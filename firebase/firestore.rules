@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Araştırmacı hesapları. Buraya kendi e-postalarını yaz.
+    // Yetki tarayıcıda değil sunucuda kontrol edilir; katılımcı kodu değiştirse bile listeye erişemez.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ['arastirmaci@ornek.edu.tr'];
+    }
+    function alloc(code) {
+      return get(/databases/$(database)/documents/allocations/$(code));
+    }
+    function codeExists(code) {
+      return exists(/databases/$(database)/documents/allocations/$(code));
+    }
+
+    // Randomizasyon listesi: katılımcı sadece KENDİ kodunu tek tek okuyabilir (get).
+    // Listenin tamamını göremez (list yok), değiştiremez.
+    match /allocations/{code} {
+      allow get: if request.auth != null;
+      allow list, write: if isAdmin();
+    }
+
+    match /participants/{code} {
+      allow get: if (request.auth != null && codeExists(code)) || isAdmin();
+      allow list: if isAdmin();
+      // Katılımcı kendi grubunu değiştiremez: yazılan grp, listedeki grp ile aynı olmalı.
+      // Çekilmiş bir kayıt katılımcı tarafından geri açılamaz.
+      allow create: if request.auth != null
+        && codeExists(code)
+        && request.resource.data.grp == alloc(code).data.grp;
+      allow update: if request.auth != null
+        && codeExists(code)
+        && request.resource.data.grp == alloc(code).data.grp
+        && (resource.data.get('withdrawn', false) == false || isAdmin());
+      allow delete: if isAdmin();
+
+      // Olay kaydı sadece eklenebilir; sonradan değiştirilemez, silinemez.
+      // Aynı olayın tekrar gönderilmesine (bağlantı kopması sonrası) izin verilir.
+      match /events/{eventId} {
+        allow create: if request.auth != null && codeExists(code);
+        allow update: if request.auth != null && request.resource.data == resource.data;
+        allow read: if isAdmin();
+        allow delete: if isAdmin();   // Sadece çekilen katılımcıların verisini silmek için
+      }
+    }
+  }
+}

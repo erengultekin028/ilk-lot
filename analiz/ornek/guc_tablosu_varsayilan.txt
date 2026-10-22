@@ -1,0 +1,20 @@
+VARSAYIMLAR: 1. bölümde ~%50 satış, sigma = 1,2, A grubunun %70'i bekleme ekranını görüyor, ortak kayma = -0,2, bölüm başına 4 deneme, tekrar = 1000. Güç = anlamlı sonuç oranı (α = 0.05, iki yönlü).
+
+Birincil test gücü (satır: grup başına tamamlayan; sütun: maruz kalanda gerçek OR). OR = 1 sütunu I. tip hatadır (≈ %5 olmalı).
+| Grup başına n (işe alım) | OR = 1 | OR = 0,7 (ek -5 yp) | OR = 0,5 (ek -9,6 yp) | OR = 0,4 (ek -12,6 yp) | OR = 0,3 (ek -16,3 yp) |
+|---|---|---|---|---|---|
+| 20 (23) | %5 | %10 | %18 | %28 | %39 |
+| 30 (34) | %5 | %8 | %22 | %33 | %51 |
+| 40 (45) | %5 | %10 | %28 | %44 | %64 |
+| 60 (67) | %6 | %16 | %39 | %58 | %79 |
+| 80 (89) | %5 | %18 | %50 | %71 | %90 |
+| 100 (112) | %5 | %21 | %55 | %81 | %95 |
+| 150 (167) | %5 | %28 | %78 | %94 | %100 |
+
+%80 güce ulaşılan en küçük n (grup başına tamamlayan):
+  OR = 0,7 (ek -5 yp): taranan en büyük n (150) ile bile ulaşılamadı
+  OR = 0,5 (ek -9,6 yp): taranan en büyük n (150) ile bile ulaşılamadı
+  OR = 0,4 (ek -12,6 yp): 100 (112 işe alım)
+  OR = 0,3 (ek -16,3 yp): 80 (89 işe alım)
+
+Güç tahminlerinin standart hatası en fazla ±1,6 puan. Sonuç dosyası: ornek/guc_tablosu_varsayilan.csv

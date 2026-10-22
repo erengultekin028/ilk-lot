@@ -1,0 +1,27 @@
+İLK LOT ARAŞTIRMASI
+Oturum sonu bilgilendirme metni (onam sürümü v1, uygulama 2026.10.20-b25)
+Bu metin A grubundaki bir katılımcının gördüğüdür; B grubunda yalnızca "Sen ... gruptaydın" cümlesi farklıdır.
+
+ÇALIŞMANIN AMACI
+Bu çalışmada, simülatörde zararına satış yapmadan önce verilen 10 saniyelik bekleme süresinin, sonrasındaki kararlara da yansıyıp yansımadığını inceledik.
+
+Katılımcılar rastgele iki gruba ayrıldı. Bir grupta simülatörde bekleme ekranı çıktı, diğerinde çıkmadı. 1. ve 3. bölümde iki grup için de bekleme yoktu; bu iki bölümü karşılaştırarak bir değişim olup olmadığına bakıyoruz. Bunu baştan söylemedik, çünkü bilmek kararlarını etkileyebilirdi.
+
+Sen bekleme süresi olan gruptaydın.
+
+BİLMEN GEREKENLER
+Hisse adları gerçek şirketlere ait olsa da fiyatlar, grafikler ve haberler tamamen kurgusaldı; bu şirketlerin gerçek performansını ya da gerçek haberlerini yansıtmaz. Karar anlarının sonuçları, satmanın ya da tutmanın ortalamada avantaj sağlamayacağı şekilde dengelenmişti; simülatördeki piyasa da krizden sonra ortalamada yatay seyredecek şekilde seçilmişti. Yani hiçbir kararın "doğru" ya da "yanlış" değildi.
+
+Hiçbir içerik yatırım tavsiyesi değildir.
+
+Soruların için: arastirmaci@ornek.edu.tr
+
+RAHATSIZ HİSSETTİYSEN
+Piyasa düşüşleri ve zarar anları sırasında gergin ya da rahatsız hissetmiş olabilirsin. Bu his sürüyorsa konuşabileceğin yer: [DOLDUR: üniversite psikolojik danışma ve rehberlik birimi, iletişim bilgisi]
+
+Araştırmayla ilgili sorular için: arastirmaci@ornek.edu.tr
+
+VERİLERİN
+Amacı öğrendikten sonra verilerinin kullanılmasını istemiyorsan şimdi çekilebilirsin.
+
+Çalışmadan çekil, verilerimi sil

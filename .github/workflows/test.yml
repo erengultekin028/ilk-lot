@@ -1,0 +1,36 @@
+# Her gönderimde testleri çalıştırır. Bu klasör (ilk-lot) bir git deposunun kökü olduğunda etkindir.
+# DİKKAT: Bu iş akışı yazıldı ama gerçek bir GitHub deposunda hiç çalıştırılmadı; ilk çalıştırmada çıktıyı izle.
+name: testler
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bağımlılıklar
+        run: |
+          pip install numpy pandas scipy matplotlib playwright pyyaml
+          playwright install --with-deps chromium
+      - name: Derlenmiş dosya kaynaktan güncel mi
+        run: |
+          python kaynak/derle.py --cikti /tmp/ilk-lot.derlenen.html
+          diff -q /tmp/ilk-lot.derlenen.html ilk-lot.html
+      - name: Uygulama testleri
+        run: python testler/uygulama_testleri.py
+      - name: Analiz testleri
+        run: python analiz/test_betikler.py
+      - name: Araç testleri (dağıtım, saklama takvimi)
+        run: python testler/arac_testleri.py
+      - name: Kuru çalıştırma (sahte veriyle uçtan uca hat)
+        run: python analiz/kuru_calistirma.py
+      - name: Erişilebilirlik taraması (keşif; axe-core ağ erişimli bu ortamda çalışır)
+        # İlk çalıştırmada axe bulguları çıkabilir; bilinmeyen olduğu için akışı durdurmaz, çıktıyı oku.
+        continue-on-error: true
+        run: |
+          npm install --no-save axe-core@4.10.2
+          python testler/erisilebilirlik_taramasi.py --axe node_modules/axe-core/axe.min.js

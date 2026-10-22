@@ -1,0 +1,72 @@
+{
+ "surum": "1.0",
+ "n_toplam": 202,
+ "n_dahil": 181,
+ "nA": 94,
+ "nB": 87,
+ "uyarilar": [
+  "Grup başına tamamlayan katılımcı sayısı hedefin altında (A: 94, B: 87; hedef: 100). Sonuç güç analizinin öngördüğünden daha belirsiz olur."
+ ],
+ "birincil": {
+  "nA": 94,
+  "nB": 87,
+  "yeterli": true,
+  "OR": 0.9209207588809037,
+  "ci_lo": 0.6228598475368385,
+  "ci_hi": 1.3616145710654752,
+  "p": 0.6781307091019703,
+  "basarisiz": false,
+  "G": 181,
+  "fark_yp": -1.5590608950843716,
+  "p_perm": 0.7767223277672233,
+  "fark_lo": -11.073459280997799,
+  "fark_hi": 8.156257642455364,
+  "g": -0.046962021985325446,
+  "ancova_b": -5.569295442520103,
+  "ancova_p": 0.18784990735408802
+ },
+ "ikincil": [
+  {
+   "ad": "Doz-yanıt: A grubunda bekleme ekranı sayısı ile değişim (Spearman)",
+   "sonuc": "ρ = -0,29, n = 94",
+   "p": 0.0050615014768718835,
+   "p_holm": 0.03543051033810318
+  },
+  {
+   "ad": "Bekleme ekranını gören A katılımcıları ile B: değişim farkı (permütasyon)",
+   "sonuc": "fark = -8,88 yp, n = 61 / 87",
+   "p": 0.10168983101689831,
+   "p_holm": 0.5084491550844915
+  },
+  {
+   "ad": "Satış gerekçelerinde \"Korktum\" payı (simülatör), A ve B",
+   "sonuc": "A: 0,55 (n=71), B: 0,51 (n=72)",
+   "p": 0.49015927585283436,
+   "p_holm": 1.0
+  },
+  {
+   "ad": "Gerginlik değişimi (3. bölüm sonrası − 1. bölüm sonrası), A ve B",
+   "sonuc": "A: 0,26 (n=87), B: 0,18 (n=77)",
+   "p": 0.7104974945627748,
+   "p_holm": 1.0
+  },
+  {
+   "ad": "Simülatör sonrası gerginlik, A ve B",
+   "sonuc": "A: 2,90 (n=87), B: 2,87 (n=77)",
+   "p": 0.6713621642148966,
+   "p_holm": 1.0
+  },
+  {
+   "ad": "Karar süresi değişimi (log oran, 3. / 1. bölüm), A ve B",
+   "sonuc": "A: -0,00, B: 0,00",
+   "p": 0.7601842284740737,
+   "p_holm": 1.0
+  },
+  {
+   "ad": "Sürü bilgisi etkisi (sert düşüş + zarar denemelerinde, sürü bilgisi var / yok; deneme düzeyi, kümeye dayanıklı)",
+   "sonuc": "satış oranı 0,51 / 0,45, OR = 1,31 [1,08; 1,57]",
+   "p": 0.005414331373049056,
+   "p_holm": 0.03543051033810318
+  }
+ ]
+}

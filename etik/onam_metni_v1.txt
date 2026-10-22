@@ -1,0 +1,49 @@
+İLK LOT ARAŞTIRMASI
+Gönüllü katılım ve bilgilendirme metni (sürüm v1)
+21.10.2026
+
+ÖZET
+- Yaklaşık 30 dakika; gerçek para yok.
+- Adın, e-postan ya da öğrenci numaran istenmez; verilerin rastgele bir katılım koduyla eşleşir.
+- Gönüllüsün; istediğin an gerekçe göstermeden çekilebilirsin ve verilerin silinir.
+
+ARAŞTIRMANIN AMACI
+Bu çalışma, üniversite öğrencilerinin yatırım kararlarını, piyasada sert düşüş gibi baskılı durumlarda nasıl verdiğini inceliyor. Bulgular, gençlere yönelik finansal okuryazarlık eğitimlerinin geliştirilmesine katkı sağlamayı amaçlıyor.
+
+Araştırmanın bazı ayrıntıları, davranışını etkileyebileceği için çalışmanın sonunda açıklanacak. O noktada tam bilgi verilecek ve istersen verilerinin kullanılmasını reddedebileceksin.
+
+NE YAPACAKSIN?
+Kısa bir form (isteğe bağlı), iki kısa test, iki alıştırma, toplam 12 kısa karar ve 7,5 dakikalık bir piyasa simülatörü (öncesinde 30 saniyelik bir alıştırma). Toplam yaklaşık 30 dakika sürer.
+
+Hiçbir aşamada gerçek para kullanılmaz. Hisse adları gerçek BIST şirketlerine ait olabilir; ama fiyatlar, grafikler ve haberler tamamen kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz.
+
+NELER KAYDEDİLİR?
+Verdiğin kararlar ve bunları verme süren, simülatördeki işlemlerin, test ve anket cevapların, uygulamada hangi ekranlarda ne kadar kaldığın, cihaz türü ve ekran boyutu gibi teknik bilgiler.
+
+Adın, e-postan, telefon numaran, öğrenci numaran, konumun, sesin ve görüntün kaydedilmez. Form sorularının hepsi isteğe bağlıdır; yaş sorusu sadece katılım koşulunu (18 yaş ve üzeri) denetlemek içindir.
+
+Uygulamayı barındıran hizmetin teknik kayıtlarında IP adresin gibi bilgiler tutulabilir; bunlar araştırma verisiyle eşleştirilmez.
+
+GİZLİLİK VE KVKK
+Verilerin yalnızca sana verilen rastgele bir kodla eşleşir; araştırmacı seni isimle tanımaz.
+
+Veri sorumlusu: [DOLDUR: üniversite ve araştırmacı adı]. Veriler [DOLDUR: örn. Google Firebase, Avrupa bölgesi] üzerinde saklanır ve yalnızca bu araştırmada kullanılır. Saklama süresi: [DOLDUR: örn. araştırma bittikten sonra 2 yıl].
+
+Veriler üçüncü kişilerle paylaşılmaz; sonuçlar yayımlanırsa yalnızca kimliksiz ve toplu olarak yayımlanır. KVKK kapsamında verilerine erişme, düzeltilmesini ve silinmesini isteme haklarını arastirmaci@ornek.edu.tr adresine başvurarak kullanabilirsin.
+
+OLASI RAHATSIZLIKLAR VE YARARLAR
+Simülatörde piyasada sert düşüşler olacak; bu bir miktar gerginlik yaratabilir. Gerçek para olmadığı için maddi bir riskin yok. Rahatsız olursan istediğin an durabilirsin. Çalışma sırasında bazı noktalarda ne kadar gergin hissettiğini soracağız; cevaplamak zorunda değilsin.
+
+Katılmanın sana doğrudan bir yararı yok; bulgular finansal okuryazarlık çalışmalarına katkı sağlayabilir. Çalışmanın sonunda, rahatsız hissedersen başvurabileceğin destek bilgisi de verilecek. Uygulama yatırım tavsiyesi vermez.
+
+ÇEKİLME HAKKIN
+Çalışma sırasında sağ üstteki ⋯ menüsünden "Çalışmadan çekil, verilerimi sil" diyebilirsin. Gerekçe göstermen gerekmez ve bunun bir sonucu olmaz. Çekilirsen bu koda ait veriler analizden çıkarılır ve silinir.
+
+Sonuçlar analiz edilip yayımlandıktan sonra, kimliksiz toplu sonuçlardan senin verini ayıklamak mümkün olmayabilir.
+
+İLETİŞİM VE ETİK ONAY
+Sorularını arastirmaci@ornek.edu.tr adresine iletebilirsin.
+
+Bu çalışma [DOLDUR: etik kurul adı, tarih ve sayı] onayıyla yürütülür.
+
+Bu metni indirmen, çalışmaya katılmayı kabul ettiğin anlamına gelmez.
