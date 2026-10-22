@@ -20,9 +20,12 @@ import os
 import shutil
 import sys
 
+import numpy as np
 from PIL import Image, ImageChops
 from playwright.async_api import async_playwright
 
+ESIK = 3            # bu kanal farkına (0-255) kadar olan pikseller gürültü sayılır
+GURULTU_PIKSEL = 8  # eşiği aşan en çok bu kadar piksel gürültü sayılır (yuvarlak kenar oynaması)
 KLASOR = os.path.dirname(os.path.abspath(__file__))
 REFERANS = os.path.join(KLASOR, 'gorsel_referans')
 FARK = os.path.join(KLASOR, 'gorsel_fark')
@@ -50,10 +53,15 @@ SABITLE = """
   var s = 123456789;                              // tohumlu Math.random (mulberry32)
   Math.random = function(){ s |= 0; s = s + 0x6D2B79F5 | 0; var t = Math.imul(s ^ s >>> 15, 1 | s);
     t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  try {                                           // kod listesi crypto ile üretiliyorsa o da tohumlu olsun
+    crypto.getRandomValues = function(arr){ for (var i = 0; i < arr.length; i++) arr[i] = Math.floor(Math.random() * 4294967296); return arr; };
+    if (crypto.randomUUID) crypto.randomUUID = function(){ return 'aaaaaaaa-0000-4000-8000-' + String(Math.floor(Math.random() * 1e12)).padStart(12, '0'); };
+  } catch (e) {}
   window.setInterval = function(){ return 0; };   // piyasa, sayaç ve pano yenilemesi kendiliğinden işlemez
 })();
 """
-SABIT_CSS = '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}'
+# Geçici bildirim (#toast) birkaç sn sonra kendiliğinden kaybolur: görüntüde bazen var bazen yok olmasın diye gizlenir
+SABIT_CSS = '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}#toast{display:none!important}'
 
 
 class Cekim:
@@ -67,9 +75,19 @@ class Cekim:
         if self.filtre and not any(f in ad for f in self.filtre):
             return
         await self.pg.evaluate(f"(function(){{var st=document.getElementById('fx')||document.head.appendChild(Object.assign(document.createElement('style'),{{id:'fx'}}));st.textContent={SABIT_CSS!r}}})()")
+        await self.pg.mouse.move(0, 0)  # fare son tıklanan düğmenin üstünde kalıp üzerine gelme (hover) biçimi vermesin
         await self.pg.wait_for_timeout(120)
         yol = os.path.join(self.klasor, f'{self.onek}_{ad}.png')
-        await self.pg.screenshot(path=yol, full_page=True, animations='disabled')
+        # Sayfa geç oturabilir (yazı tipi, düzen): iki ardışık çekim aynı olana kadar (en çok 6 deneme) bekle
+        onceki = None
+        for _ in range(6):
+            png = await self.pg.screenshot(full_page=True, animations='disabled')
+            if png == onceki:
+                break
+            onceki = png
+            await self.pg.wait_for_timeout(150)
+        with open(yol, 'wb') as f:
+            f.write(png)
         self.adlar.append(os.path.basename(yol))
 
 
@@ -181,10 +199,17 @@ def karsilastir(yol_a, yol_b, ad):
     kutu = fark.getbbox()
     if kutu is None:
         return 0, ''
-    n = sum(1 for px in fark.getdata() if px != (0, 0, 0))
+    # Chromium aynı sayfayı iki kez çizerken yuvarlak kenarlarda 1-2 düzeylik (0-255) ve birkaç piksellik oynama yapabiliyor
+    # (aynı kodla iki çekimde ölçüldü). Gerçek bir tasarım değişikliği (renk, kayma, boyut) yüzlerce pikseli etkiler.
+    # Bu yüzden: kanal farkı ≤ ESIK olan pikseller yok sayılır ve en çok GURULTU_PIKSEL pikselin bunu aşmasına izin verilir.
+    en_buyuk = np.asarray(fark).max(axis=2)
+    n = int((en_buyuk > ESIK).sum())
+    toplam = int((en_buyuk > 0).sum())
+    if n <= GURULTU_PIKSEL:
+        return 0, ''
     os.makedirs(FARK, exist_ok=True)
-    fark.point(lambda v: 255 if v else 0).save(os.path.join(FARK, ad))
-    return n, f'fark alanı {kutu}'
+    fark.point(lambda v: 255 if v > ESIK else 0).save(os.path.join(FARK, ad))
+    return n, f'fark alanı {kutu}, en büyük kanal farkı {int(en_buyuk.max())}/255, sıfırdan farklı {toplam} piksel'
 
 
 async def ana(a):
@@ -258,4 +283,8 @@ if __name__ == '__main__':
     ap.add_argument('--genislik', type=int, nargs='+', default=[360, 412])
     ap.add_argument('--tema', nargs='+', choices=['acik', 'koyu'], default=['acik', 'koyu'])
     ap.add_argument('--filtre', nargs='+', default=None, help='yalnızca adında bu metinlerden biri geçen ekranlar')
-    sys.exit(asyncio.run(ana(ap.parse_args())))
+    ap.add_argument('--siki', action='store_true', help='gürültü payını kapat: tek bir piksel farkı bile FARK sayılır')
+    arg = ap.parse_args()
+    if arg.siki:
+        ESIK, GURULTU_PIKSEL = 0, 0
+    sys.exit(asyncio.run(ana(arg)))
