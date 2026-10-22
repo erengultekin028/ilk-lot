@@ -1,6 +1,6 @@
 'use strict';
 // Her olay ve anlık görüntü bu sürümle etiketlenir. Pilot ortasında kodu değiştirirsen MUTLAKA artır.
-var APP_VERSION='2026.10.20-b25';
+var APP_VERSION='2026.10.22-b26';
 
 // ═════════════════ ÇALIŞMA AYARLARI ═════════════════
 var QS=new URLSearchParams(location.search);
