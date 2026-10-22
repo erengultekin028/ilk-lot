@@ -20,7 +20,23 @@ import time
 from playwright.async_api import async_playwright
 
 KLASOR = os.path.dirname(os.path.abspath(__file__))
-HTML = os.path.abspath(os.environ.get('ILKLOT_HTML', os.path.join(KLASOR, '..', 'ilk-lot.html')))
+GERCEK_HTML = os.path.abspath(os.environ.get('ILKLOT_HTML', os.path.join(KLASOR, '..', 'ilk-lot.html')))
+
+
+def yerel_kopya(kaynak):
+    """Testler yerel (Firebase'siz) kipte koşar. Derlenmiş dosyada gerçek CFG.firebase doluysa (b26'dan beri), testlerin
+    gerçek Firebase'e bağlanmaması için, yalnızca bu bölümü `null` yapan geçici bir kopya üretilir; dosyanın geri kalanı aynıdır."""
+    html = open(kaynak, encoding='utf-8').read()
+    html2, n = re.subn(r'(\n\s*)firebase:\{[^}]*\}', r'\1firebase:null', html, count=1)
+    if n == 0:
+        return kaynak
+    yol = os.path.join(tempfile.mkdtemp(prefix='ilklot_test_'), 'ilk-lot.html')
+    with open(yol, 'w', encoding='utf-8', newline='') as f:
+        f.write(html2)
+    return yol
+
+
+HTML = yerel_kopya(GERCEK_HTML)
 URL = 'file://' + HTML
 CHROMIUM = os.environ.get('CHROMIUM')
 sys.path.insert(0, os.path.join(KLASOR, '..', 'analiz'))
@@ -395,8 +411,10 @@ async def lot_girisi(b):
     assert await pg.evaluate('S.sim.pos.KOZAL.q') == elde - 37
     t = await pg.evaluate('S.sim.trades[S.sim.trades.length-1]')
     assert t['q'] == 37 and t['qMode'] == 'typed' and t['afterCooldown'] is True and t['why'] == 'Korktum'
-    c0, q0, p0 = await pg.evaluate('S.sim.cash'), await pg.evaluate('S.sim.pos.KOZAL.q'), await pg.evaluate('S.sim.p.KOZAL')
+    c0, q0 = await pg.evaluate('S.sim.cash'), await pg.evaluate('S.sim.pos.KOZAL.q')
     await pg.click('[data-a=simOpen][data-v="KOZAL|B"]')
+    # Fiyat, piyasa durduktan (işlem penceresi açıldıktan) sonra okunur; önce okunursa gerçek zamanlı bir adım araya girip testi arada bir bozar
+    p0 = await pg.evaluate('S.sim.p.KOZAL')
     await pg.fill('#simq', '12')
     await pg.click('[data-a=simGo]')
     await pg.wait_for_timeout(120)

@@ -30,7 +30,8 @@ def yukle(ad, yol):
 
 dagit = yukle('dagit', os.path.join(KOK, 'firebase', 'dagit.py'))
 takvim = yukle('saklama_takvimi', os.path.join(KOK, 'etik', 'saklama_takvimi.py'))
-GERCEK_HTML = open(os.path.join(KOK, 'ilk-lot.html'), encoding='utf-8').read()
+# Gerçek dosyada CFG.firebase doluysa testler için "henüz doldurulmamış" haline çevrilir (testler dolu/boş durumları kendileri kurar)
+GERCEK_HTML = re.sub(r'(\n\s*)firebase:\{[^}]*\}', r'\1firebase:null', open(os.path.join(KOK, 'ilk-lot.html'), encoding='utf-8').read(), count=1)
 GERCEK_KURAL = open(os.path.join(KOK, 'firebase', 'firestore.rules'), encoding='utf-8').read()
 FB = 'firebase:{apiKey:"AIzaX",authDomain:"x.firebaseapp.com",projectId:"x",appId:"1:2:web:3"}'
 sonuclar = []
