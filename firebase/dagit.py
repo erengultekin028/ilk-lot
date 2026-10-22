@@ -247,10 +247,12 @@ def main(argv=None):
         print('Komut (firebase/yayin içinde): ' + ' '.join(komut))
         if a.kuru:
             return 0
-        if not shutil.which('firebase'):
+        yol = shutil.which('firebase')
+        if not yol:
             print('HATA: firebase komutu bulunamadı (npm i -g firebase-tools; firebase login).')
             return 1
-        return subprocess.run(komut, cwd=YAYIN).returncode
+        # Windows'ta firebase-tools "firebase.cmd" olarak kurulur; bare ad subprocess ile bulunamaz, bu yüzden tam yol verilir
+        return subprocess.run([yol] + komut[1:], cwd=YAYIN).returncode
     return 0
 
 

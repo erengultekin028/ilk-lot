@@ -271,10 +271,16 @@ def _():
         bin_ = os.path.join(d, 'bin')
         os.makedirs(bin_)
         iz = os.path.join(d, 'cagri.txt')
-        sahte = os.path.join(bin_, 'firebase')
-        with open(sahte, 'w') as f:
-            f.write(f'#!/bin/sh\necho "$PWD|$@" > "{iz}"\nexit 0\n')
-        os.chmod(sahte, os.stat(sahte).st_mode | stat.S_IEXEC)
+        # Windows'ta sahte komut firebase.cmd (gerçek firebase-tools de böyle kurulur), diğerlerinde sh betiği
+        win = os.name == 'nt'
+        sahte = os.path.join(bin_, 'firebase.cmd' if win else 'firebase')
+
+        def sahte_yaz(govde_sh, govde_cmd):
+            with open(sahte, 'w', newline='') as f:
+                f.write(govde_cmd if win else govde_sh)
+            if not win:
+                os.chmod(sahte, os.stat(sahte).st_mode | stat.S_IEXEC)
+        sahte_yaz(f'#!/bin/sh\necho "$PWD|$@" > "{iz}"\nexit 0\n', f'@echo off\r\n>"{iz}" echo %CD%^|%*\r\nexit /b 0\r\n')
         os.environ['PATH'] = bin_ + os.pathsep + eski_yol
         r, cikti = sus(dagit.main, ['--yayinla', '--proje', 'ilklot-demo', '--kuru'])
         assert r == 0 and not os.path.exists(iz) and 'firebase deploy --only hosting,firestore:rules --project ilklot-demo' in cikti
@@ -282,8 +288,7 @@ def _():
         assert r == 0
         cwd, args = open(iz, encoding='utf-8').read().strip().split('|', 1)
         assert os.path.realpath(cwd) == os.path.realpath(dagit.YAYIN) and args == 'deploy --only hosting,firestore:rules --project ilklot-demo', (cwd, args)
-        with open(sahte, 'w') as f:
-            f.write('#!/bin/sh\nexit 7\n')
+        sahte_yaz('#!/bin/sh\nexit 7\n', '@echo off\r\nexit /b 7\r\n')
         r, _ = sus(dagit.main, ['--yayinla', '--proje', 'x'])
         assert r == 7, 'firebase hata kodu yukarı aktarılmalı'
         os.environ['PATH'] = os.path.join(d, 'yok')

@@ -319,7 +319,8 @@ def kor_hazirla(df, args, uyarilar):
                           else 'G1 = gerçekte A (bekleme süreli), G2 = gerçekte B (kontrol); birincil OR değişmez'),
                    olusturma=datetime.now().isoformat(timespec='seconds'))
     metin = json.dumps(anahtar, ensure_ascii=False, indent=1)
-    with open(args.kor_anahtar, 'w', encoding='utf-8') as f:
+    # newline='' : Windows'ta satır sonu CRLF'e çevrilmesin; yoksa dosyanın özeti rapordaki özetle uyuşmaz
+    with open(args.kor_anahtar, 'w', encoding='utf-8', newline='') as f:
         f.write(metin)
     ozet = hashlib.sha256(metin.encode('utf-8')).hexdigest()
     if args.olaylar:
