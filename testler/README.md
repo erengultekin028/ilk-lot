@@ -34,7 +34,7 @@ python uygulama_testleri.py lot onam     # adında "lot" ya da "onam" geçenler
 | `logo_ve_simge` | Başlık logosu yeni tasarım (eski logonun öğeleri yok); favicon ve ana ekran simgesi geçerli 180×180 PNG (b24) |
 | `sistem_testi` | Panel sistem testi; depo engelini hata olarak bildirir |
 | `fiyat_gosterimi` | Ekrandaki fiyat, değer ve toplamlar modelle birebir aynı |
-| `sahte_firebase_entegrasyonu` | Firebase kod yolu (sahte SDK): yazma, olaylar, çekilme, kalıcı silme |
+| `sahte_firebase_entegrasyonu` | Firebase kod yolu (sahte SDK): yazma, olaylar, çekilme (soft delete: silme yolu yok), sistem testi |
 | `yazi_boyutu_secici` | Yazı boyutu seçici (onam + menü): üç seçenek, %115/%130, yenilemede kalır, geçersiz kayıtlı değer yok sayılır, `fs_set` yalnızca kodla yazılır, depolama engelliyken çalışır (b22) |
 | `yazi_boyutu_tasma_yok` | Büyük/Çok büyük yazıda 320 ve 360 px'te tarama temiz; üst çubuk sağ kenar boşluğunu yemez (b22) |
 | `adet_fiyat_gosterimi` | Portföy satırı "adet × 1 lot fiyatı = değer" olarak tutarlı (5 farklı günde), kâr/zarar işareti ve rengi, ortalama alış; detay ve işlem penceresinde aynı adlandırma; işlem özetinde "N lot × ₺fiyat" ve tutar |

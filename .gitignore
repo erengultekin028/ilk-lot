@@ -2,3 +2,5 @@
 testler/gorsel_fark/
 testler/gorsel_anlik*/
 __pycache__/
+firebase/kural_testleri/node_modules/
+firebase/kural_testleri/*.log

@@ -7,7 +7,7 @@ Saklama süresini bu araç SEÇMEZ ve varsayılanı yoktur: süre; etik kurul, k
 farklıysa (ör. "araştırma raporunun teslimi") --saklama-baslangic ile o tarihi ver.
 
 Üretilen hatırlatmalar:
-  1. Veri toplama süresince her hafta: çekilen katılımcıları kalıcı sil (Firebase'te katılımcı kendi verisini silemez; araştırmacı siler).
+  1. Veri toplama süresince her hafta: çekilen katılımcıları kontrol et (silinmez, "withdrawn" işaretli kalır ve analizden çıkar).
   2. Veri toplamanın bittiği gün: kapat, CSV'leri indir ve yedekle.
   3. Saklama süresi bitmeden 90, 30 ve 7 gün önce: hazırlık.
   4. Saklama süresinin bittiği gün: ham veriyi sil.
@@ -64,12 +64,12 @@ def olaylar(bas, bit, saklama_bas, ay):
     liste = []
     ilk_hafta = bas + timedelta(days=7)
     if ilk_hafta <= bit:
-        liste.append(('İlk Lot: çekilen katılımcıları kalıcı sil',
-                      'Araştırmacı paneli: Çekilenler kısmından "Kalıcı sil". Firebase\'te katılımcı kendi verisini silemez; çekilme isteği geldiyse gecikmeden sil. '
-                      'Silinen kayıtların olay kayıtları da gider; kayıt "çekildi" olarak kalır.', ilk_hafta, bit))
+        liste.append(('İlk Lot: çekilen katılımcıları kontrol et',
+                      'Araştırmacı paneli: Çekilenler kısmında "Say". Çekilen kayıtlar silinmez, "withdrawn" olarak işaretli kalır ve CSV dışa aktarmaya girmez (politika A, soft delete). '
+                      'Bir çekilme ya da silme talebi geldiyse gecikmeden danışmanına ve KVKK birimine bildir.', ilk_hafta, bit))
     liste.append(('İlk Lot: veri toplama bitti, kapat ve yedekle',
                   'Panelden "Katılımcı özeti" ve "Tüm olaylar" CSV\'lerini indir, güvenli yere yedekle. Kod-grup gizli listesini (varsa) güvene al. '
-                  'Firebase\'te yeni yazmayı kapat (kuralları kısıtla ya da barındırmayı kaldır). Çekilenleri kalıcı sil.', bit, None))
+                  'Firebase\'te yeni yazmayı kapat (kuralları kısıtla ya da barındırmayı kaldır). Çekilenlerin analize girmediğini son kez doğrula.', bit, None))
     for gun in (90, 30, 7):
         t = son - timedelta(days=gun)
         if t > bit:

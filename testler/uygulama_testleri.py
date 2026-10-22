@@ -822,13 +822,20 @@ async def sahte_firebase_entegrasyonu(b):
     await pg.wait_for_function('S.stage==="withdrawn"')
     db = json.loads(await pg.evaluate("localStorage.getItem('__fakedb')"))
     assert db['participants/' + kod]['withdrawn'] is True
-    assert any(k.startswith(f'participants/{kod}/events/') for k in db), 'katılımcı olay kayıtlarını silemez (kurallar); araştırmacı siler'
+    assert any(k.startswith(f'participants/{kod}/events/') for k in db), 'politika A: çekilmede olay kayıtları silinmez'
+    assert db['participants/' + kod].get('withdrawnAt'), 'çekilme zamanı işaretlenmeli'
+    # Politika A (soft delete): uygulamada kalıcı silme yolu hiç yok
+    assert await pg.evaluate("typeof Store.purgeWithdrawn") == 'undefined' and await pg.evaluate("typeof ADMIN_ACT.adPurge") == 'undefined'
+    html = open(HTML, encoding='utf-8').read()
+    assert 'purgeWithdrawn' not in html and 'adPurge' not in html and 'purgedAt' not in html
+    kurallar = open(os.path.join(KLASOR, '..', 'firebase', 'firestore.rules'), encoding='utf-8').read()
+    kod_satirlari = [s.split('//')[0] for s in kurallar.splitlines()]
+    assert not any('delete' in s or ' write' in s for s in kod_satirlari), 'kurallarda silme (ya da silmeyi içeren write) izni olmamalı'
     await pg.evaluate("Store.adminLogin('a@b.c','x')")
-    n = await pg.evaluate('Store.purgeWithdrawn()')
+    st = await pg.evaluate('Store.selfTest()')
+    assert not any(x['ok'] is False for x in st), st
     db = json.loads(await pg.evaluate("localStorage.getItem('__fakedb')"))
-    assert n == 1 and not any(k.startswith(f'participants/{kod}/events/') for k in db), 'silme işlemi olayları kaldırmalı'
-    kalan = db['participants/' + kod]
-    assert kalan['withdrawn'] is True and kalan.get('purgedAt') and 'demo' not in kalan and 'pre' not in kalan, kalan
+    assert 'allocations/__selftest__' not in db and 'selftest/yazma' in db, 'sistem testi randomizasyon listesine karışmamalı'
     temiz(pg)
 
 

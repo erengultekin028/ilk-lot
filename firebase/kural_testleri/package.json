@@ -1,0 +1,1 @@
+{"name":"ilk-lot-kural-testleri","private":true,"version":"1.0.0","description":"Firestore guvenlik kurallari testleri (Emulator)","scripts":{"test":"firebase emulators:exec --only firestore --project demo-ilklot \"node --test kural.test.js\""},"devDependencies":{"@firebase/rules-unit-testing":"^6.0.0","firebase":"^13.1.0","firebase-tools":"^15.34.1"}}

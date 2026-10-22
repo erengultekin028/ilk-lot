@@ -42,7 +42,7 @@ Otomatik testler (`testler/uygulama_testleri.py`) masaüstü Chromium'da çalı�
 | C2 | Kullanılmamış bir kartla akışı bitir | Konsolda `participants/{kod}` (grp, consentAt, demo, pre, `sess_1` …) ve `events` alt koleksiyonu görünür | ✅ sahte SDK · ⚠️ gerçek |
 | C3 | **Rules Playground**'da `participants/{kod}` üzerinde, anonim kullanıcıyla ve `grp` alanını listedekinden **farklı** bir değerle bir güncelleme simüle et | Reddedilmeli. (Konsoldaki elle düzenleme kurallardan geçmez; kuralları bu yüzden konsoldan sınayamazsın) | ⚠️ |
 | C4 | Katılımcı menüden **Çalışmadan çekil** | Kayıt `withdrawn: true` olur; olaylar hâlâ durur (katılımcı silemez) | ✅ sahte SDK · ⚠️ gerçek |
-| C5 | Araştırmacı olarak giriş → **Çekilenlerin verisini kalıcı sil** düğmesi | Olaylar silinir; kayıtta yalnızca kod, grup, çekilme tarihi, `purgedAt` kalır | ✅ sahte SDK · ⚠️ gerçek |
+| C5 | Araştırmacı olarak giriş → Çekilenler bölümünde **Say** (politika A: silme düğmesi yok) | Çekilen sayısı görünür; konsolda kayıt `withdrawn: true`, `withdrawnAt` ile durur, olaylar silinmez; CSV'ye girmez | ✅ sahte SDK · ⚠️ gerçek |
 | C6 | Araştırmacı girişiyle **Sistem testi** | "Firestore yazma (araştırmacı)" ✓ | ✅ sahte SDK · ⚠️ gerçek |
 | C7 | Panelden CSV indir → `analiz/ilklot_analiz.py` ile çalıştır | Sütunlar eşleşir, rapor üretilir | ✅ yerel örnek · ⚠️ Firebase çıktısı |
 | C8 | Güvenlik kurallarında `arastirmaci@ornek.edu.tr` yerine kendi e-postanı yaz | Araştırmacı girişi çalışır; başkası liste okuyamaz | ⚠️ |

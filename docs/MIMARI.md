@@ -40,7 +40,7 @@ Hosting ve claude.ai önizlemesi için bağımlılıksız çalışır. Dış kay
 ## Veri
 - **İki kaynak:** (1) `sess_1` anlık görüntüsü (kararlar, simülatör işlemleri; katılımcı özeti CSV'si buradan üretilir), (2) olay kaydı (`log()`; her eylem). Birincil analiz (1)'e, ikincil analizler (2)'ye dayanır.
 - **`Store`**: yerel kipte `localStorage` (depo engelliyse bellek), Firebase kipinde Firestore. Katılımcılar anonim girişle yazar; güvenlik `firebase/firestore.rules` ile sunucuda zorlanır: grup değiştirilemez, çekilmiş kayıt geri açılamaz, olay kaydı yalnızca eklenir (katılımcı okuyamaz ve değiştiremez), listeleme ve olay okuma yalnızca araştırmacıda. Katılımcı kaydını **kodunu bilen herkes** okuyup yazabilir; koruma kodun tahmin edilemezliğine dayanır.
-- **Çekilme:** yerelde veri hemen silinir; Firebase'de katılımcı silemez, kayıt `withdrawn` olur, araştırmacı "kalıcı sil" ile temizler.
+- **Çekilme:** yerelde veri hemen silinir; Firebase'de katılımcı silemez, kayıt `withdrawn` + `withdrawnAt` ile işaretlenir ve analizden çıkar. **Politika A (soft delete, b26):** uygulamada ve `firestore.rules` içinde hiçbir silme yolu yoktur ("kalıcı sil" kaldırıldı); süre sonu silme Firebase konsolundan yapılır. Onam metni bu politikaya henüz uyarlanmadı: `etik/ONAM_DEGISIKLIK_ONERISI_A.md`.
 - **Randomizasyon:** kodlar önceden, 4'lük bloklarda (2 A + 2 B), set sırası bloklar içinde dengeli; katılımcı grubunu seçemez.
 
 ## Sürümleme ve değişiklik kuralları

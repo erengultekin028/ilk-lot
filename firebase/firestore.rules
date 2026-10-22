@@ -2,48 +2,68 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Araştırmacı hesapları. Buraya kendi e-postalarını yaz.
+    // GÜVENLİK: Araştırmacı hesapları. Buraya kendi e-postalarını yaz.
     // Yetki tarayıcıda değil sunucuda kontrol edilir; katılımcı kodu değiştirse bile listeye erişemez.
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email in ['arastirmaci@ornek.edu.tr'];
     }
+    // Randomizasyon listesindeki kaydı getirir (kodun hangi gruba ait olduğunu söyler).
     function alloc(code) {
       return get(/databases/$(database)/documents/allocations/$(code));
     }
+    // Bu kod, araştırmacının önceden bastığı listede var mı? (Listede olmayan kodla kimse kayıt açamaz.)
     function codeExists(code) {
       return exists(/databases/$(database)/documents/allocations/$(code));
     }
 
+    // SİLME POLİTİKASI (A, soft delete): hiçbir koleksiyonda "delete" izni yoktur; ne katılımcı ne araştırmacı
+    // veri silebilir. Çekilen katılımcı "withdrawn: true" ile işaretlenir ve analizden çıkarılır.
+    // Aşağıda "write" yazılmaz, yalnızca "create" ve "update" yazılır; çünkü "write" silmeyi de içerir.
+
     // Randomizasyon listesi: katılımcı sadece KENDİ kodunu tek tek okuyabilir (get).
-    // Listenin tamamını göremez (list yok), değiştiremez.
+    // Listenin tamamını göremez (list yok), hiçbir şey yazamaz.
     match /allocations/{code} {
+      // Giriş yapmış (anonim dahil) herkes tek bir kodu getirebilir; kodun tahmin edilemezliği koruma sağlar.
       allow get: if request.auth != null;
-      allow list, write: if isAdmin();
+      // Yalnızca araştırmacı listeyi görür, kod ekler ya da günceller; silemez.
+      allow list, create, update: if isAdmin();
     }
 
     match /participants/{code} {
+      // Kendi kaydını kodu bilen (ve kodu listede olan) kişi okuyabilir; araştırmacı hepsini okur.
       allow get: if (request.auth != null && codeExists(code)) || isAdmin();
+      // Katılımcıların tamamını listelemek yalnızca araştırmacıya açık.
       allow list: if isAdmin();
       // Katılımcı kendi grubunu değiştiremez: yazılan grp, listedeki grp ile aynı olmalı.
-      // Çekilmiş bir kayıt katılımcı tarafından geri açılamaz.
       allow create: if request.auth != null
         && codeExists(code)
         && request.resource.data.grp == alloc(code).data.grp;
+      // Güncellemede de grup aynı kalmalı. Çekilmiş bir kayıt katılımcı tarafından geri açılamaz
+      // (yalnızca araştırmacı çekilmiş kaydı güncelleyebilir).
       allow update: if request.auth != null
         && codeExists(code)
         && request.resource.data.grp == alloc(code).data.grp
         && (resource.data.get('withdrawn', false) == false || isAdmin());
-      allow delete: if isAdmin();
+      // allow delete: YOK (politika A).
 
       // Olay kaydı sadece eklenebilir; sonradan değiştirilemez, silinemez.
       // Aynı olayın tekrar gönderilmesine (bağlantı kopması sonrası) izin verilir.
       match /events/{eventId} {
+        // Yeni olay eklemek: giriş yapmış ve kodu listede olan kişi.
         allow create: if request.auth != null && codeExists(code);
+        // "Güncelleme" yalnızca birebir aynı veriyi yeniden yazmaktır (içeriği değiştirmez).
         allow update: if request.auth != null && request.resource.data == resource.data;
+        // Olayları yalnızca araştırmacı okur; katılımcı kendi olaylarını bile okuyamaz.
         allow read: if isAdmin();
-        allow delete: if isAdmin();   // Sadece çekilen katılımcıların verisini silmek için
+        // allow delete: YOK (politika A).
       }
+    }
+
+    // Sistem testi (panel → "Sistem testini çalıştır"): yalnızca araştırmacı yazıp okur, silemez.
+    // Katılımcı verisinden ayrı bir koleksiyondur ki randomizasyon listesine karışmasın.
+    match /selftest/{id} {
+      allow get, list, create, update: if isAdmin();
     }
   }
 }

@@ -71,7 +71,7 @@ claude.ai'deki sürüm verileri sadece tarayıcıda tutar (demo). Gerçek pilott
 - [ ] Bir B kodu ile aynısını dene → bekleme çıkmıyor mu?
 - [ ] Sayfayı yenile, aynı kodla gir → kaldığın yerden devam ediyor mu?
 - [ ] CSV'leri indir, satırlar dolu mu?
-- [ ] Bir test koduyla "Çalışmadan çekil" de → panelde "Çekilen" sayısı arttı mı, CSV'den düştü mü? "Kalıcı sil" çalışıyor mu?
+- [ ] Bir test koduyla "Çalışmadan çekil" de → panelde "Çekilen" sayısı arttı mı, CSV'den düştü mü? (Politika A: "Kalıcı sil" yok; kayıt konsolda `withdrawn: true` olarak kalmalı.)
 
 ## Dikkat
 - Firestore ücretsiz planının günlük yazma kotası sınırlı. Tüm katılımcıları aynı güne koyarsan kotayı aşabilirsin. Güncel limitleri kontrol et; gerekirse oturumları günlere yay ya da Blaze planına geç (bu ölçekte maliyet çok düşük).
