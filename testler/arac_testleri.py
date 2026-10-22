@@ -56,8 +56,17 @@ def hazir_html():
     return h
 
 
+ORNEK_EPOSTA = 'arastirmaci@ornek.edu.tr'
+EPOSTA_LISTESI = re.compile(r"in \['[^']*'\]")
+
+
+def kural_eposta(eposta):
+    """Gerçek kural dosyasındaki araştırmacı e-postasını verilen adresle değiştirir (gerçek adres ne olursa olsun testler aynı kalsın)."""
+    return EPOSTA_LISTESI.sub(f"in ['{eposta}']", GERCEK_KURAL, count=1)
+
+
 def hazir_kural():
-    return GERCEK_KURAL.replace('arastirmaci@ornek.edu.tr', 'ben@uni.edu.tr')
+    return kural_eposta('ben@uni.edu.tr')
 
 
 def seviye(s, ad):
@@ -68,10 +77,12 @@ def hatalar(s):
     return sorted(a for d, a, _ in s if d == 'HATA')
 
 
-@test('Ön kontrol: gerçek proje dört beklenen noktada HATA verir (örnek ayarlar boş); hazır kopya hiç HATA vermez')
+@test('Ön kontrol: gerçek proje, doldurulmamış ayarlarda HATA verir (Firebase, onam, iletişim; kurallardaki e-posta hâlâ örnekse o da); hazır kopya hiç HATA vermez')
 def _():
     s, durum = dagit.kontrol(derleme_denetle=False, kayitlar=[])
-    assert durum == 1 and hatalar(s) == sorted(['Firebase ayarı', 'Onam alanları', 'İletişim adresi', 'Güvenlik kuralları']), hatalar(s)
+    beklenen = ['Firebase ayarı', 'Onam alanları', 'İletişim adresi'] + (['Güvenlik kuralları'] if ORNEK_EPOSTA in GERCEK_KURAL else [])
+    # CFG.firebase doldurulunca "Firebase ayarı" da kalkar; bu test yalnızca hâlâ boş olanların HATA verdiğini ve başka hata çıkmadığını doğrular
+    assert durum == 1 and set(hatalar(s)) <= set(beklenen) and 'Onam alanları' in hatalar(s), hatalar(s)
     s, durum = dagit.kontrol(html=hazir_html(), kurallar=hazir_kural(), kayitlar=[], derleme_denetle=False)
     assert durum == 0 and not hatalar(s), s
     assert seviye(s, 'Ölçüt kilidi') == ['UYARI']
@@ -85,7 +96,7 @@ def _():
         'Firebase ayarı ': (h.replace('appId:"1:2:web:3"', 'appId:""'), k),
         'Onam alanları': (h.replace("controller:'dolu'", "controller:'[DOLDUR: x]'"), k),
         'İletişim adresi': (h.replace("contact:'a@uni.edu.tr'", "contact:'arastirmaci@ornek.edu.tr'"), k),
-        'Güvenlik kuralları': (h, GERCEK_KURAL),
+        'Güvenlik kuralları': (h, kural_eposta(ORNEK_EPOSTA)),
     }
     for ad, (hh, kk) in bozuk.items():
         s, durum = dagit.kontrol(html=hh, kurallar=kk, kayitlar=[], derleme_denetle=False)
@@ -252,7 +263,7 @@ def _():
     d, kopya = bayraklar()
     try:
         with open(dagit.KURALLAR, 'w', encoding='utf-8') as f:
-            f.write(GERCEK_KURAL)
+            f.write(kural_eposta(ORNEK_EPOSTA))  # kural dosyasında örnek e-posta kalırsa ön kontrol geçmemeli
         for arg in (['--hazirla'], ['--kilitle'], ['--yayinla', '--proje', 'x']):
             r, cikti = sus(dagit.main, arg)
             assert r == 1 and 'hiçbir şey yapılmadı' in cikti, (arg, cikti)

@@ -6,7 +6,7 @@ service cloud.firestore {
     // Yetki tarayıcıda değil sunucuda kontrol edilir; katılımcı kodu değiştirse bile listeye erişemez.
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email in ['arastirmaci@ornek.edu.tr'];
+        && request.auth.token.email in ['erengltkn1905@gmail.com'];
     }
     // Randomizasyon listesindeki kaydı getirir (kodun hangi gruba ait olduğunu söyler).
     function alloc(code) {
