@@ -1,0 +1,131 @@
+﻿İLK LOT - BAŞLANGIÇ TESTLERİ (refaktör öncesi, b25)
+Tarih: 2026-10-22 | Windows 11 | Python 3.14.8 | numpy 2.5.4, pandas 3.1.0, scipy 1.18.1 | Playwright 1.64.1 (Chromium 156) | Node 24.22.1
+Ortam notu: Türkçe Windows'ta betikler UTF-8 kipinde koşturuldu (PYTHONUTF8=1); bu olmadan 1 araç testi yazı kodlaması yüzünden kalıyor.
+Derleme: python kaynak/derle.py -> ilk-lot.html, depodaki dosyayla bayt bayt AYNI (git status temiz).
+
+ÖZET
+  Uygulama testleri : 43/44  (kalan: erisilebilirlik_taramasi_calisiyor)
+  Analiz testleri   : 22/23  (kalan: Kör analiz ...)
+  Araç testleri     : 13/14  (kalan: --yayinla sahte firebase komutu)
+  Erişilebilirlik   : 4 bulgu, hepsi aynı "Lot" düğmesi 23x24 px (360 px genişlikte)
+
+KALAN 4 KIRMIZININ SEBEBİ (hiçbiri uygulama davranışını değiştirmez)
+ 1) Araç testi "--yayinla sahte firebase": test, '#!/bin/sh' içeren sahte bir firebase komutu yazıyor. Windows bunu çalıştıramaz.
+    SEBEP: ORTAM (test Linux varsayıyor). dagit.py'nin kendisi için sonuç yok; Windows'ta bu test anlamlı çalışmıyor.
+ 2) Analiz testi "Kör analiz": --kor-anahtar dosyası Windows'ta satır sonu CRLF ile yazılıyor; rapora yazılan SHA-256 ise LF'li metnin özeti.
+    Dosyanın gerçek özeti ile raporundaki özet uyuşmuyor (4 tohumun 4'ünde). Analiz sonuçları (OR, p) doğru.
+    SEBEP: GERÇEK WINDOWS UYUMSUZLUĞU analiz/ilklot_analiz.py satır 322 (open(..., 'w') yerine newline='' gerekir). Linux'ta görünmez.
+ 3) Uygulama testi + erişilebilirlik taraması: simülatör portföy ve serbest mod portföy ekranlarındaki "Lot" düğmesi 360 px'te 23x24 ölçülüyor (sınır 24).
+    SEBEP: büyük olasılıkla Windows'ta yazı çizimi (1 px genişlik farkı). Doğrulanmadı; Linux'ta aynı ölçüm yapılmadı.
+    Not: yazı tipi dosyaya gömülü olduğu için tam sebep belirsiz.
+
+AYRINTILI ÇIKTILAR (ham): aşağıda.
+===== uygulama =====
+GEÇTİ (  8.5 sn)  akis_A_ve_B
+GEÇTİ (  5.6 sn)  bekleme_suresi_kaydi
+GEÇTİ (  2.3 sn)  devam_etme
+GEÇTİ (  2.1 sn)  olay_numarasi_surekliligi
+GEÇTİ (  1.6 sn)  cekilme_ve_18_alti
+GEÇTİ (  1.5 sn)  depo_engelli
+GEÇTİ (  2.4 sn)  lot_girisi
+GEÇTİ (  0.5 sn)  onam_ve_metin
+GEÇTİ (  1.3 sn)  hizli_mod_kilidi
+GEÇTİ (  0.3 sn)  uyaran_determinizmi
+GEÇTİ (  1.8 sn)  on_test_puani
+GEÇTİ (  1.3 sn)  olcek_ve_dk
+GEÇTİ (  4.0 sn)  serbest_mod_menu_ve_baslangic
+GEÇTİ (  8.0 sn)  serbest_mod_hiz_ve_otomatik_emir
+GEÇTİ (  0.8 sn)  sistem_testi
+GEÇTİ (  0.2 sn)  fiyat_gosterimi
+GEÇTİ (  0.5 sn)  adet_fiyat_gosterimi
+GEÇTİ (  3.0 sn)  sahte_firebase_entegrasyonu
+GEÇTİ (  5.3 sn)  tanitim_modu
+GEÇTİ (  9.6 sn)  pilot_geri_bildirim
+GEÇTİ (  0.9 sn)  tema_yazi_ve_hareket
+GEÇTİ (  5.5 sn)  grafik_gezme
+GEÇTİ (  5.2 sn)  tanitim_hiz_ve_kriz
+GEÇTİ (  0.2 sn)  piyasa_tarafsizligi
+GEÇTİ (  3.1 sn)  karar_karti_ve_uyari
+GEÇTİ ( 13.6 sn)  anlama_kontrolu_degisken
+GEÇTİ (  0.2 sn)  afis_suresi_onamla_tutarli
+GEÇTİ (  5.5 sn)  terim_aciklama
+GEÇTİ (  3.0 sn)  simulator_oncesi_bilgi_paneli
+GEÇTİ (  5.9 sn)  alistirma_simulatoru
+GEÇTİ (  0.5 sn)  canli_pano
+GEÇTİ (  5.3 sn)  haber_gorunurlugu_ve_cesitlilik
+GEÇTİ (  0.2 sn)  serbest_mod_calisma_simulatorunu_degistirmez
+GEÇTİ (  6.4 sn)  serbest_mod_kayit_yok_ve_kosullar
+GEÇTİ (  9.1 sn)  serbest_mod_zorluk_ve_kayip_siniri
+GEÇTİ (  3.0 sn)  serbest_mod_haber_seridi_ve_hisse_isareti
+GEÇTİ (  0.2 sn)  serbest_mod_haber_derinligi_ve_olaylar
+GEÇTİ (  0.8 sn)  serbest_mod_tanitimda
+GEÇTİ (  2.3 sn)  yazi_boyutu_secici
+GEÇTİ ( 64.6 sn)  yazi_boyutu_tasma_yok
+GEÇTİ (  1.5 sn)  pencere_odagi
+GEÇTİ (  0.0 sn)  kontrast_ve_kaynak_denetimi
+KALDI (  9.9 sn)  erisilebilirlik_taramasi_calisiyor
+         -> AssertionError: KÜÇÜK HEDEF                | serbest mod: bitirme onayı | Lot 23x24 | [(360, 0)]
+KÜÇÜK HEDEF                | serbest mod: portföy | Lot 23x24 | [(360, 0)]
+KÜÇÜK HEDEF                | serbest mod: portföy (emir etiketi) | Lot 23x24 | [(360, 0)]
+KÜÇÜK HEDEF                | simülatör portföy | Lot 23x24 | [(360, 0)]
+
+30 ekran ölçüldü (1 ayar); axe-core çalışmadı (--axe verilmedi). 4 farklı bulgu, 
+GEÇTİ (  0.1 sn)  logo_ve_simge
+
+43/44 test geçti.
+
+===== analiz =====
+GEÇTİ ( 0.0 sn)  Çekirdek: lojistik regresyon bağımsız en büyük olabilirlik tahminiyle uyuşuyor
+GEÇTİ ( 0.1 sn)  Çekirdek: HC3, Holm ve permütasyon
+GEÇTİ ( 0.0 sn)  Güç: toplu hesap tek tek hesapla aynı sonucu veriyor
+GEÇTİ ( 0.4 sn)  Güç: OR = 1 iken I. tip hata ≈ %5 (4000 tekrar, n = 20 ve 40)
+GEÇTİ ( 1.7 sn)  Güç: n büyüdükçe ve etki büyüdükçe güç artıyor
+GEÇTİ ( 0.1 sn)  Üretici: başlıklar uygulamanın gerçek dışa aktarımıyla birebir aynı
+GEÇTİ ( 0.1 sn)  Üretici: set sırası ve grup dengeli, test modu ve tamamlamayan satırlar var
+GEÇTİ ( 7.8 sn)  Uçtan uca: filtreler ve ham fark, bağımsız pandas hesabıyla uyuşuyor
+GEÇTİ ( 3.3 sn)  Bilgi düzeyi modeli: gerçek üçlü etkileşimi geri buluyor, etkileşim yokken 1'i içeriyor; rapor satırı bağımsız hesapla uyuşuyor
+GEÇTİ ( 3.4 sn)  Uçtan uca: müdahale kontrolü tablosu bağımsız hesapla aynı (dizin hizalama hatası geri gelmesin)
+GEÇTİ ( 2.7 sn)  Gerçek uygulama çıktısı (6 test katılımcısı): çökmeden çalışıyor, küçük örneklem uyarıları çıkıyor
+GEÇTİ (14.6 sn)  Kenar durumları: eksik sütun, boş dosya, tek grup, yinelenen kod, isteğe bağlı sütunlar yok
+GEÇTİ ( 5.6 sn)  Kodlama dosyası: manuel kodlama anahtar kelime taramasının yerine geçiyor
+GEÇTİ ( 1.2 sn)  Pilot aracı: maruz kalma sayısı ve medyan süre bağımsız hesapla aynı
+GEÇTİ ( 2.6 sn)  Pilot aracı: gerçek uygulama çıktısında çökmüyor; eksik sütun ve olay dosyasız durumda anlaşılır davranıyor
+GEÇTİ ( 3.6 sn)  Pilot aracı: geri bildirim özeti bağımsız hesapla aynı; "Evet" rahatsızlık İNCELE; yanıt yoksa bölüm sessiz kalır
+GEÇTİ ( 5.9 sn)  Kodlayıcı uyumu: ders kitabı örneği (κ = 0,40), tanımsız durumlar, uzlaşma akışı
+GEÇTİ ( 0.1 sn)  TOST: p değeri %90 GA'nın sınırlar içinde olmasıyla aynı karar; simetri; hatalı sınır reddi
+GEÇTİ (16.1 sn)  TOST: rapor ve JSON, bağımsız (GA'dan geri kurulan) hesapla aynı; bayrak yoksa bölüm yok; hatalı bayrak reddedilir
+GEÇTİ ( 0.4 sn)  TOST gücü: toplu hesap tek tek hesapla aynı; seyreltme yokken sınırdaki OR için güç ≈ α; OR = 1 için yüksek
+KALDI ( 6.0 sn)  Kör analiz: etiketler maskelenir, değişen etiketlerde OR tam 1/OR ve p aynı, anahtar yazılır/açılır, grubu ele veren bilgi raporda yok
+         -> AssertionError: 
+GEÇTİ (18.6 sn)  Bağımsız incelemeden gelen düzeltmeler: Holm NaN, yinelenen kodlama kodu, 0-1 dışı oran, tanınmayan set, grubu geçersiz satır, özdeş katılımcılar
+GEÇTİ (20.9 sn)  Kuru çalıştırma: sahte veride hat tamam; gerçek-veri modunda bozuk dosya yakalanır ve etki (OR, p) ekrana yazılmaz
+
+22/23 test geçti.
+
+===== arac =====
+GEÇTİ ( 0.0 sn)  Ön kontrol: gerçek proje dört beklenen noktada HATA verir (örnek ayarlar boş); hazır kopya hiç HATA vermez
+GEÇTİ ( 0.0 sn)  Ön kontrol: her eksik tek başına yakalanır (5 ayrı bozma)
+GEÇTİ ( 0.8 sn)  Dış yazı tipi sunucusu yok: uygulama ve tanıtım sayfası Google Fonts'a bağlanmaz; derleyici yazı tipi dosyası eksikse durur
+GEÇTİ ( 0.0 sn)  Ön kontrol: pilot formu açık kalırsa ana veri toplamada HATA; --pilot ile TAMAM; kapalıyken --pilot UYARI; alan silinirse HATA
+GEÇTİ ( 0.0 sn)  Ölçüt kilidi: aynıysa TAMAM; her ölçüt değişikliği HATA; sürümsüz kod değişikliği HATA; yeni sürüm UYARI
+GEÇTİ ( 5.8 sn)  Derleme denetimi: gerçek dosya güncel; elle değiştirilmiş dosya HATA
+GEÇTİ ( 1.8 sn)  Betik: --hazirla yayın klasörünü üretir (önbellek kapalı); --kilitle kayıt yazar ve sonraki kontrol onu kullanır
+GEÇTİ ( 0.7 sn)  Betik: kontrol geçmezse --hazirla, --kilitle ve --yayinla hiçbir şey yapmaz
+KALDI ( 0.7 sn)  Betik: --yayinla sahte firebase komutunu doğru bağımsız değişken ve klasörle çağırır; komut yoksa HATA; --kuru çalıştırmaz
+         -> AssertionError: 
+GEÇTİ ( 0.0 sn)  Takvim: ay toplama (ay sonu kenar durumları, yıl geçişi)
+GEÇTİ ( 0.0 sn)  Takvim: geçerli .ics (CRLF, 75 bayt katlama, benzersiz UID, doğru tarihler, kaçışlar)
+GEÇTİ ( 0.0 sn)  Takvim: kısa süreler (hazırlık günleri toplama bitmeden önceye düşmez; <7 gün toplamada haftalık yok)
+GEÇTİ ( 0.0 sn)  Takvim: komut satırı eksik ya da çelişkili girdiyi reddeder; saklama süresi için varsayılan yoktur
+GEÇTİ ( 0.0 sn)  CI tanımı: geçerli YAML; çağırdığı betikler ve klasörler gerçekten var; Python sürümü ve eylemler sabit
+
+13/14 test geçti.
+
+===== erisilebilirlik =====
+KÜÇÜK HEDEF                | serbest mod: bitirme onayı | Lot 23x24 | [(360, 0)]
+KÜÇÜK HEDEF                | serbest mod: portföy | Lot 23x24 | [(360, 0)]
+KÜÇÜK HEDEF                | serbest mod: portföy (emir etiketi) | Lot 23x24 | [(360, 0)]
+KÜÇÜK HEDEF                | simülatör portföy | Lot 23x24 | [(360, 0)]
+
+30 ekran ölçüldü (1 ayar); axe-core çalışmadı (--axe verilmedi). 4 farklı bulgu, 0 sayfa hatası.
+
