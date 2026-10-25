@@ -7,32 +7,74 @@ import { STOCK_BASES } from '../constants/market-data.js';
 import { initSimulation, stepSimulation } from '../models/market-simulation.js';
 
 // ───────────────── Simülatör ekranı ─────────────────
+// Her grafik kendi degrade kimliğini alır (aynı sayfada birden çok SVG olabilir)
+let gradientCounter = 0;
+function nextGradientId(prefix) {
+  gradientCounter += 1;
+  return prefix + gradientCounter;
+}
+// Çizginin altını renkten şeffafa inen yumuşak bir degrade ile doldurur
+function areaGradientDefs(id, color, topOpacity) {
+  return (
+    '<defs><linearGradient id="' +
+    id +
+    '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' +
+    color +
+    '" stop-opacity="' +
+    topOpacity +
+    '"/><stop offset="1" stop-color="' +
+    color +
+    '" stop-opacity="0"/></linearGradient></defs>'
+  );
+}
+
 export function renderSparkline(values, isUp) {
   const width = 64;
   const height = 24;
   const min = Math.min.apply(0, values);
   const max = Math.max.apply(0, values);
   const result = max - min || 1;
+  const color = isUp ? 'var(--up)' : 'var(--dn)';
+  const gradientId = nextGradientId('spark-fill-');
+  const line = values
+    .map(function (item, index) {
+      return (
+        ((index / Math.max(1, values.length - 1)) * width).toFixed(1) +
+        ',' +
+        (height - 2 - ((item - min) / result) * (height - 4)).toFixed(1)
+      );
+    })
+    .join(' ');
+  // vector-effect: grafik genişliğe göre esnese de çizgi kalınlığı sabit ve keskin kalır
   return (
     '<svg width="' +
     width +
     '" height="' +
     height +
-    '" aria-hidden="true"><polyline points="' +
-    values
-      .map(function (item, index) {
-        return (
-          ((index / Math.max(1, values.length - 1)) * width).toFixed(1) +
-          ',' +
-          (height - 2 - ((item - min) / result) * (height - 4)).toFixed(1)
-        );
-      })
-      .join(' ') +
+    '" aria-hidden="true">' +
+    areaGradientDefs(gradientId, color, 0.32) +
+    '<polygon points="0,' +
+    height +
+    ' ' +
+    line +
+    ' ' +
+    width +
+    ',' +
+    height +
+    '" fill="url(#' +
+    gradientId +
+    ')"/><polyline points="' +
+    line +
     '" fill="none" stroke="' +
-    (isUp ? 'var(--up)' : 'var(--dn)') +
-    '" stroke-width="1.8" stroke-linejoin="round"/></svg>'
+    color +
+    '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>'
   );
 }
+
+// Hisse grafiğinin sağındaki fiyat ekseni için ayrılan pay (çizim alanı bunun dışında kalır; gezme hesabı bunu kullanır)
+const DETAIL_CHART_WIDTH = 320;
+const DETAIL_AXIS_WIDTH = 46;
+export const DETAIL_PLOT_RATIO = (DETAIL_CHART_WIDTH - DETAIL_AXIS_WIDTH) / DETAIL_CHART_WIDTH;
 
 // ── Hisse detay sayfası: büyük grafik (10/30/60 gün), ortalama alış çizgisi, pozisyon, ilgili haberler ──
 export function renderDetailChart(symbol) {
@@ -44,20 +86,26 @@ export function renderDetailChart(symbol) {
   const min = Math.min.apply(0, vals);
   const max = Math.max.apply(0, vals);
   const range = max - min || 1;
-  const width = 320;
+  const width = DETAIL_CHART_WIDTH;
+  const plotWidth = width - DETAIL_AXIS_WIDTH;
   const height = 150;
   const padding = 10;
   const length = history.length;
   const isUp = history[history.length - 1] >= history[0];
   const color = isUp ? 'var(--up)' : 'var(--dn)';
+  const gradientId = nextGradientId('detail-fill-');
   const yValue = function (value) {
     return padding + (height - 2 * padding) * (1 - (value - min) / range);
   };
+  const xValue = function (index) {
+    return length > 1 ? (index / (length - 1)) * plotWidth : 0;
+  };
   const point = history
     .map(function (item, index) {
-      return (length > 1 ? (index / (length - 1)) * width : 0).toFixed(1) + ',' + yValue(item).toFixed(1);
+      return xValue(index).toFixed(1) + ',' + yValue(item).toFixed(1);
     })
     .join(' ');
+  const lastY = yValue(history[length - 1]);
   let html =
     '<svg viewBox="0 0 ' +
     width +
@@ -67,25 +115,50 @@ export function renderDetailChart(symbol) {
     symbol +
     ' son ' +
     length +
-    ' günlük fiyat grafiği"><polygon points="0,' +
+    ' günlük fiyat grafiği">' +
+    areaGradientDefs(gradientId, color, 0.3);
+  // Yatay ızgara ve sağ fiyat ekseni: en düşükten en yükseğe dört seviye
+  for (let step = 0; step < 4; step++) {
+    const level = min + (range * step) / 3;
+    const y = yValue(level);
+    html +=
+      '<line x1="0" x2="' +
+      plotWidth +
+      '" y1="' +
+      y.toFixed(1) +
+      '" y2="' +
+      y.toFixed(1) +
+      '" stroke="var(--ln)" stroke-width="1" opacity=".7"/>';
+    if (Math.abs(y - lastY) > 9)
+      html +=
+        '<text x="' +
+        (width - 2) +
+        '" y="' +
+        (y + 3).toFixed(1) +
+        '" font-size="8.5" text-anchor="end" fill="var(--mu)">' +
+        formatNumber(level) +
+        '</text>';
+  }
+  html +=
+    '<polygon points="0,' +
     height +
     ' ' +
     point +
     ' ' +
-    width +
+    plotWidth +
     ',' +
     height +
-    '" fill="' +
-    color +
-    '" opacity=".1"/><polyline points="' +
+    '" fill="url(#' +
+    gradientId +
+    ')"/><polyline points="' +
     point +
     '" fill="none" stroke="' +
     color +
-    '" stroke-width="2.2" stroke-linejoin="round"/>';
+    '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
   if (avg)
     html +=
       '<line x1="0" x2="' +
-      width +
+      plotWidth +
       '" y1="' +
       yValue(avg).toFixed(1) +
       '" y2="' +
@@ -95,13 +168,46 @@ export function renderDetailChart(symbol) {
       '" font-size="10" font-weight="700" fill="var(--act)" stroke="var(--sf)" stroke-width="3" paint-order="stroke">ortalama alışın ₺' +
       formatNumber(avg) +
       '</text>';
+  // Son fiyat: çizginin ucunda nokta, eksende renkli etiket
+  html +=
+    '<line x1="' +
+    xValue(length - 1).toFixed(1) +
+    '" x2="' +
+    plotWidth +
+    '" y1="' +
+    lastY.toFixed(1) +
+    '" y2="' +
+    lastY.toFixed(1) +
+    '" stroke="' +
+    color +
+    '" stroke-width="1" stroke-dasharray="2 3" opacity=".8"/><circle cx="' +
+    xValue(length - 1).toFixed(1) +
+    '" cy="' +
+    lastY.toFixed(1) +
+    '" r="3.4" fill="' +
+    color +
+    '" stroke="var(--sf)" stroke-width="1.6"/><rect x="' +
+    (plotWidth + 1) +
+    '" y="' +
+    (lastY - 7).toFixed(1) +
+    '" width="' +
+    (DETAIL_AXIS_WIDTH - 1) +
+    '" height="14" rx="3" fill="' +
+    color +
+    '"/><text x="' +
+    (plotWidth + DETAIL_AXIS_WIDTH / 2 + 0.5).toFixed(1) +
+    '" y="' +
+    (lastY + 3.2).toFixed(1) +
+    '" font-size="8.5" font-weight="700" text-anchor="middle" fill="var(--ink)">' +
+    formatNumber(history[length - 1]) +
+    '</text>';
   // Parmakla gezme: S.scrubDay mutlak gün numarasıdır (piyasa akarken işaret aynı güne sabit kalır; pencerenin dışına çıkarsa kaybolur)
   const stockIndex = state.scrubDay != null ? length - 1 - (simulation.tick - state.scrubDay) : -1;
   if (stockIndex >= 0 && stockIndex < length) {
-    const startX = length > 1 ? (stockIndex / (length - 1)) * width : 0;
+    const startX = xValue(stockIndex);
     const startY = yValue(history[stockIndex]);
     const label = 'Gün ' + state.scrubDay + ' · ₺' + formatNumber(history[stockIndex]);
-    const analysis = startX < width * 0.28 ? 'start' : startX > width * 0.72 ? 'end' : 'middle';
+    const analysis = startX < plotWidth * 0.28 ? 'start' : startX > plotWidth * 0.72 ? 'end' : 'middle';
     html +=
       '<line x1="' +
       startX.toFixed(1) +
@@ -118,7 +224,7 @@ export function renderDetailChart(symbol) {
       '" r="4.5" fill="' +
       color +
       '" stroke="var(--sf)" stroke-width="2"/><text id="scrub-label" x="' +
-      Math.min(width - 2, Math.max(2, startX)).toFixed(1) +
+      Math.min(plotWidth - 2, Math.max(2, startX)).toFixed(1) +
       '" y="11" font-size="11" font-weight="700" text-anchor="' +
       analysis +
       '" fill="var(--tx)" stroke="var(--sf)" stroke-width="3" paint-order="stroke">' +
@@ -244,7 +350,19 @@ export function simulationChartSvg() {
     length +
     ' satış ve ' +
     buyCount +
-    ' alış noktası işaretli." style="display:block">';
+    ' alış noktası işaretli." style="display:block">' +
+    areaGradientDefs('portfolio-fill', 'var(--tx)', 0.16);
+  [0.25, 0.5, 0.75].forEach(function (fraction) {
+    const y = (10 + (height - 32) * fraction).toFixed(1);
+    html +=
+      '<line x1="8" x2="' +
+      (width - 8) +
+      '" y1="' +
+      y +
+      '" y2="' +
+      y +
+      '" stroke="var(--ln)" stroke-width="1" opacity=".6"/>';
+  });
   CONFIG.simCrises.forEach(function (item) {
     html +=
       '<rect x="' +
@@ -266,7 +384,27 @@ export function simulationChartSvg() {
     innerSimulationChartGeometry.Y(data.v0).toFixed(1) +
     '" stroke="var(--mu)" stroke-width="1" stroke-dasharray="4 4"/>';
   html +=
-    '<polyline fill="none" stroke="var(--tx)" stroke-width="2" stroke-linejoin="round" points="' +
+    '<polygon fill="url(#portfolio-fill)" points="' +
+    innerSimulationChartGeometry.X(0).toFixed(1) +
+    ',' +
+    (height - 22) +
+    ' ' +
+    data.v
+      .map(function (item, index) {
+        return (
+          innerSimulationChartGeometry.X(index).toFixed(1) +
+          ',' +
+          innerSimulationChartGeometry.Y(item).toFixed(1)
+        );
+      })
+      .join(' ') +
+    ' ' +
+    innerSimulationChartGeometry.X(simTicks).toFixed(1) +
+    ',' +
+    (height - 22) +
+    '"/>';
+  html +=
+    '<polyline fill="none" stroke="var(--tx)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' +
     data.v
       .map(function (item, index) {
         return (

@@ -15,7 +15,7 @@ import {
   stockCrisisAt,
 } from '../models/market-simulation.js';
 import { closeModal, isModalOpen } from '../widgets/modal.js';
-import { renderDetailChart } from '../widgets/price-chart.js';
+import { DETAIL_PLOT_RATIO, renderDetailChart } from '../widgets/price-chart.js';
 import { saveSnapshot } from '../services/session-persistence.js';
 import { updateSimulatorLive } from '../views/simulator-view.js';
 import { showToast } from '../widgets/toast.js';
@@ -259,7 +259,9 @@ export function scrubChartAt(event) {
   const simulation = state.simulation;
   const detailSymbol = state.detailSymbol;
   const count = Math.min(state.detailRangeDays, simulation.h[detailSymbol].length);
-  const i = Math.round(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)) * (count - 1));
+  // Çizim alanı grafiğin solunda; sağdaki fiyat ekseni gezme hesabına katılmaz
+  const plotFraction = (event.clientX - rect.left) / rect.width / DETAIL_PLOT_RATIO;
+  const i = Math.round(Math.min(1, Math.max(0, plotFraction)) * (count - 1));
   state.scrubDay = simulation.tick - (count - 1 - i);
   if (scrubState.gesture) scrubState.gesture.moves++;
   const detailChartElement = byId('detail-chart');

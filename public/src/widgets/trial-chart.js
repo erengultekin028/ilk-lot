@@ -30,9 +30,28 @@ export function renderTrialChart(trial) {
     width +
     ' ' +
     (height + 12) +
-    '" width="100%" role="img" aria-label="' +
+    '" width="100%" overflow="visible" role="img" aria-label="' +
     escapeHtml(trial.sym) +
-    ' son 30 işlem günü fiyat grafiği"><rect x="' +
+    ' son 30 işlem günü fiyat grafiği"><defs><linearGradient id="trial-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' +
+    color +
+    '" stop-opacity=".3"/><stop offset="1" stop-color="' +
+    color +
+    '" stop-opacity="0"/></linearGradient></defs>' +
+    [0.25, 0.5, 0.75]
+      .map(function (fraction) {
+        const y = (height * fraction).toFixed(1);
+        return (
+          '<line x1="0" x2="' +
+          width +
+          '" y1="' +
+          y +
+          '" y2="' +
+          y +
+          '" stroke="var(--ln)" stroke-width="1" opacity=".6"/>'
+        );
+      })
+      .join('') +
+    '<rect x="' +
     ((width * 25) / 29 - 4).toFixed(1) +
     '" y="0" width="' +
     ((width * 4) / 29 + 8).toFixed(1) +
@@ -46,13 +65,17 @@ export function renderTrialChart(trial) {
     width +
     ',' +
     height +
-    '" fill="' +
-    color +
-    '" opacity=".12"/><polyline points="' +
+    '" fill="url(#trial-fill)"/><polyline points="' +
     line +
     '" fill="none" stroke="' +
     color +
-    '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><text x="2" y="' +
+    '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="' +
+    point[point.length - 1][0].toFixed(1) +
+    '" cy="' +
+    point[point.length - 1][1].toFixed(1) +
+    '" r="3.4" fill="' +
+    color +
+    '" stroke="var(--sf)" stroke-width="1.6"/><text x="2" y="' +
     (height + 11) +
     '" font-size="9" fill="var(--mu)">30 gün önce</text><text x="' +
     width +
