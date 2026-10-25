@@ -1,4 +1,4 @@
-﻿# İlk Lot – Claude Code için notlar
+# İlk Lot – Claude Code için notlar
 
 Önce `DEVIR_NOTU.md`, sonra `README.md` ve `docs/MIMARI.md` oku. Kullanıcıyla Türkçe konuş; kısa, doğrudan, sonuç önce.
 
