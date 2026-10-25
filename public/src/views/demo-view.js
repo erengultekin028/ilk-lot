@@ -20,9 +20,9 @@ export function renderDemoLanding() {
 }
 
 export function renderDemoEnd() {
-  var simulation = state.simulation,
-    portfolioTotal = portfolioValue(),
-    change = (portfolioTotal / simulation.v0 - 1) * 100;
+  const simulation = state.simulation;
+  const portfolioTotal = portfolioValue();
+  const change = (portfolioTotal / simulation.v0 - 1) * 100;
   return (
     '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">Tanıtım bitti</div><h1>Simülatör bitti</h1><p>Portföyünün değeri ₺' +
     formatNumber(portfolioTotal, 0) +
@@ -38,7 +38,7 @@ export function renderDemoEnd() {
 // Firebase modunda (gerçek pilot) bu ipucu hiç görünmez.
 export function demoHintHtml() {
   if (participantRepository.mode() !== 'local') return '';
-  var allocationCache = state.allocationCache;
+  const allocationCache = state.allocationCache;
   if (!allocationCache) {
     Promise.all([participantRepository.listAlloc(), participantRepository.listP()]).then(function (result) {
       state.allocationCache = result[0];
@@ -50,18 +50,18 @@ export function demoHintHtml() {
     });
     return '';
   }
-  var isValid = function (key) {
-      return !(state.demoCodeUsed || {})[key];
-    },
-    keys = Object.keys(allocationCache).sort(function (left, right) {
-      return (allocationCache[left].no || 0) - (allocationCache[right].no || 0);
-    }),
-    allocations = keys.filter(function (item) {
-      return allocationCache[item].grp === 'A' && isValid(item);
-    })[0],
-    bounds = keys.filter(function (item) {
-      return allocationCache[item].grp === 'B' && isValid(item);
-    })[0];
+  const isValid = function (key) {
+    return !(state.demoCodeUsed || {})[key];
+  };
+  const keys = Object.keys(allocationCache).sort(function (left, right) {
+    return (allocationCache[left].no || 0) - (allocationCache[right].no || 0);
+  });
+  const allocations = keys.filter(function (item) {
+    return allocationCache[item].grp === 'A' && isValid(item);
+  })[0];
+  const bounds = keys.filter(function (item) {
+    return allocationCache[item].grp === 'B' && isValid(item);
+  })[0];
   return (
     '<div class="is-wrongsheet-titlee is-info" style="margin-top:16px;display:block"><div>' +
     (participantRepository.memMode()

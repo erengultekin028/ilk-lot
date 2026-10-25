@@ -22,9 +22,9 @@ import { renderStress, renderTrial } from './trial-view.js';
 // ───────────────── Giriş, test, tanıtım ekranları ─────────────────
 export function renderStage() {
   if (state.testQuestion) {
-    var innerTestQuestionSequence = testQuestionSequence(state.testQuestion.kind),
-      innerItem = innerTestQuestionSequence[state.testQuestion.i],
-      quantity = innerItem === 'att' ? ATTENTION_QUESTION : TEST_QUESTIONS[innerItem];
+    const innerTestQuestionSequence = testQuestionSequence(state.testQuestion.kind);
+    const innerItem = innerTestQuestionSequence[state.testQuestion.i];
+    const quantity = innerItem === 'att' ? ATTENTION_QUESTION : TEST_QUESTIONS[innerItem];
     return (
       '<div class="row-titlesheet-titleage"><div class="dotour-skip">' +
       innerTestQuestionSequence
@@ -52,8 +52,8 @@ export function renderStage() {
   if (state.stage === 'boot')
     return '<div class="row-titlesheet-titleage"><p class="muted" style="text-align:center">Yükleniyor…</p></div>';
   if (state.stage === 'welcome') {
-    var welcomeBack = state.welcomeBack,
-      next = welcomeBack.next;
+    const welcomeBack = state.welcomeBack;
+    const next = welcomeBack.next;
     return (
       '<div class="row-titlesheet-titleage"><h1>Tekrar hoş geldin</h1><p>' +
       (next ? 'Kaldığın yerden devam edebilirsin.' : 'Çalışmayı tamamladın.') +
@@ -135,7 +135,7 @@ export function renderStage() {
   if (state.stage === 'stress') return renderStress();
   if (state.stage === 'admin') return renderAdmin();
   // Tanıtım: görevin ne olduğunu üç adımda anlatır. Hipotez ve bekleme süresi burada AÇIKLANMAZ
-  var innerIndex = [
+  const innerIndex = [
     [
       '<div class="giant-number">3</div>',
       'Üç bölüm, yaklaşık 30 dakika',

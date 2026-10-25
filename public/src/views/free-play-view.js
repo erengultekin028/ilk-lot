@@ -14,13 +14,13 @@ import { section } from '../widgets/section.js';
 
 // Portföy ekranında: kayıp sınırı ve sınıra kalan pay
 export function freePlayHeaderHtml() {
-  var freePlay = state.freePlay,
-    simulation = state.simulation,
-    portfolioTotal = portfolioValue(),
-    lossFloor = freePlayLossFloorFor(freePlay, simulation.v0),
-    room = simulation.v0 - lossFloor,
-    loss = Math.max(0, simulation.v0 - portfolioTotal),
-    percent = Math.min(100, (loss / room) * 100);
+  const freePlay = state.freePlay;
+  const simulation = state.simulation;
+  const portfolioTotal = portfolioValue();
+  const lossFloor = freePlayLossFloorFor(freePlay, simulation.v0);
+  const room = simulation.v0 - lossFloor;
+  const loss = Math.max(0, simulation.v0 - portfolioTotal);
+  const percent = Math.min(100, (loss / room) * 100);
   return (
     '<div class="free-play-limit"><div class="key-value" style="padding:0"><span style="color:var(--tx);font-weight:700">Kayıp sınırı · %' +
     Math.round(freePlayLossLimit(freePlay) * 100) +
@@ -54,7 +54,7 @@ function radioGroupHtml(action, label, items, current) {
     '</span>' +
     items
       .map(function (item) {
-        var isOn = String(item[0]) === String(current);
+        const isOn = String(item[0]) === String(current);
         return (
           '<button class="chip' +
           (isOn ? ' is-active' : '') +
@@ -76,7 +76,7 @@ function radioGroupHtml(action, label, items, current) {
 
 // Oyun sırasında piyasa hızı: durdurma, 1×, 2×, 4× (yerinde güncellenir, her gün yeniden çizilmez)
 export function freePlaySpeedHtml() {
-  var value = state.freePlay.speed == null ? 1 : state.freePlay.speed;
+  const value = state.freePlay.speed == null ? 1 : state.freePlay.speed;
   return (
     '<div class="font-size-selector" role="group" aria-labelledby="speed-label" style="margin:0 0 12px"><span class="selector-label" id="speed-label">Piyasa hızı</span>' +
     [
@@ -86,7 +86,7 @@ export function freePlaySpeedHtml() {
       [4, '4×'],
     ]
       .map(function (item) {
-        var isOn = item[0] === value;
+        const isOn = item[0] === value;
         return (
           '<button class="chip' +
           (isOn ? ' is-active' : '') +
@@ -106,10 +106,10 @@ export function freePlaySpeedHtml() {
 
 // Hisse detayında otomatik sat emri kartı (yalnızca serbest mod)
 export function freePlayOrderHtml(symbol) {
-  var simulation = state.simulation,
-    position = simulation.pos[symbol],
-    hasPosition = position && position.q > 0,
-    order = (simulation.orders && simulation.orders[symbol]) || { stop: null, take: null };
+  const simulation = state.simulation;
+  const position = simulation.pos[symbol];
+  const hasPosition = position && position.q > 0;
+  const order = (simulation.orders && simulation.orders[symbol]) || { stop: null, take: null };
   function row(value, lab, vals, ff) {
     return (
       '<div class="font-size-selector" role="radiogroup" aria-label="' +
@@ -120,7 +120,7 @@ export function freePlayOrderHtml(symbol) {
       ['x']
         .concat(vals)
         .map(function (item) {
-          var isOn = item === 'x' ? order[value] == null : order[value] === item;
+          const isOn = item === 'x' ? order[value] == null : order[value] === item;
           return (
             '<button class="chip' +
             (isOn ? ' is-active' : '') +
@@ -170,26 +170,26 @@ function freePlaySettingsText(freePlay) {
 }
 
 export function renderFreePlayMenu() {
-  var freePlay = state.freePlay,
-    desc = {
-      k: ['Daha seyrek ve küçük düşüşler ile yükselişler; uyarı erken gelir', 'Haberler kısa ve net'],
-      o: [
-        'Daha sık ve büyük olaylar; bazen tüm piyasa birlikte hareket eder',
-        'Haberler nedenleriyle birlikte gelir',
-      ],
-      z: [
-        'Sık ve sert olaylar; uyarı geç gelir',
-        'Haberler çok katmanlı ve belirsizdir, yön her zaman açık değildir',
-      ],
-    };
+  const freePlay = state.freePlay;
+  const desc = {
+    k: ['Daha seyrek ve küçük düşüşler ile yükselişler; uyarı erken gelir', 'Haberler kısa ve net'],
+    o: [
+      'Daha sık ve büyük olaylar; bazen tüm piyasa birlikte hareket eder',
+      'Haberler nedenleriyle birlikte gelir',
+    ],
+    z: [
+      'Sık ve sert olaylar; uyarı geç gelir',
+      'Haberler çok katmanlı ve belirsizdir, yön her zaman açık değildir',
+    ],
+  };
   return (
     '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><div class="muted small-text" style="font-weight:700">Serbest mod</div><h1 style="margin-top:4px">Oyunu kendin kur</h1><p>Aynı simülatör, kurgusal fiyatlar ve haberler. Hiçbir şey kaydedilmez ve çalışmanın parçası değildir. Süre sınırı yok; toplam paran kayıp sınırının altına inince oyun biter, istersen kendin de bitirebilirsin. Oyun sırasında piyasayı durdurabilir ya da hızlandırabilir, her hisseye otomatik sat emri koyabilirsin.</p>' +
     '<div class="level-list" role="radiogroup" aria-label="Zorluk">' +
     ['k', 'o', 'z']
       .map(function (item) {
-        var list = FREE_PLAY_LEVELS[item],
-          data = desc[item],
-          isOn = freePlay.lvl === item;
+        const items = FREE_PLAY_LEVELS[item];
+        const data = desc[item];
+        const isOn = freePlay.lvl === item;
         return (
           '<button class="level-option' +
           (isOn ? ' is-active' : '') +
@@ -198,9 +198,9 @@ export function renderFreePlayMenu() {
           '" data-a="selectFreePlayLevel" data-v="' +
           item +
           '"><b>' +
-          list.ad +
+          items.ad +
           '</b><span>Kayıp sınırı %' +
-          Math.round(list.lim * 100) +
+          Math.round(items.lim * 100) +
           '</span><small>' +
           data[0] +
           '.</small><small>' +
@@ -247,18 +247,18 @@ export function renderFreePlayMenu() {
 }
 
 export function renderFreePlayEnd() {
-  var freePlay = state.freePlay,
-    res = freePlay.res,
-    list = FREE_PLAY_LEVELS[freePlay.lvl],
-    change = (res.value / res.v0 - 1) * 100,
-    na = state.simulation
-      ? state.simulation.trades.filter(function (item) {
-          return item.auto;
-        }).length
-      : 0;
+  const freePlay = state.freePlay;
+  const res = freePlay.res;
+  const items = FREE_PLAY_LEVELS[freePlay.lvl];
+  const change = (res.value / res.v0 - 1) * 100;
+  const na = state.simulation
+    ? state.simulation.trades.filter(function (item) {
+        return item.auto;
+      }).length
+    : 0;
   return (
     '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><div class="muted small-text" style="font-weight:700">Serbest mod · ' +
-    list.ad +
+    items.ad +
     '</div><h1 style="margin-top:4px">' +
     (res.kind === 'limit' ? 'Kayıp sınırına ulaştın' : 'Oyunu bitirdin') +
     '</h1><p>' +

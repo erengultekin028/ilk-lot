@@ -59,7 +59,7 @@ export const marketActions = {
     state.marketTab = value;
     state.detailSymbol = null;
     if (value === 'm') {
-      var news = latestNewsAt(state.simulation.tick);
+      const news = latestNewsAt(state.simulation.tick);
       state.newsSeenDay = news ? news[0] : 0;
     }
     render();
@@ -89,12 +89,12 @@ export const marketActions = {
     state.stage = 'task';
     startTrial();
   },
-  openTradeWindow: function (value) {
+  openTradeWindow: function (innerValue) {
     if (state.simulation.tick >= simulationTickLimit()) return;
-    var price = String(value).split('|'),
-      key = price[0],
-      position = state.simulation.pos[key],
-      side = price[1] || (position && position.q > 0 ? 'S' : 'B');
+    const value = String(innerValue).split('|');
+    const key = value[0];
+    const position = state.simulation.pos[key];
+    const side = value[1] || (position && position.q > 0 ? 'S' : 'B');
     state.tradeDraft = { k: key, t0: Date.now(), side: side, q: 0, mode: null, edits: 0 };
     logEvent('sim_open', { k: key, side: side });
     openModal(tradeWindowHtml(key));
@@ -105,39 +105,39 @@ export const marketActions = {
     closeModal();
   },
   setTradeSide: function (value) {
-    var tradeDraft = state.tradeDraft;
+    const tradeDraft = state.tradeDraft;
     if (!tradeDraft || tradeDraft.side === value) return;
     tradeDraft.side = value;
     tradeDraft.q = 0;
     tradeDraft.mode = null;
     tradeDraft.edits++;
-    var i = byId('trade-quantity');
+    const i = byId('trade-quantity');
     if (i) i.value = '';
     updateTradePreview();
   },
   setTradeQuantity: function (value) {
-    var tradeDraft = state.tradeDraft;
+    const tradeDraft = state.tradeDraft;
     if (!tradeDraft) return;
-    var trade = calculateTrade(),
-      quantity = tradeDraft.q || 0;
+    const trade = calculateTrade();
+    let quantity = tradeDraft.q || 0;
     if (value === '+1') quantity = Math.min(trade.lim, quantity + 1);
     else if (value === '-1') quantity = Math.max(0, quantity - 1);
     else {
-      var handler = { p25: 0.25, p50: 0.5, p75: 0.75 }[value];
+      const handler = { p25: 0.25, p50: 0.5, p75: 0.75 }[value];
       quantity =
         trade.lim < 1 ? 0 : value === 'max' ? trade.lim : Math.max(1, Math.floor(trade.lim * handler));
     }
     tradeDraft.q = quantity;
     tradeDraft.mode = value === '+1' || value === '-1' ? 'step' : 'chip';
     tradeDraft.edits++;
-    var i = byId('trade-quantity');
+    const i = byId('trade-quantity');
     if (i) i.value = quantity || '';
     updateTradePreview();
   },
   submitTrade: function () {
-    var tradeDraft = state.tradeDraft;
+    const tradeDraft = state.tradeDraft;
     if (!tradeDraft) return;
-    var trade = calculateTrade();
+    const trade = calculateTrade();
     if (trade.q < 1 || trade.over) return;
     if (trade.sell && state.freePlay) sellStock(tradeDraft.k, trade.q, false);
     else if (trade.sell) {
@@ -146,22 +146,22 @@ export const marketActions = {
     } else buyStock(tradeDraft.k, trade.q);
   },
   cancelSellReason: function () {
-    var key = state.sellReasonDraft.k;
+    const key = state.sellReasonDraft.k;
     state.sellReasonDraft = null;
     byId('modal-box').innerHTML = tradeWindowHtml(key);
   },
   chooseSellReason: function (i) {
-    var sellReasonDraft = state.sellReasonDraft;
+    const sellReasonDraft = state.sellReasonDraft;
     sellReasonDraft.why = SELL_REASONS[+i];
     actions.confirmSell();
   },
   confirmSell: function () {
-    var sellReasonDraft = state.sellReasonDraft,
-      key = sellReasonDraft.k,
-      quantity = sellReasonDraft.q,
-      simulation = state.simulation,
-      position = simulation.pos[key],
-      profitLossPercent = position ? simulation.p[key] / position.avg - 1 : 0;
+    const sellReasonDraft = state.sellReasonDraft;
+    const key = sellReasonDraft.k;
+    const quantity = sellReasonDraft.q;
+    const simulation = state.simulation;
+    const position = simulation.pos[key];
+    const profitLossPercent = position ? simulation.p[key] / position.avg - 1 : 0;
     if (
       !DEMO_MODE &&
       !state.practice &&
@@ -169,7 +169,7 @@ export const marketActions = {
       state.group === 'A' &&
       profitLossPercent <= CONFIG.lossThreshold
     ) {
-      var value = (state.cooldownStats = state.cooldownStats || { n: 0, v: 0, g: 0 });
+      const value = (state.cooldownStats = state.cooldownStats || { n: 0, v: 0, g: 0 });
       value.n++;
       state.simulatorCooldown = { k: key, q: quantity, left: CONFIG.cooldownSec, t0: Date.now() };
       logEvent('cooldown_shown', {
@@ -190,7 +190,7 @@ export const marketActions = {
         setText('cdn', String(Math.max(0, state.simulatorCooldown.left)));
         if (state.simulatorCooldown.left <= 0) {
           clearInterval(state.cooldownTimer);
-          var cooldownConfirmElement = byId('cooldown-confirm');
+          const cooldownConfirmElement = byId('cooldown-confirm');
           if (cooldownConfirmElement) cooldownConfirmElement.disabled = false;
         }
       }, 1000);
@@ -199,7 +199,7 @@ export const marketActions = {
     sellStock(key, quantity, false);
   },
   cancelCooldown: function () {
-    var simulatorCooldown = state.simulatorCooldown;
+    const simulatorCooldown = state.simulatorCooldown;
     state.cooldownStats.v++;
     clearInterval(state.cooldownTimer);
     logEvent('cooldown_cancel', { k: simulatorCooldown.k, waitedMs: Date.now() - simulatorCooldown.t0 });
@@ -208,7 +208,7 @@ export const marketActions = {
     byId('modal-box').innerHTML = tradeWindowHtml(simulatorCooldown.k);
   },
   confirmAfterCooldown: function () {
-    var simulatorCooldown = state.simulatorCooldown;
+    const simulatorCooldown = state.simulatorCooldown;
     if (!simulatorCooldown || simulatorCooldown.left > 0) return;
     state.cooldownStats.g++;
     clearInterval(state.cooldownTimer);

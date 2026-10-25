@@ -12,17 +12,17 @@ import { TRIAL_SETS, stimulusFingerprint } from '../models/trial-generator.js';
 
 // ═════════════════ ARAŞTIRMACI PANELİ ═════════════════
 function renderAdminPanel() {
-  var allocationCache = state.allocationCache,
-    count = allocationCache
-      ? Object.keys(allocationCache).reduce(
-          function (accumulator, item) {
-            accumulator[allocationCache[item].grp]++;
-            return accumulator;
-          },
-          { A: 0, B: 0 }
-        )
-      : null;
-  var html =
+  const allocationCache = state.allocationCache;
+  const count = allocationCache
+    ? Object.keys(allocationCache).reduce(
+        function (accumulator, item) {
+          accumulator[allocationCache[item].grp]++;
+          return accumulator;
+        },
+        { A: 0, B: 0 }
+      )
+    : null;
+  let html =
     '<div class="is-wrongsheet-titlee"><span><b>Araştırmacı modu.</b> Bu bölüm katılımcıya görünmez. Kapatmak için logoya 5 kez dokun.</span></div>';
   if (participantRepository.mode() === 'firebase' && !participantRepository.isAdminAuthed())
     return (
@@ -35,9 +35,11 @@ function renderAdminPanel() {
             : '')
       )
     );
-  var items = ['controller', 'ethics', 'retention', 'hosting', 'support', 'contact'].filter(function (item) {
-    return /^\[DOLDUR|ornek\.edu\.tr/.test(item === 'contact' ? CONFIG.contact : CONFIG.consentInfo[item]);
-  });
+  const items = ['controller', 'ethics', 'retention', 'hosting', 'support', 'contact'].filter(
+    function (item) {
+      return /^\[DOLDUR|ornek\.edu\.tr/.test(item === 'contact' ? CONFIG.contact : CONFIG.consentInfo[item]);
+    }
+  );
   html += section(
     'Onam metni',
     '<div class="key-value"><span>Sürüm</span><b>' +

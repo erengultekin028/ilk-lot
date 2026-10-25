@@ -18,12 +18,12 @@ function pickRandomItem(items) {
 // Başlangıç portföyünü ayarlar (olay üretimini etkilemez: rnd2 kullanmaz)
 export function applyFreePlayPortfolio(simulation, innerKey) {
   if (innerKey !== 'n' && innerKey !== 'h') return;
-  var invested = 0,
-    per = innerKey === 'h' ? (0.9 * simulation.v0) / STOCK_BASES.length : 0;
+  let invested = 0;
+  const per = innerKey === 'h' ? (0.9 * simulation.v0) / STOCK_BASES.length : 0;
   STOCK_BASES.forEach(function (item) {
-    var key = item[0],
-      startPrice = simulation.p0[key],
-      quantity = per ? Math.round(per / startPrice) : 0;
+    const key = item[0];
+    const startPrice = simulation.p0[key];
+    const quantity = per ? Math.round(per / startPrice) : 0;
     simulation.pos[key] = { q: quantity, avg: startPrice };
     invested += quantity * startPrice;
   });
@@ -31,7 +31,7 @@ export function applyFreePlayPortfolio(simulation, innerKey) {
 }
 
 export function initFreePlay(level, scenario) {
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   simulation.free = level;
   simulation.fsc = FREE_PLAY_SCENARIOS[scenario] ? scenario : 'r';
   simulation.orders = {};
@@ -43,30 +43,32 @@ export function initFreePlay(level, scenario) {
 
 // Tohumdan ileriye (150 gün) olay ve haber planlar. Haberler gün sırasıyla eklenir; tarafsız haberler olayın uyarısından 3 gün önce ve bitişinden 8 gün sonra arasına konur.
 export function planFreePlayEvents(simulation) {
-  var list = FREE_PLAY_LEVELS[simulation.free],
-    handler = simulation.fr,
-    SC = FREE_PLAY_SCENARIOS[simulation.fsc || 'r'];
+  const innerItems = FREE_PLAY_LEVELS[simulation.free];
+  const handler = simulation.fr;
+  const SC = FREE_PLAY_SCENARIOS[simulation.fsc || 'r'];
   while (handler.at < simulation.tick + 150) {
-    var gap = Math.round((list.gap[0] + marketRandom() * (list.gap[1] - list.gap[0])) * SC.gap);
+    let gap = Math.round(
+      (innerItems.gap[0] + marketRandom() * (innerItems.gap[1] - innerItems.gap[0])) * SC.gap
+    );
     if (handler.first) {
       gap = Math.round(gap * 0.5);
       handler.first = 0;
     }
-    var at = handler.at + gap,
-      wd = at - list.warn,
-      lo = handler.end + 8,
-      hi = wd - 3,
-      count = 2 + (marketRandom() < 0.5 ? 1 : 0),
-      days = [],
-      i;
+    const at = handler.at + gap;
+    const wd = at - innerItems.warn;
+    const lo = handler.end + 8;
+    const hi = wd - 3;
+    const count = 2 + (marketRandom() < 0.5 ? 1 : 0);
+    const days = [];
+    var i;
     for (i = 0; i < count; i++) {
-      var data = Math.round(lo + ((i + 0.5) * (hi - lo)) / count + (marketRandom() - 0.5) * 4);
+      const data = Math.round(lo + ((i + 0.5) * (hi - lo)) / count + (marketRandom() - 0.5) * 4);
       if (data >= lo && data <= hi && (!days.length || data - days[days.length - 1] >= 6)) days.push(data);
     }
     days.forEach(function (item) {
-      var value,
-        items = FREE_PLAY_NEUTRAL_NEWS[list.d],
-        group = 0;
+      let value;
+      const items = FREE_PLAY_NEUTRAL_NEWS[innerItems.d];
+      let group = 0;
       do {
         value = pickRandomItem(items);
         group++;
@@ -74,8 +76,8 @@ export function planFreePlayEvents(simulation) {
       handler.lastNeu = value;
       simulation.news.push([item, value, 0, []]);
     });
-    var all = marketRandom() < list.mkt,
-      stockIndex = 5;
+    const all = marketRandom() < innerItems.mkt;
+    let stockIndex = 5;
     if (!all) {
       do {
         stockIndex = Math.floor(marketRandom() * 5);
@@ -83,21 +85,26 @@ export function planFreePlayEvents(simulation) {
       handler.lastSec2 = handler.lastSec;
       handler.lastSec = stockIndex;
     }
-    var isUp = marketRandom() < (SC.up == null ? list.up : SC.up),
-      mg = (list.drop[0] + marketRandom() * (list.drop[1] - list.drop[0])) * SC.drop,
-      len = 5 + Math.floor(marketRandom() * 5),
-      scrollTop = FREE_PLAY_SECTORS[stockIndex][1];
+    const isUp = marketRandom() < (SC.up == null ? innerItems.up : SC.up);
+    let mg = (innerItems.drop[0] + marketRandom() * (innerItems.drop[1] - innerItems.drop[0])) * SC.drop;
+    const len = 5 + Math.floor(marketRandom() * 5);
+    const scrollTop = FREE_PLAY_SECTORS[stockIndex][1];
     if (all) mg *= 0.6;
     if (isUp) mg = mg / (1 - mg);
     mg = Math.round(mg * 1000) / 1000;
     simulation.crises.push({ at: at, len: len, drop: isUp ? -mg : mg, stocks: scrollTop });
     simulation.news.push([
       wd,
-      FREE_PLAY_NEWS[stockIndex][isUp ? 2 : 0][list.d],
-      !isUp && list.d < 2 ? -1 : 0,
+      FREE_PLAY_NEWS[stockIndex][isUp ? 2 : 0][innerItems.d],
+      !isUp && innerItems.d < 2 ? -1 : 0,
       scrollTop,
     ]);
-    simulation.news.push([at, FREE_PLAY_NEWS[stockIndex][isUp ? 3 : 1][list.d], isUp ? 1 : -1, scrollTop]);
+    simulation.news.push([
+      at,
+      FREE_PLAY_NEWS[stockIndex][isUp ? 3 : 1][innerItems.d],
+      isUp ? 1 : -1,
+      scrollTop,
+    ]);
     handler.at = at;
     handler.end = at + len;
   }

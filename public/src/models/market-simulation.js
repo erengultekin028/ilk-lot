@@ -11,7 +11,7 @@ export function simulationTickLimit() {
 }
 
 export function simulationMinutesText() {
-  var x = Math.round(((CONFIG.simTicks * CONFIG.simTickMs) / 60000) * 2) / 2;
+  const x = Math.round(((CONFIG.simTicks * CONFIG.simTickMs) / 60000) * 2) / 2;
   return String(x).replace('.', ',');
 }
 
@@ -21,7 +21,7 @@ export function tickSecondsText() {
 
 export function initSimulation(seed) {
   rngState.market = hashSeed(seed || CONFIG.simSeed);
-  var map = {
+  const map = {
     tick: 0,
     cash: CONFIG.cash0,
     pos: {},
@@ -32,9 +32,9 @@ export function initSimulation(seed) {
     v0: CONFIG.cash0 + STOCK_BASES.length * CONFIG.posValue,
     vh: [],
   };
-  var invested = 0;
+  let invested = 0;
   STOCK_BASES.forEach(function (item) {
-    var quantity = Math.round(CONFIG.posValue / item[2]);
+    const quantity = Math.round(CONFIG.posValue / item[2]);
     map.p[item[0]] = item[2];
     map.p0[item[0]] = item[2];
     map.h[item[0]] = [item[2]];
@@ -53,9 +53,9 @@ function activeCrises() {
 }
 
 export function crisisAt(tick) {
-  var crises = activeCrises();
-  for (var i = 0; i < crises.length; i++) {
-    var value = crises[i];
+  const crises = activeCrises();
+  for (let i = 0; i < crises.length; i++) {
+    const value = crises[i];
     if (value.drop > 0 && tick >= value.at && tick < value.at + value.len) return value;
   }
   return null;
@@ -63,9 +63,9 @@ export function crisisAt(tick) {
 
 // Hissenin şu an krizde (ya da krizden sonraki 20 günde) olup olmadığı
 export function stockCrisisAt(symbol, tick, after) {
-  var crises = activeCrises();
-  for (var i = 0; i < crises.length; i++) {
-    var value = crises[i];
+  const crises = activeCrises();
+  for (let i = 0; i < crises.length; i++) {
+    const value = crises[i];
     if (value.stocks.indexOf(symbol) >= 0 && tick >= value.at && tick < value.at + value.len + (after || 0))
       return value;
   }
@@ -77,7 +77,7 @@ export function newsItems() {
 }
 
 export function latestNewsAt(tick) {
-  var count = null;
+  let count = null;
   newsItems().forEach(function (item) {
     if (item[0] <= tick) count = item;
   });
@@ -85,15 +85,15 @@ export function latestNewsAt(tick) {
 }
 
 export function stepSimulation() {
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   simulation.tick++;
   if (simulation.free) planFreePlayEvents(simulation);
-  var marketChange = (marketRandom() - 0.5) * 0.005;
+  const marketChange = (marketRandom() - 0.5) * 0.005;
   // Krizdeki hisse: sektöre özgü sert düşüş; diğerleri sadece ortak piyasa gürültüsü + kendi gürültüsü
   STOCK_BASES.forEach(function (item) {
-    var key = item[0],
-      crisis = stockCrisisAt(key, simulation.tick, 0),
-      sharesHeld = crisis ? Math.pow(1 - crisis.drop, 1 / crisis.len) - 1 : 0;
+    const key = item[0];
+    const crisis = stockCrisisAt(key, simulation.tick, 0);
+    const sharesHeld = crisis ? Math.pow(1 - crisis.drop, 1 / crisis.len) - 1 : 0;
     simulation.p[key] = Math.max(
       1,
       simulation.p[key] * (1 + marketChange + sharesHeld + (marketRandom() - 0.5) * 0.008)
@@ -105,23 +105,23 @@ export function stepSimulation() {
 }
 
 export function portfolioValue() {
-  var simulation = state.simulation,
-    cash = simulation.cash;
-  for (var key in simulation.pos) cash += simulation.pos[key].q * simulation.p[key];
+  const simulation = state.simulation;
+  let cash = simulation.cash;
+  for (const key in simulation.pos) cash += simulation.pos[key].q * simulation.p[key];
   return cash;
 }
 
 function findStockBase(symbol) {
-  for (var i = 0; i < STOCK_BASES.length; i++) if (STOCK_BASES[i][0] === symbol) return STOCK_BASES[i];
+  for (let i = 0; i < STOCK_BASES.length; i++) if (STOCK_BASES[i][0] === symbol) return STOCK_BASES[i];
   return null;
 }
 
 export function stockCompanyName(symbol) {
-  var stockBase = findStockBase(symbol);
+  const stockBase = findStockBase(symbol);
   return stockBase ? stockBase[1] : '';
 }
 
 export function stockFullName(symbol) {
-  var stockBase = findStockBase(symbol);
+  const stockBase = findStockBase(symbol);
   return stockBase ? stockBase[1] + ' · ' + stockBase[3] : '';
 }

@@ -20,17 +20,17 @@ let filmData = null;
 const FILM_COLORS = { sat: '#C2412D', tut: '#8C93A3', al: '#1E8A5E' };
 
 function buildFilmData() {
-  var decisions = state.decisions,
-    innerLength = decisions.length,
-    gap = 1.2,
-    length = TRIAL_SETS.X.length,
-    xValue = function (i) {
-      var unit = i + (i >= length ? gap : 0),
-        total = innerLength + (innerLength > length ? gap : 0);
-      return (
-        FILM_PADDING.l + ((FILM_WIDTH - FILM_PADDING.l - FILM_PADDING.r) * (unit + 0.5)) / Math.max(1, total)
-      );
-    };
+  const decisions = state.decisions;
+  const innerLength = decisions.length;
+  const gap = 1.2;
+  const length = TRIAL_SETS.X.length;
+  const xValue = function (i) {
+    const unit = i + (i >= length ? gap : 0);
+    const total = innerLength + (innerLength > length ? gap : 0);
+    return (
+      FILM_PADDING.l + ((FILM_WIDTH - FILM_PADDING.l - FILM_PADDING.r) * (unit + 0.5)) / Math.max(1, total)
+    );
+  };
   return {
     n: innerLength,
     X: xValue,
@@ -46,9 +46,9 @@ function buildFilmData() {
 
 export function filmHtml() {
   if (!state.decisions.length) return '';
-  var film = buildFilmData(),
-    bw = (FILM_WIDTH - FILM_PADDING.l - FILM_PADDING.r) / (film.n + 1.2);
-  var html =
+  const film = buildFilmData();
+  const bw = (FILM_WIDTH - FILM_PADDING.l - FILM_PADDING.r) / (film.n + 1.2);
+  let html =
     '<div class="ficard-labelm"><div class="film-title"><b>Kararlarının filmi</b><button class="card-labelirow-subtitlecard-value" style="padding:0;color:var(--act)" data-a="playFilm">Tekrar oynat</button></div><svg viewBox="0 0 ' +
     FILM_WIDTH +
     ' ' +
@@ -57,7 +57,7 @@ export function filmHtml() {
     FILM_HEIGHT +
     '"/></clipPath></defs>';
   ['Sat', 'Tut', 'Daha al'].forEach(function (item, index) {
-    var y = FILM_PADDING.t + 18 + index * 44;
+    const y = FILM_PADDING.t + 18 + index * 44;
     html +=
       '<line x1="' +
       FILM_PADDING.l +
@@ -82,9 +82,9 @@ export function filmHtml() {
         (FILM_HEIGHT - FILM_PADDING.t - FILM_PADDING.b + 8) +
         '" fill="#C2412D" opacity=".09" rx="3"/>';
   });
-  var length = TRIAL_SETS.X.length;
+  const length = TRIAL_SETS.X.length;
   if (film.n > length) {
-    var gridX = (film.X(length - 1) + film.X(length)) / 2;
+    const gridX = (film.X(length - 1) + film.X(length)) / 2;
     html +=
       '<line x1="' +
       gridX +
@@ -105,8 +105,8 @@ export function filmHtml() {
     (FILM_WIDTH - FILM_PADDING.r) +
     '" y="12" font-size="9" text-anchor="end" fill="currentColor" fill-opacity=".55">3. bölüm</text>';
   state.decisions.forEach(function (item, index) {
-    var centerX = film.X(index),
-      centerY = film.y(item);
+    const centerX = film.X(index);
+    const centerY = film.y(item);
     html +=
       '<g class="film-marker is-off" data-t="' +
       (index + 1) +
@@ -147,22 +147,23 @@ export function filmHtml() {
 }
 
 function drawFilmFrame(progress) {
-  var filmClipRectElement = byId('film-clip-rect');
+  const filmClipRectElement = byId('film-clip-rect');
   if (!filmClipRectElement) return false;
   progress = Math.max(0, Math.min(1, progress));
-  var data = filmData,
-    key = Math.max(0, Math.min(data.n, Math.floor(progress * data.n + 1e-9))),
-    x = key >= data.n ? FILM_WIDTH : data.X(Math.max(0, key - 1)) + 6;
-  var filmPlayheadElement = byId('film-playhead');
+  const data = filmData;
+  const key = Math.max(0, Math.min(data.n, Math.floor(progress * data.n + 1e-9)));
+  const x = key >= data.n ? FILM_WIDTH : data.X(Math.max(0, key - 1)) + 6;
+  const filmPlayheadElement = byId('film-playhead');
   filmPlayheadElement.setAttribute('x1', x);
   filmPlayheadElement.setAttribute('x2', x);
   document.querySelectorAll('.film .film-marker').forEach(function (item) {
     item.classList.toggle('is-off', +item.dataset.t > key);
   });
-  var text, color;
+  let text;
+  let color;
   if (key >= data.n) {
-    var classNames = function (other) {
-      var decisions = state.decisions.filter(function (item) {
+    const classNames = function (other) {
+      const decisions = state.decisions.filter(function (item) {
         return item.block === other && item.kind === 'kriz' && item.pos === 'zarar';
       });
       return (
@@ -179,7 +180,7 @@ function drawFilmFrame(progress) {
     text = '1. bölüm başlıyor';
     color = 'var(--mu)';
   } else {
-    var x2 = state.decisions[key - 1];
+    const x2 = state.decisions[key - 1];
     text =
       (x2.block === 'pre' ? '1. bölüm' : '3. bölüm') +
       ' · ' +
@@ -190,8 +191,8 @@ function drawFilmFrame(progress) {
       (x2.pos === 'kar' ? 'kârdaydın)' : 'zarardaydın)');
     color = FILM_COLORS[x2.final];
   }
-  var filmCaptionElement = byId('film-caption'),
-    html = '<i style="background:' + color + '"></i><span>' + escapeHtml(text) + '</span>';
+  const filmCaptionElement = byId('film-caption');
+  const html = '<i style="background:' + color + '"></i><span>' + escapeHtml(text) + '</span>';
   if (filmCaptionElement._h !== html) {
     filmCaptionElement.innerHTML = html;
     filmCaptionElement._h = html;
@@ -209,12 +210,12 @@ export function startFilm() {
     return;
   }
   if (state.filmProgress == null) state.filmProgress = 0;
-  var duration = 7000,
-    startTime = performance.now() - state.filmProgress * duration;
+  const duration = 7000;
+  const startTime = performance.now() - state.filmProgress * duration;
   (function loop(now) {
-    var price = Math.max(0, Math.min(1, (now - startTime) / duration));
-    state.filmProgress = price;
-    if (!drawFilmFrame(price)) return;
-    if (price < 1) filmAnimationFrame = requestAnimationFrame(loop);
+    const value = Math.max(0, Math.min(1, (now - startTime) / duration));
+    state.filmProgress = value;
+    if (!drawFilmFrame(value)) return;
+    if (value < 1) filmAnimationFrame = requestAnimationFrame(loop);
   })(performance.now());
 }

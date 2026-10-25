@@ -15,14 +15,14 @@ import { updateTradePreview } from '../views/simulator-view.js';
 // Tanıtım modunda hız çarpanı (1, 2, 4): aynı turu art arda çalıştırır; gerçek akışta çarpan hep 1
 // b23: serbest modda hız (0 duraklat, 1, 2, 4) oyuncunun kendi seçimidir; tanıtım hızı yalnızca serbest dışında geçerli
 setInterval(function () {
-  var count = state.freePlay
+  const count = state.freePlay
     ? state.freePlay.speed == null
       ? 1
       : state.freePlay.speed
     : DEMO_MODE
       ? state.demoSpeed || 1
       : 1;
-  for (var i = 0; i < count; i++) marketTick();
+  for (let i = 0; i < count; i++) marketTick();
 }, CONFIG.simTickMs);
 
 document.addEventListener('pointerdown', function (event) {
@@ -33,7 +33,7 @@ document.addEventListener('pointerdown', function (event) {
 });
 
 document.addEventListener('pointermove', function (event) {
-  var insideChart = event.target.closest && event.target.closest('#detail-chart');
+  const insideChart = event.target.closest && event.target.closest('#detail-chart');
   if (!insideChart) {
     if (event.pointerType === 'mouse' && !scrubState.gesture && state.scrubDay != null && !scrubState.timer)
       endChartScrub();
@@ -58,9 +58,9 @@ document.addEventListener('pointercancel', function () {
 
 // ═════════════════ OLAYLAR ═════════════════
 document.addEventListener('click', function (event) {
-  var target = event.target.closest('[data-a]');
+  const target = event.target.closest('[data-a]');
   if (!target) return;
-  var handler = actions[target.dataset.a];
+  const handler = actions[target.dataset.a];
   if (handler) {
     event.preventDefault();
     handler(target.dataset.v, target);
@@ -68,20 +68,20 @@ document.addEventListener('click', function (event) {
 });
 
 document.addEventListener('input', function (event) {
-  var key = event.target.dataset && event.target.dataset.in;
+  const key = event.target.dataset && event.target.dataset.in;
   if (!key) return;
-  var value = event.target.value;
+  const value = event.target.value;
   if (key === 'code') {
     state.codeError = '';
     if (event.isComposing) {
       state.codeInput = value;
       return;
     }
-    var formatted = formatCodeInput(value);
+    const formatted = formatCodeInput(value);
     if (formatted !== value) event.target.value = formatted;
     state.codeInput = formatted;
   } else if (key === 'simq') {
-    var degrees = value.replace(/\D/g, '').slice(0, 6);
+    const degrees = value.replace(/\D/g, '').slice(0, 6);
     if (degrees !== value) event.target.value = degrees;
     if (state.tradeDraft) {
       state.tradeDraft.q = degrees === '' ? 0 : parseInt(degrees, 10);
@@ -91,7 +91,7 @@ document.addEventListener('input', function (event) {
     }
   } else if (key === 'consentOk') {
     state.consentChecked = event.target.checked;
-    var consentButtonElement = byId('consent-button');
+    const consentButtonElement = byId('consent-button');
     if (consentButtonElement) consentButtonElement.disabled = !state.consentChecked || !!state.busy;
   } else if (key === 'dashAuto') {
     state.dashboardAutoRefresh = event.target.checked;
@@ -110,7 +110,7 @@ document.addEventListener('input', function (event) {
 document.addEventListener(
   'toggle',
   function (event) {
-    var target = event.target;
+    const target = event.target;
     if (target && target.dataset && target.dataset.cs) {
       state.consentOpenSections = state.consentOpenSections || {};
       state.consentOpenSections[target.dataset.cs] = 1;
@@ -126,7 +126,7 @@ document.addEventListener('keydown', function (event) {
 
 document.addEventListener('compositionend', function (event) {
   if (event.target && event.target.id === 'code-input') {
-    var formatted = formatCodeInput(event.target.value);
+    const formatted = formatCodeInput(event.target.value);
     event.target.value = formatted;
     state.codeInput = formatted;
   }
@@ -162,7 +162,7 @@ setInterval(dashboardAutoRefresh, 30000); // Bağlantı kopmuşsa kuyruğu düze
 
 // Yazı boyutu (b22 geri geldi): kayıtlı tercih 'ilklot:fs' (0/1/2); geçersiz değer yok sayılır. Bir arayüz ayarıdır, katılımcı verisi değil.
 (function () {
-  var handler = null;
+  let handler = null;
   try {
     handler = localStorage.getItem('ilklot:fs');
   } catch (error) {}
@@ -171,7 +171,7 @@ setInterval(dashboardAutoRefresh, 30000); // Bağlantı kopmuşsa kuyruğu düze
 
 // Tema: kayıtlı tercih > görüntüleyicinin verdiği data-theme > cihazın teması. Tercih bir arayüz ayarıdır (katılımcı verisi değil).
 (function () {
-  var value = null;
+  let value = null;
   try {
     value = localStorage.getItem('ilklot:theme');
   } catch (error) {}

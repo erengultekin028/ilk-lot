@@ -36,8 +36,8 @@ export function marketTick() {
   stepSimulation();
   updateSimulatorLive();
   updateHeader();
-  var simulation = state.simulation,
-    crisis = crisisAt(simulation.tick);
+  const simulation = state.simulation;
+  const crisis = crisisAt(simulation.tick);
   if (crisis && simulation.tick === crisis.at) {
     logEvent('sim_crisis_start', { stocks: crisis.stocks, tab: state.marketTab });
     if (state.marketTab !== 'p') showToast('Sert düşüş: ' + crisis.stocks.join(', ') + '. Portföyüne bak.');
@@ -48,7 +48,7 @@ export function marketTick() {
   }
   if (state.freePlay) {
     executeFreePlayOrders();
-    var portfolioTotal = portfolioValue();
+    const portfolioTotal = portfolioValue();
     if (portfolioTotal > state.freePlay.peak) state.freePlay.peak = portfolioTotal;
     if (portfolioTotal <= freePlayLossFloorFor(state.freePlay, simulation.v0)) {
       finishFreePlay('limit');
@@ -68,22 +68,22 @@ export function marketTick() {
 // b23: serbest mod otomatik sat emirleri. Eşik, hissenin ORTALAMA ALIŞ fiyatına göre kâr/zarardır; tetiklenince hissenin tamamı O ANKİ fiyattan satılır
 // (sert düşüşte eşiğin altından satış olabilir). Hissenin tamamı satıldığı için doSimSell emri siler: emir bir kez çalışır.
 function executeFreePlayOrders() {
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   if (!state.freePlay || !simulation || !simulation.orders) return;
   STOCK_BASES.forEach(function (item) {
-    var key = item[0],
-      order = simulation.orders[key],
-      position = simulation.pos[key];
+    const key = item[0];
+    const order = simulation.orders[key];
+    const position = simulation.pos[key];
     if (!order || !position || position.q < 1) return;
-    var profitLossPercent = simulation.p[key] / position.avg - 1,
-      value = null;
+    const profitLossPercent = simulation.p[key] / position.avg - 1;
+    let value = null;
     if (order.stop != null && profitLossPercent <= -order.stop) value = 'stop';
     else if (order.take != null && profitLossPercent >= order.take) value = 'take';
     if (!value) return;
-    var quantity = position.q,
-      price = simulation.p[key];
+    const quantity = position.q;
+    const price = simulation.p[key];
     sellStock(key, quantity, false);
-    var trialState = simulation.trades[simulation.trades.length - 1];
+    const trialState = simulation.trades[simulation.trades.length - 1];
     if (trialState) trialState.auto = value;
     showToast(
       'Otomatik emir: ' +
@@ -102,20 +102,21 @@ function executeFreePlayOrders() {
 
 export function trackTabTime() {
   if (state.stage !== 'sim' || !state.tabActiveSince) return;
-  var now = Date.now();
-  state.tabTimes[state.marketTab] = (state.tabTimes[state.marketTab] || 0) + (now - state.tabActiveSince);
-  state.tabActiveSince = now;
+  const timestamp = Date.now();
+  state.tabTimes[state.marketTab] =
+    (state.tabTimes[state.marketTab] || 0) + (timestamp - state.tabActiveSince);
+  state.tabActiveSince = timestamp;
 }
 
 export function endPractice(skipped) {
-  var practice = state.practice;
+  const practice = state.practice;
   if (!practice) return;
   trackTabTime();
   state.tabActiveSince = null;
   closeModal();
   clearInterval(state.cooldownTimer);
-  var count = state.simulation ? state.simulation.trades.length : 0,
-    tick = state.simulation ? state.simulation.tick : 0;
+  const count = state.simulation ? state.simulation.trades.length : 0;
+  const tick = state.simulation ? state.simulation.tick : 0;
   state.practice = null;
   state.simulation = null;
   state.detailSymbol = null;
@@ -132,8 +133,8 @@ export function endPractice(skipped) {
 }
 
 export function finishFreePlay(kind) {
-  var freePlay = state.freePlay,
-    simulation = state.simulation;
+  const freePlay = state.freePlay;
+  const simulation = state.simulation;
   if (!freePlay || !simulation || freePlay.res) return;
   closeModal();
   clearInterval(state.cooldownTimer);
@@ -158,7 +159,7 @@ function endSimulation() {
   state.tabActiveSince = null;
   closeModal();
   clearInterval(state.cooldownTimer);
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   if (DEMO_MODE) {
     state.stage = 'demoend';
     render();
@@ -174,38 +175,38 @@ function endSimulation() {
 }
 
 function recordTrade(symbol, side, quantity, price, extra) {
-  var simulation = state.simulation,
-    position = simulation.pos[symbol],
-    map = {
-      t: simulation.tick,
-      sym: symbol,
-      side: side,
-      q: quantity,
-      p: round2(price),
-      pl: position ? Math.round((price / position.avg - 1) * 10000) / 10000 : null,
-      // Bu hisse şu an krizde mi; ya da krizinden sonraki 20 gün içinde mi (dipteki satışlar buraya düşer)
-      crisis: !!stockCrisisAt(symbol, simulation.tick, 0),
-      postCrisis: !!stockCrisisAt(symbol, simulation.tick, 20),
-      decMs: state.tradeDraft ? Date.now() - state.tradeDraft.t0 : null,
-    };
-  for (var x in extra) map[x] = extra[x];
+  const simulation = state.simulation;
+  const position = simulation.pos[symbol];
+  const map = {
+    t: simulation.tick,
+    sym: symbol,
+    side: side,
+    q: quantity,
+    p: round2(price),
+    pl: position ? Math.round((price / position.avg - 1) * 10000) / 10000 : null,
+    // Bu hisse şu an krizde mi; ya da krizinden sonraki 20 gün içinde mi (dipteki satışlar buraya düşer)
+    crisis: !!stockCrisisAt(symbol, simulation.tick, 0),
+    postCrisis: !!stockCrisisAt(symbol, simulation.tick, 20),
+    decMs: state.tradeDraft ? Date.now() - state.tradeDraft.t0 : null,
+  };
+  for (const x in extra) map[x] = extra[x];
   return map;
 }
 
 export function sellStock(symbol, quantity, afterCooldown) {
-  var simulation = state.simulation,
-    position = simulation.pos[symbol],
-    price = simulation.p[symbol];
+  const simulation = state.simulation;
+  const position = simulation.pos[symbol];
+  const price = simulation.p[symbol];
   if (!position || quantity < 1 || quantity > position.q) return;
-  var value = state.tradeDraft || {},
-    innerRecordTrade = recordTrade(symbol, 'S', quantity, price, {
-      frac: Math.round((quantity / position.q) * 1000) / 1000,
-      afterCooldown: !!afterCooldown,
-      value: Math.round(quantity * price),
-      why: state.sellReasonDraft ? state.sellReasonDraft.why : null,
-      qMode: value.mode || null,
-      qEdits: value.edits || 0,
-    });
+  const value = state.tradeDraft || {};
+  const innerRecordTrade = recordTrade(symbol, 'S', quantity, price, {
+    frac: Math.round((quantity / position.q) * 1000) / 1000,
+    afterCooldown: !!afterCooldown,
+    value: Math.round(quantity * price),
+    why: state.sellReasonDraft ? state.sellReasonDraft.why : null,
+    qMode: value.mode || null,
+    qEdits: value.edits || 0,
+  });
   state.sellReasonDraft = null;
   simulation.cash += quantity * price;
   position.q -= quantity;
@@ -221,17 +222,17 @@ export function sellStock(symbol, quantity, afterCooldown) {
 }
 
 export function buyStock(symbol, quantity) {
-  var simulation = state.simulation,
-    price = simulation.p[symbol],
-    position = simulation.pos[symbol],
-    innerValue = quantity * price;
+  const simulation = state.simulation;
+  const price = simulation.p[symbol];
+  const position = simulation.pos[symbol];
+  const innerValue = quantity * price;
   if (!(quantity >= 1) || innerValue > simulation.cash + 1e-9) return;
-  var value = state.tradeDraft || {},
-    innerRecordTrade = recordTrade(symbol, 'B', quantity, price, {
-      value: Math.round(innerValue),
-      qMode: value.mode || null,
-      qEdits: value.edits || 0,
-    });
+  const value = state.tradeDraft || {};
+  const innerRecordTrade = recordTrade(symbol, 'B', quantity, price, {
+    value: Math.round(innerValue),
+    qMode: value.mode || null,
+    qEdits: value.edits || 0,
+  });
   position.avg =
     position.q > 0 ? (position.avg * position.q + price * quantity) / (position.q + quantity) : price;
   position.q += quantity;
@@ -251,17 +252,17 @@ export function buyStock(symbol, quantity) {
 export const scrubState = { timer: null, gesture: null };
 
 export function scrubChartAt(event) {
-  var element = document.querySelector('#detail-chart svg');
+  const element = document.querySelector('#detail-chart svg');
   if (!element || !state.simulation || !state.detailSymbol) return;
-  var result = element.getBoundingClientRect();
-  if (!result.width) return;
-  var simulation = state.simulation,
-    detailSymbol = state.detailSymbol,
-    count = Math.min(state.detailRangeDays, simulation.h[detailSymbol].length),
-    i = Math.round(Math.min(1, Math.max(0, (event.clientX - result.left) / result.width)) * (count - 1));
+  const rect = element.getBoundingClientRect();
+  if (!rect.width) return;
+  const simulation = state.simulation;
+  const detailSymbol = state.detailSymbol;
+  const count = Math.min(state.detailRangeDays, simulation.h[detailSymbol].length);
+  const i = Math.round(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)) * (count - 1));
   state.scrubDay = simulation.tick - (count - 1 - i);
   if (scrubState.gesture) scrubState.gesture.moves++;
-  var detailChartElement = byId('detail-chart');
+  const detailChartElement = byId('detail-chart');
   if (detailChartElement) detailChartElement.innerHTML = renderDetailChart(detailSymbol);
 }
 
@@ -279,7 +280,7 @@ export function endChartScrub() {
   scrubState.timer = setTimeout(function () {
     scrubState.timer = null;
     state.scrubDay = null;
-    var detailChartElement = byId('detail-chart');
+    const detailChartElement = byId('detail-chart');
     if (detailChartElement && state.detailSymbol && state.simulation)
       detailChartElement.innerHTML = renderDetailChart(state.detailSymbol);
   }, 1500);

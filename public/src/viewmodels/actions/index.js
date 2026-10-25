@@ -15,4 +15,4 @@ export const actions = Object.assign(
   adminSelfTestActions
 );
 
-for (var _k in ADMIN_ACTIONS) actions[_k] = ADMIN_ACTIONS[_k];
+for (const _k in ADMIN_ACTIONS) actions[_k] = ADMIN_ACTIONS[_k];

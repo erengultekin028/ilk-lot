@@ -5,26 +5,26 @@ import { lastWeekChangePercent } from '../models/trial-generator.js';
 
 // Son 30 işlem günü: alan grafiği. Renk son haftanın yönüne göre
 export function renderTrialChart(trial) {
-  var path = trial.path,
-    min = Math.min.apply(0, path),
-    max = Math.max.apply(0, path),
-    range = max - min || 1,
-    width = 320,
-    height = 96,
-    padding = 8,
-    point = path.map(function (item, index) {
-      return [
-        (index / (path.length - 1)) * width,
-        padding + (height - 2 * padding) * (1 - (item - min) / range),
-      ];
-    }),
-    isUp = lastWeekChangePercent(trial) >= 0,
-    color = isUp ? 'var(--up)' : 'var(--dn)',
-    line = point
-      .map(function (item) {
-        return item[0].toFixed(1) + ',' + item[1].toFixed(1);
-      })
-      .join(' ');
+  const path = trial.path;
+  const min = Math.min.apply(0, path);
+  const max = Math.max.apply(0, path);
+  const range = max - min || 1;
+  const width = 320;
+  const height = 96;
+  const padding = 8;
+  const point = path.map(function (item, index) {
+    return [
+      (index / (path.length - 1)) * width,
+      padding + (height - 2 * padding) * (1 - (item - min) / range),
+    ];
+  });
+  const isUp = lastWeekChangePercent(trial) >= 0;
+  const color = isUp ? 'var(--up)' : 'var(--dn)';
+  const line = point
+    .map(function (item) {
+      return item[0].toFixed(1) + ',' + item[1].toFixed(1);
+    })
+    .join(' ');
   return (
     '<svg viewBox="0 0 ' +
     width +

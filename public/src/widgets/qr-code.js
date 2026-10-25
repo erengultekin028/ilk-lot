@@ -4,15 +4,15 @@ import { QRLib } from '../vendor/qr-lib.js';
 
 // Metni QR olarak SVG'ye çevirir. Ağ bağlantısı gerektirmez; claude.ai içinde de, kendi sunucunda da çalışır
 export function renderQrSvg(innerText, pixels) {
-  var quantity = new QRLib.QRCode(-1, QRLib.ECL.M);
+  const quantity = new QRLib.QRCode(-1, QRLib.ECL.M);
   quantity.addData(innerText);
   quantity.make();
-  var count = quantity.getModuleCount(),
-    simulation = 4,
-    text2 = count + simulation * 2,
-    text = '';
-  for (var result = 0; result < count; result++)
-    for (var value = 0; value < count; value++)
+  const count = quantity.getModuleCount();
+  const simulation = 4;
+  const text2 = count + simulation * 2;
+  let text = '';
+  for (let result = 0; result < count; result++)
+    for (let value = 0; value < count; value++)
       if (quantity.isDark(result, value))
         text += 'M' + (value + simulation) + ' ' + (result + simulation) + 'h1v1h-1z';
   return (

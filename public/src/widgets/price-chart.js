@@ -8,11 +8,11 @@ import { initSimulation, stepSimulation } from '../models/market-simulation.js';
 
 // ───────────────── Simülatör ekranı ─────────────────
 export function renderSparkline(values, isUp) {
-  var width = 64,
-    height = 24,
-    min = Math.min.apply(0, values),
-    max = Math.max.apply(0, values),
-    result = max - min || 1;
+  const width = 64;
+  const height = 24;
+  const min = Math.min.apply(0, values);
+  const max = Math.max.apply(0, values);
+  const result = max - min || 1;
   return (
     '<svg width="' +
     width +
@@ -36,29 +36,29 @@ export function renderSparkline(values, isUp) {
 
 // ── Hisse detay sayfası: büyük grafik (10/30/60 gün), ortalama alış çizgisi, pozisyon, ilgili haberler ──
 export function renderDetailChart(symbol) {
-  var simulation = state.simulation,
-    history = simulation.h[symbol].slice(-state.detailRangeDays),
-    position = simulation.pos[symbol],
-    avg = position && position.q > 0 ? position.avg : null,
-    vals = avg ? history.concat([avg]) : history,
-    min = Math.min.apply(0, vals),
-    max = Math.max.apply(0, vals),
-    range = max - min || 1,
-    width = 320,
-    height = 150,
-    padding = 10,
-    length = history.length,
-    isUp = history[history.length - 1] >= history[0],
-    color = isUp ? 'var(--up)' : 'var(--dn)',
-    yValue = function (value) {
-      return padding + (height - 2 * padding) * (1 - (value - min) / range);
-    },
-    point = history
-      .map(function (item, index) {
-        return (length > 1 ? (index / (length - 1)) * width : 0).toFixed(1) + ',' + yValue(item).toFixed(1);
-      })
-      .join(' ');
-  var html =
+  const simulation = state.simulation;
+  const history = simulation.h[symbol].slice(-state.detailRangeDays);
+  const position = simulation.pos[symbol];
+  const avg = position && position.q > 0 ? position.avg : null;
+  const vals = avg ? history.concat([avg]) : history;
+  const min = Math.min.apply(0, vals);
+  const max = Math.max.apply(0, vals);
+  const range = max - min || 1;
+  const width = 320;
+  const height = 150;
+  const padding = 10;
+  const length = history.length;
+  const isUp = history[history.length - 1] >= history[0];
+  const color = isUp ? 'var(--up)' : 'var(--dn)';
+  const yValue = function (value) {
+    return padding + (height - 2 * padding) * (1 - (value - min) / range);
+  };
+  const point = history
+    .map(function (item, index) {
+      return (length > 1 ? (index / (length - 1)) * width : 0).toFixed(1) + ',' + yValue(item).toFixed(1);
+    })
+    .join(' ');
+  let html =
     '<svg viewBox="0 0 ' +
     width +
     ' ' +
@@ -96,12 +96,12 @@ export function renderDetailChart(symbol) {
       formatNumber(avg) +
       '</text>';
   // Parmakla gezme: S.scrubDay mutlak gün numarasıdır (piyasa akarken işaret aynı güne sabit kalır; pencerenin dışına çıkarsa kaybolur)
-  var stockIndex = state.scrubDay != null ? length - 1 - (simulation.tick - state.scrubDay) : -1;
+  const stockIndex = state.scrubDay != null ? length - 1 - (simulation.tick - state.scrubDay) : -1;
   if (stockIndex >= 0 && stockIndex < length) {
-    var startX = length > 1 ? (stockIndex / (length - 1)) * width : 0,
-      startY = yValue(history[stockIndex]),
-      label = 'Gün ' + state.scrubDay + ' · ₺' + formatNumber(history[stockIndex]),
-      analysis = startX < width * 0.28 ? 'start' : startX > width * 0.72 ? 'end' : 'middle';
+    const startX = length > 1 ? (stockIndex / (length - 1)) * width : 0;
+    const startY = yValue(history[stockIndex]);
+    const label = 'Gün ' + state.scrubDay + ' · ₺' + formatNumber(history[stockIndex]);
+    const analysis = startX < width * 0.28 ? 'start' : startX > width * 0.72 ? 'end' : 'middle';
     html +=
       '<line x1="' +
       startX.toFixed(1) +
@@ -147,32 +147,32 @@ export function renderDetailChart(symbol) {
 // Yalnızca simülatör bitmişken çağrılır (simInit sayacı sıfırlar). Sonuç S.simSer içinde saklanır.
 export function simulationSeries() {
   if (state.simulationSeriesCache) return state.simulationSeriesCache;
-  var keep = state.simulation;
+  const keep = state.simulation;
   if (DEMO_MODE || !keep || keep.tick < CONFIG.simTicks) return null;
-  var simTicks = CONFIG.simTicks,
-    trades = keep.trades
-      .map(function (item, index) {
-        return [item, index];
-      })
-      .sort(function (left, right) {
-        return left[0].t - right[0].t || left[1] - right[1];
-      })
-      .map(function (item) {
-        return item[0];
-      });
+  const simTicks = CONFIG.simTicks;
+  const trades = keep.trades
+    .map(function (item, index) {
+      return [item, index];
+    })
+    .sort(function (left, right) {
+      return left[0].t - right[0].t || left[1] - right[1];
+    })
+    .map(function (item) {
+      return item[0];
+    });
   initSimulation();
-  var simulation = state.simulation,
-    map = {},
-    items = [],
-    ti = 0,
-    cash = simulation.cash;
+  const simulation = state.simulation;
+  const map = {};
+  const items = [];
+  let ti = 0;
+  let cash = simulation.cash;
   STOCK_BASES.forEach(function (item) {
     map[item[0]] = simulation.pos[item[0]].q;
   });
   function applied(value) {
     while (ti < trades.length && trades[ti].t <= value) {
-      var result = trades[ti++],
-        price = simulation.p[result.sym];
+      const result = trades[ti++];
+      const price = simulation.p[result.sym];
       if (result.side === 'S') {
         cash += result.q * price;
         map[result.sym] -= result.q;
@@ -183,13 +183,13 @@ export function simulationSeries() {
     }
   }
   function innerValue() {
-    var x = cash;
-    for (var key in map) x += map[key] * simulation.p[key];
+    let x = cash;
+    for (const key in map) x += map[key] * simulation.p[key];
     return x;
   }
   applied(0);
   items.push(innerValue());
-  for (var value2 = 1; value2 <= simTicks; value2++) {
+  for (let value2 = 1; value2 <= simTicks; value2++) {
     stepSimulation();
     applied(value2);
     items.push(innerValue());
@@ -205,11 +205,11 @@ export function simulationSeries() {
 }
 
 export function simulationChartGeometry(width, height, left, right, top, bottom) {
-  var series = simulationSeries(),
-    simTicks = CONFIG.simTicks,
-    min = Math.min.apply(0, series.v.concat([series.v0])),
-    max = Math.max.apply(0, series.v.concat([series.v0])),
-    padding = (max - min) * 0.08 || 1;
+  const series = simulationSeries();
+  const simTicks = CONFIG.simTicks;
+  let min = Math.min.apply(0, series.v.concat([series.v0]));
+  let max = Math.max.apply(0, series.v.concat([series.v0]));
+  const padding = (max - min) * 0.08 || 1;
   min -= padding;
   max += padding;
   return {
@@ -225,16 +225,16 @@ export function simulationChartGeometry(width, height, left, right, top, bottom)
 
 export function simulationChartSvg() {
   if (!simulationSeries()) return '';
-  var width = 340,
-    height = 150,
-    innerSimulationChartGeometry = simulationChartGeometry(width, height, 8, 8, 10, 22),
-    data = innerSimulationChartGeometry.d,
-    simTicks = CONFIG.simTicks,
-    length = data.tr.filter(function (item) {
-      return item.side === 'S';
-    }).length,
-    buyCount = data.tr.length - length;
-  var html =
+  const width = 340;
+  const height = 150;
+  const innerSimulationChartGeometry = simulationChartGeometry(width, height, 8, 8, 10, 22);
+  const data = innerSimulationChartGeometry.d;
+  const simTicks = CONFIG.simTicks;
+  const length = data.tr.filter(function (item) {
+    return item.side === 'S';
+  }).length;
+  const buyCount = data.tr.length - length;
+  let html =
     '<svg viewBox="0 0 ' +
     width +
     ' ' +
@@ -277,8 +277,8 @@ export function simulationChartSvg() {
       .join(' ') +
     '"/>';
   data.tr.forEach(function (item) {
-    var centerX = innerSimulationChartGeometry.X(item.t).toFixed(1),
-      centerY = innerSimulationChartGeometry.Y(data.v[item.t]).toFixed(1);
+    const centerX = innerSimulationChartGeometry.X(item.t).toFixed(1);
+    const centerY = innerSimulationChartGeometry.Y(data.v[item.t]).toFixed(1);
     html +=
       item.side === 'S'
         ? '<circle cx="' +

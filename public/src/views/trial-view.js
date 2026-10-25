@@ -19,7 +19,7 @@ import { PRACTICE_TRIALS, currentBlockTrials, lastWeekChangePercent } from '../m
 import { CHOICE_LABELS } from '../constants/ui-constants.js';
 
 function trialProgressHtml() {
-  var trialState = state.trial;
+  const trialState = state.trial;
   if (trialState.mode === 'practice')
     return (
       '<div class="muted small-text" style="margin:2px 0 8px;font-weight:600">Alıştırma ' +
@@ -44,11 +44,11 @@ function trialProgressHtml() {
 }
 
 function chooseHtml(trial) {
-  var price = trial.path[trial.path.length - 1],
-    innerLastWeekChangePercent = lastWeekChangePercent(trial),
-    cost = CONFIG.stake / (1 + trial.pl),
-    diff = CONFIG.stake - cost;
-  var html = '<div style="padding-top:4px">' + trialProgressHtml();
+  const price = trial.path[trial.path.length - 1];
+  const innerLastWeekChangePercent = lastWeekChangePercent(trial);
+  const cost = CONFIG.stake / (1 + trial.pl);
+  const diff = CONFIG.stake - cost;
+  let html = '<div style="padding-top:4px">' + trialProgressHtml();
   html +=
     '<div class="card-section" id="tour-chart"><div class="card-body" style="padding-top:14px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><div style="font:700 21px var(--fd)">' +
     escapeHtml(trial.sym) +
@@ -135,15 +135,16 @@ function cooldownHtml(trial) {
 }
 
 function outcomeHtml(trial, decision) {
-  var isUp = trial.out >= 0,
-    lbl = { sat: 'Sattın', tut: 'Tuttun', al: 'Daha aldın' }[decision.final],
-    html = '<b class="' + directionClass(trial.out) + '">' + formatPercentChange(trial.out * 100) + '</b>',
-    reason =
-      decision.final === 'sat'
-        ? 'Sattığın için fiyat değişimi seni etkilemedi.'
-        : decision.final === 'tut'
-          ? '₺' + formatNumber(CONFIG.stake, 0) + ' × ' + html
-          : '₺' + formatNumber(CONFIG.stake + CONFIG.addAmount, 0) + ' × ' + html;
+  const isUp = trial.out >= 0;
+  const lbl = { sat: 'Sattın', tut: 'Tuttun', al: 'Daha aldın' }[decision.final];
+  const html =
+    '<b class="' + directionClass(trial.out) + '">' + formatPercentChange(trial.out * 100) + '</b>';
+  const reason =
+    decision.final === 'sat'
+      ? 'Sattığın için fiyat değişimi seni etkilemedi.'
+      : decision.final === 'tut'
+        ? '₺' + formatNumber(CONFIG.stake, 0) + ' × ' + html
+        : '₺' + formatNumber(CONFIG.stake + CONFIG.addAmount, 0) + ' × ' + html;
   return (
     '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:22px">' +
     trialProgressHtml() +
@@ -198,19 +199,20 @@ function stressHtml() {
 
 // Anlama kontrolü: yanlışta açıklama gösterilir ve aynı soru tekrar sorulur
 function quizHtml() {
-  var comprehension = state.comprehension,
-    question = comprehensionQuestionAt(comprehension.i),
-    html =
-      '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:24px"><div class="muted small-text" style="font-weight:700">Kısa kontrol · ' +
-      (comprehension.i + 1) +
-      ' / ' +
-      COMPREHENSION_POOLS.length +
-      '</div><h1 style="font-size:24px;margin:10px 0 14px">' +
-      escapeHtml(question.q) +
-      '</h1>';
+  const comprehension = state.comprehension;
+  const question = comprehensionQuestionAt(comprehension.i);
+  let html =
+    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:24px"><div class="muted small-text" style="font-weight:700">Kısa kontrol · ' +
+    (comprehension.i + 1) +
+    ' / ' +
+    COMPREHENSION_POOLS.length +
+    '</div><h1 style="font-size:24px;margin:10px 0 14px">' +
+    escapeHtml(question.q) +
+    '</h1>';
   html += question.o
     .map(function (item, index) {
-      var scrollTop = comprehension.sel === index ? (index === question.a ? ' is-correct' : ' is-wrong') : '';
+      const scrollTop =
+        comprehension.sel === index ? (index === question.a ? ' is-correct' : ' is-wrong') : '';
       return (
         '<button class="option' +
         scrollTop +
@@ -237,8 +239,8 @@ function quizHtml() {
 }
 
 export function renderTrial() {
-  var trialState = state.trial,
-    trial = currentTrial();
+  const trialState = state.trial;
+  const trial = currentTrial();
   if (trialState.phase === 'ready')
     return (
       '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">1. bölüm</div><h1>Hazırsın</h1><p>Şimdi ' +

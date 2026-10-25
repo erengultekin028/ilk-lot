@@ -12,8 +12,8 @@ import { TRIAL_SETS } from '../models/trial-generator.js';
 // Üstte 3 satırlık özet; altta açılır ayrıntılar; indirilebilir metin; onay kutusu. Hipotez ve müdahale burada AÇIKLANMAZ
 // (bunun yerine "bazı ayrıntılar çalışmanın sonunda açıklanacak" denir ve bilgilendirmede tam açıklama yapılır).
 export function consentField(key, plain) {
-  var value = key === 'contact' ? CONFIG.contact : CONFIG.consentInfo[key],
-    unfilled = /^\[DOLDUR|ornek\.edu\.tr/.test(value || '');
+  const value = key === 'contact' ? CONFIG.contact : CONFIG.consentInfo[key];
+  const unfilled = /^\[DOLDUR|ornek\.edu\.tr/.test(value || '');
   return plain
     ? value
     : unfilled
@@ -23,11 +23,11 @@ export function consentField(key, plain) {
 
 // Yazı boyutu seçici (onam ekranı, kod ekranı ve menüde). Tercih bu cihazda saklanır; kayda yalnızca seçim olayı yazılır
 function consentSections(plain) {
-  var handler = function (key) {
-      return consentField(key, plain);
-    },
-    nextDay = TRIAL_SETS.X.length + TRIAL_SETS.Y.length,
-    innerSimulationMinutesText = simulationMinutesText();
+  const handler = function (key) {
+    return consentField(key, plain);
+  };
+  const nextDay = TRIAL_SETS.X.length + TRIAL_SETS.Y.length;
+  const innerSimulationMinutesText = simulationMinutesText();
   return [
     [
       'amac',
@@ -106,7 +106,7 @@ function consentSections(plain) {
 }
 
 export function consentText() {
-  var html =
+  let html =
     'İLK LOT ARAŞTIRMASI\nGönüllü katılım ve bilgilendirme metni (sürüm ' +
     CONSENT_VERSION +
     ')\n' +
@@ -120,25 +120,25 @@ export function consentText() {
 
 export function renderConsent() {
   state.consentStartedAt = state.consentStartedAt || Date.now();
-  var icon = function (price) {
-      return (
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-        price +
-        '</svg>'
-      );
-    },
-    sum = function (i, value, data) {
-      return (
-        '<div class="consent-summary">' +
-        icon(i) +
-        '<div><b>' +
-        value +
-        '</b><span>' +
-        data +
-        '</span></div></div>'
-      );
-    },
-    nextDay = TRIAL_SETS.X.length + TRIAL_SETS.Y.length;
+  const icon = function (value) {
+    return (
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      value +
+      '</svg>'
+    );
+  };
+  const sum = function (i, value, data) {
+    return (
+      '<div class="consent-summary">' +
+      icon(i) +
+      '<div><b>' +
+      value +
+      '</b><span>' +
+      data +
+      '</span></div></div>'
+    );
+  };
+  const nextDay = TRIAL_SETS.X.length + TRIAL_SETS.Y.length;
   return (
     '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:8px"><h1 style="font-size:28px;margin:4px 0 6px">Katılmadan önce, kısaca</h1><p class="muted" style="margin:0 0 10px">Bu bir üniversite araştırması. Üç şeyi bilmen yeterli:</p><div class="font-size-section">' +
     fontSizeHtml() +

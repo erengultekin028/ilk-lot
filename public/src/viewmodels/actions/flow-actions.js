@@ -40,7 +40,7 @@ export const flowActions = {
     state.stage = 'code';
     render();
     setTimeout(function () {
-      var codeInputElement = byId('code-input');
+      const codeInputElement = byId('code-input');
       if (codeInputElement) codeInputElement.focus();
     }, 50);
   },
@@ -64,7 +64,7 @@ export const flowActions = {
     render();
   },
   submitCode: function () {
-    var codeInputElement = byId('code-input');
+    const codeInputElement = byId('code-input');
     state.codeInput = codeInputElement ? codeInputElement.value : state.codeInput;
     state.busy = true;
     render();
@@ -92,11 +92,11 @@ export const flowActions = {
       }
     );
   },
-  setDemographic: function (value) {
-    var price = value.split('|'),
-      key = price[0],
-      position = DEMOGRAPHIC_OPTIONS[key][+price[1]],
-      demographics = state.demographics;
+  setDemographic: function (innerValue) {
+    const value = innerValue.split('|');
+    const key = value[0];
+    const position = DEMOGRAPHIC_OPTIONS[key][+value[1]];
+    const demographics = state.demographics;
     if (key === 'inv') {
       if (position === 'Hiç yapmadım')
         demographics.inv = demographics.inv[0] === 'Hiç yapmadım' ? [] : ['Hiç yapmadım'];
@@ -104,18 +104,18 @@ export const flowActions = {
         demographics.inv = demographics.inv.filter(function (item) {
           return item !== 'Hiç yapmadım';
         });
-        var j = demographics.inv.indexOf(position);
+        const j = demographics.inv.indexOf(position);
         j < 0 ? demographics.inv.push(position) : demographics.inv.splice(j, 1);
       }
     } else demographics[key] = demographics[key] === position ? null : position;
     render();
   },
   finishDemographics: async function () {
-    var demographics = state.demographics;
+    const demographics = state.demographics;
     if (!demographics.adult) return;
     if (demographics.adult === 'Hayır') {
-      var participantCode = state.participantCode,
-        group = state.group;
+      const participantCode = state.participantCode;
+      const group = state.group;
       // 18 yaş altı: hiçbir demografik veri saklanmaz, kayıt kapatılır
       rememberCode(null);
       state.allocationCache = null;
@@ -131,7 +131,7 @@ export const flowActions = {
       render();
       return;
     }
-    var demo = {
+    const demo = {
       age: demographics.age || null,
       gender: demographics.gender || null,
       field: demographics.field || null,
@@ -152,9 +152,9 @@ export const flowActions = {
     render();
   },
   answerTest: function (value) {
-    var testQuestion = state.testQuestion,
-      innerTestQuestionSequence = testQuestionSequence(testQuestion.kind),
-      innerItem = innerTestQuestionSequence[testQuestion.i];
+    const testQuestion = state.testQuestion;
+    const innerTestQuestionSequence = testQuestionSequence(testQuestion.kind);
+    const innerItem = innerTestQuestionSequence[testQuestion.i];
     if (innerItem === 'att') {
       state.attentionPassed = +value === ATTENTION_QUESTION[2];
       logEvent('attention_check', { pass: state.attentionPassed, choice: +value });
@@ -176,11 +176,11 @@ export const flowActions = {
     }
     testQuestion.i++;
     if (testQuestion.i >= innerTestQuestionSequence.length) {
-      var length = innerTestQuestionSequence.filter(function (item) {
-          return item !== 'att';
-        }).length,
-        sc = Math.round((testQuestion.sc / length) * 100),
-        map = {};
+      const length = innerTestQuestionSequence.filter(function (item) {
+        return item !== 'att';
+      }).length;
+      const sc = Math.round((testQuestion.sc / length) * 100);
+      const map = {};
       if (testQuestion.kind === 'pre') {
         state.preTest = sc;
         state.preTestBigThree = Math.round(((testQuestion.sc3 || 0) / 3) * 100);
@@ -225,8 +225,8 @@ export const flowActions = {
     startTrial();
   },
   answerQuiz: function (value) {
-    var comprehension = state.comprehension,
-      question = comprehensionQuestionAt(comprehension.i);
+    const comprehension = state.comprehension;
+    const question = comprehensionQuestionAt(comprehension.i);
     if (comprehension.sel === question.a) return;
     value = +value;
     if (comprehension.first[comprehension.i] == null)
@@ -237,7 +237,7 @@ export const flowActions = {
     render();
   },
   nextQuiz: function () {
-    var comprehension = state.comprehension;
+    const comprehension = state.comprehension;
     logEvent('comprehension', {
       q: comprehension.i,
       form: (comprehension.f || [])[comprehension.i] || 0,
@@ -260,7 +260,7 @@ export const flowActions = {
     createSummaryCard();
   },
   submitPurposeGuess: function () {
-    var group = (byId('purpose-guess') || {}).value || '';
+    const group = (byId('purpose-guess') || {}).value || '';
     state.purposeGuess = group.trim().slice(0, 400);
     logEvent('purpose_guess', { len: state.purposeGuess.length });
     participantRepository.saveP(state.participantCode, { guess: state.purposeGuess }).catch(function () {});
@@ -277,8 +277,8 @@ export const flowActions = {
   },
   nextTrial: advanceAfterOutcome,
   answerStress: function (innerValue) {
-    var stressKey = state.stressKey,
-      value = +innerValue || null;
+    const stressKey = state.stressKey;
+    const value = +innerValue || null;
     state.pulses[stressKey] = { v: value, ms: Date.now() - (state.stressStartedAt || Date.now()) };
     logEvent('stress_rating', { block: stressKey, value: value, skipped: !value });
     if (stressKey === 'b_pre') {
@@ -302,16 +302,16 @@ export const flowActions = {
     saveSnapshot();
     endSession();
   },
-  pickFeedbackAnswer: function (value) {
-    var price = String(value).split('|');
+  pickFeedbackAnswer: function (innerValue) {
+    const value = String(innerValue).split('|');
     if (
       !PILOT_FEEDBACK_QUESTIONS.some(function (item) {
-        return item[0] === price[0] && item[2].indexOf(price[1]) >= 0;
+        return item[0] === value[0] && item[2].indexOf(value[1]) >= 0;
       })
     )
       return;
     state.feedbackDraft = state.feedbackDraft || {};
-    state.feedbackDraft[price[0]] = state.feedbackDraft[price[0]] === price[1] ? null : price[1];
+    state.feedbackDraft[value[0]] = state.feedbackDraft[value[0]] === value[1] ? null : value[1];
     render();
   },
   sendFeedback: function () {

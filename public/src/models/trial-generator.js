@@ -7,16 +7,16 @@ import { hashSeed, random, randomBetween, rngState, shuffleArray } from '../util
 import { CRISIS_HEADLINES, NORMAL_HEADLINES, SECTORS, TASK_STOCKS } from '../constants/stimulus-content.js';
 
 function makePricePath(kind, last5, startPrice) {
-  var items = [startPrice],
-    i,
-    base = startPrice;
+  const items = [startPrice];
+  let i;
+  let base = startPrice;
   // İlk 25 gün: sakin dalgalanma
   for (i = 1; i < 25; i++) {
     base *= 1 + (random() - 0.5) * 0.022;
     items.push(base);
   }
   // Son 5 gün: istenen toplam değişim; sert düşüşte bir gün daha büyük pay alır
-  var width = kind === 'kriz' ? [0.12, 0.18, 0.38, 0.2, 0.12] : [0.2, 0.2, 0.2, 0.2, 0.2];
+  const width = kind === 'kriz' ? [0.12, 0.18, 0.38, 0.2, 0.12] : [0.2, 0.2, 0.2, 0.2, 0.2];
   for (i = 0; i < 5; i++) {
     base *= Math.pow(1 + last5, width[i]) * (1 + (random() - 0.5) * (kind === 'kriz' ? 0.004 : 0.008));
     items.push(base);
@@ -34,22 +34,22 @@ const PAIR_PARAMS = (function () {
 
 function buildTrialSet(name) {
   rngState.main = hashSeed('ilklot-set6-' + name);
-  var items = [],
-    letters = (name === 'X' ? 'ABCDEF' : 'GHJKLM').split(''),
-    innerShuffleArray = shuffleArray(SECTORS.slice()),
-    shuffleArray2 = shuffleArray(CRISIS_HEADLINES.slice()),
-    shuffleArray3 = shuffleArray(NORMAL_HEADLINES.slice()),
-    key = 0,
-    xValue = name === 'X';
+  const items = [];
+  const letters = (name === 'X' ? 'ABCDEF' : 'GHJKLM').split('');
+  const innerShuffleArray = shuffleArray(SECTORS.slice());
+  const shuffleArray2 = shuffleArray(CRISIS_HEADLINES.slice());
+  const shuffleArray3 = shuffleArray(NORMAL_HEADLINES.slice());
+  let key = 0;
+  const xValue = name === 'X';
   function add(kind, position, crowd, sign, mag, news) {
-    var last5 = kind === 'kriz' ? -randomBetween(0.1, 0.16) : randomBetween(-0.03, 0.03),
-      profitLossPercent =
-        kind === 'kriz'
-          ? -randomBetween(0.12, 0.22)
-          : position === 'kar'
-            ? randomBetween(0.06, 0.14)
-            : -randomBetween(0.06, 0.14),
-      p0 = Math.round(randomBetween(20, 300) * 100) / 100;
+    const last5 = kind === 'kriz' ? -randomBetween(0.1, 0.16) : randomBetween(-0.03, 0.03);
+    const profitLossPercent =
+      kind === 'kriz'
+        ? -randomBetween(0.12, 0.22)
+        : position === 'kar'
+          ? randomBetween(0.06, 0.14)
+          : -randomBetween(0.06, 0.14);
+    const p0 = Math.round(randomBetween(20, 300) * 100) / 100;
     items.push({
       id: name + (items.length + 1),
       set: name,
@@ -65,8 +65,8 @@ function buildTrialSet(name) {
       sector: innerShuffleArray[key++],
     });
   }
-  var marketA = round2(randomBetween(2.5, 7.5)) / 100,
-    marketB = round2(randomBetween(2.5, 7.5)) / 100;
+  const marketA = round2(randomBetween(2.5, 7.5)) / 100;
+  const marketB = round2(randomBetween(2.5, 7.5)) / 100;
   [
     [true, 1, marketA],
     [true, -1, marketA],
@@ -79,10 +79,10 @@ function buildTrialSet(name) {
   add('normal', 'zarar', !xValue, xValue ? -1 : 1, PAIR_PARAMS.nz, xValue ? null : shuffleArray3[1]);
   shuffleArray(items);
   if (items[0].kind === 'kriz') {
-    var j = items.findIndex(function (item) {
+    const j = items.findIndex(function (item) {
       return item.kind === 'normal';
     });
-    var x = items[0];
+    const x = items[0];
     items[0] = items[j];
     items[j] = x;
   }
@@ -98,7 +98,7 @@ export const TRIAL_SETS = { X: buildTrialSet('X'), Y: buildTrialSet('Y') };
 
 // Hangi set önce: randomizasyon listesindeki "order" alanı (0: X→Y, 1: Y→X), gruplar içinde dengeli
 export function currentBlockTrials() {
-  var first = state.setOrder === 1 ? 'Y' : 'X';
+  const first = state.setOrder === 1 ? 'Y' : 'X';
   return state.block === 'post' ? TRIAL_SETS[first === 'X' ? 'Y' : 'X'] : TRIAL_SETS[first];
 }
 
@@ -141,7 +141,7 @@ export const PRACTICE_TRIALS = buildPracticeTrials();
 
 // Uyaran parmak izi: iki cihazda aynı çıkmalı (herkes aynı 16 anı görüyor mu?)
 export function stimulusFingerprint() {
-  var handler = function (trials) {
+  const handler = function (trials) {
     return trials.map(function (item) {
       return [item.kind, item.pos, item.crowd, item.out, item.pl, item.path[29]];
     });
@@ -152,6 +152,6 @@ export function stimulusFingerprint() {
 }
 
 export function lastWeekChangePercent(trial) {
-  var path = trial.path;
+  const path = trial.path;
   return (path[path.length - 1] / path[path.length - 6] - 1) * 100;
 }

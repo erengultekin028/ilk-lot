@@ -11,14 +11,14 @@ import { CODE_PATTERN, buildAllocationList, rememberCode } from '../utils/partic
 //  - firebase: CFG.firebase doluysa ve sayfa kendi sunucunda yayındaysa. Gerçek pilot için.
 // Uygulamanın geri kalanı hangi modda olduğunu bilmez; sadece Store'u çağırır.
 export const participantRepository = (function () {
-  var mode = 'local',
-    feedback = null,
-    ready = false,
-    adminUser = null;
+  let mode = 'local';
+  let feedback = null;
+  let ready = false;
+  let adminUser = null;
   // Bazı mobil görünümler tarayıcı deposunu tamamen engelliyor. O durumda demo, bellekte çalışır
   // (sayfa kapanınca silinir). Eskiden bu durumda kod listesi hiç oluşmuyor ve hiçbir kod kabul edilmiyordu.
-  var innerMap = {},
-    memMode = false;
+  const innerMap = {};
+  let memMode = false;
   try {
     localStorage.setItem('ilklot:_t', '1');
     localStorage.removeItem('ilklot:_t');
@@ -33,8 +33,8 @@ export const participantRepository = (function () {
     }
     try {
       if (value === undefined) {
-        var result = localStorage.getItem('ilklot:' + key);
-        return result ? JSON.parse(result) : null;
+        const storedValue = localStorage.getItem('ilklot:' + key);
+        return storedValue ? JSON.parse(storedValue) : null;
       }
       localStorage.setItem('ilklot:' + key, JSON.stringify(value));
       return true;
@@ -44,7 +44,7 @@ export const participantRepository = (function () {
   }
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
-      var element = document.createElement('script');
+      const element = document.createElement('script');
       element.src = src;
       element.onload = resolve;
       element.onerror = reject;
@@ -52,7 +52,7 @@ export const participantRepository = (function () {
     });
   }
   async function initFb() {
-    var text = 'https://www.gstatic.com/firebasejs/10.12.2/';
+    const text = 'https://www.gstatic.com/firebasejs/10.12.2/';
     await loadScript(text + 'firebase-app-compat.js');
     await loadScript(text + 'firebase-auth-compat.js');
     await loadScript(text + 'firebase-firestore-compat.js');
@@ -60,7 +60,7 @@ export const participantRepository = (function () {
     // Katılımcılar anonim oturum açar: kimlik bilgisi toplanmaz ama güvenlik kuralları çalışır
     if (!firebase.auth().currentUser) await firebase.auth().signInAnonymously();
     feedback = { db: firebase.firestore(), auth: firebase.auth() };
-    var currentUser = feedback.auth.currentUser;
+    const currentUser = feedback.auth.currentUser;
     adminUser = currentUser && !currentUser.isAnonymous ? currentUser.email : null;
   }
   return {
@@ -92,7 +92,7 @@ export const participantRepository = (function () {
       }
       // Demo kolaylığı: yerel modda liste yoksa 40 kişilik örnek liste oluştur
       // Eski biçimdeki (P001-ABC) demo listesi varsa yenisiyle değiştir
-      var alert = mode === 'local' ? list('alloc') : null;
+      const alert = mode === 'local' ? list('alloc') : null;
       if (
         mode === 'local' &&
         (!alert ||
@@ -107,14 +107,14 @@ export const participantRepository = (function () {
     },
     getAlloc: async function (code) {
       if (mode === 'firebase') {
-        var data = await feedback.db.collection('allocations').doc(code).get();
+        const data = await feedback.db.collection('allocations').doc(code).get();
         return data.exists ? data.data() : null;
       }
       return (list('alloc') || {})[code] || null;
     },
     getP: async function (code) {
       if (mode === 'firebase') {
-        var data = await feedback.db.collection('participants').doc(code).get();
+        const data = await feedback.db.collection('participants').doc(code).get();
         return data.exists ? data.data() : null;
       }
       return list('p:' + code);
@@ -123,10 +123,10 @@ export const participantRepository = (function () {
       if (DEMO_MODE) return;
       if (mode === 'firebase')
         return feedback.db.collection('participants').doc(code).set(data, { merge: true });
-      var current = list('p:' + code) || {};
-      for (var key in data) current[key] = data[key];
+      const current = list('p:' + code) || {};
+      for (const key in data) current[key] = data[key];
       list('p:' + code, current);
-      var level = list('plist') || [];
+      const level = list('plist') || [];
       if (level.indexOf(code) < 0) {
         level.push(code);
         list('plist', level);
@@ -135,20 +135,20 @@ export const participantRepository = (function () {
     addEvents: async function (code, evs) {
       if (DEMO_MODE || !evs.length) return;
       if (mode === 'firebase') {
-        var other = feedback.db.batch(),
-          color = feedback.db.collection('participants').doc(code).collection('events');
+        const other = feedback.db.batch();
+        const color = feedback.db.collection('participants').doc(code).collection('events');
         evs.forEach(function (item) {
           other.set(color.doc(item.session + '-' + String(item.n).padStart(6, '0')), item);
         });
         return other.commit();
       }
-      var current = list('ev:' + code) || [];
+      const current = list('ev:' + code) || [];
       if (list('ev:' + code, current.concat(evs)) === null) throw new Error('Yerel depolama dolu');
     },
     // ── Araştırmacı işlemleri ──
     adminLogin: async function (email, pw) {
       if (mode !== 'firebase') return;
-      var value = await feedback.auth.signInWithEmailAndPassword(email, pw);
+      const value = await feedback.auth.signInWithEmailAndPassword(email, pw);
       adminUser = value.user.email;
     },
     adminLogout: async function () {
@@ -159,8 +159,8 @@ export const participantRepository = (function () {
     },
     listAlloc: async function () {
       if (mode === 'firebase') {
-        var quantity = await feedback.db.collection('allocations').get(),
-          map = {};
+        const quantity = await feedback.db.collection('allocations').get();
+        const map = {};
         quantity.forEach(function (item) {
           map[item.id] = item.data();
         });
@@ -170,8 +170,8 @@ export const participantRepository = (function () {
     },
     saveAlloc: async function (map) {
       if (mode === 'firebase') {
-        var keys = Object.keys(map);
-        for (var i = 0; i < keys.length; i += 400) {
+        const keys = Object.keys(map);
+        for (let i = 0; i < keys.length; i += 400) {
           var other = feedback.db.batch();
           keys.slice(i, i + 400).forEach(function (item) {
             other.set(feedback.db.collection('allocations').doc(item), map[item]);
@@ -184,8 +184,8 @@ export const participantRepository = (function () {
     },
     listP: async function () {
       if (mode === 'firebase') {
-        var quantity = await feedback.db.collection('participants').get(),
-          items = [];
+        const quantity = await feedback.db.collection('participants').get();
+        const items = [];
         quantity.forEach(function (item) {
           items.push(item.data());
         });
@@ -199,8 +199,8 @@ export const participantRepository = (function () {
     },
     listEvents: async function (code) {
       if (mode === 'firebase') {
-        var quantity = await feedback.db.collection('participants').doc(code).collection('events').get(),
-          items = [];
+        const quantity = await feedback.db.collection('participants').doc(code).collection('events').get();
+        const items = [];
         quantity.forEach(function (item) {
           items.push(item.data());
         });
@@ -212,8 +212,8 @@ export const participantRepository = (function () {
     // (politika A, soft delete): kayıt "withdrawn:true + withdrawnAt" ile işaretlenir ve analizden/dışa aktarmadan çıkarılır.
     withdraw: async function (code, grp, extra) {
       if (DEMO_MODE) return;
-      var tomb = { code: code, grp: grp, withdrawn: true, withdrawnAt: new Date().toISOString() };
-      for (var key in extra || {}) tomb[key] = extra[key];
+      const tomb = { code: code, grp: grp, withdrawn: true, withdrawnAt: new Date().toISOString() };
+      for (const key in extra || {}) tomb[key] = extra[key];
       if (mode === 'firebase')
         return feedback.db.collection('participants').doc(code).set(tomb, { merge: true });
       try {
@@ -226,16 +226,16 @@ export const participantRepository = (function () {
     // Sistem testi: depolama, bağlantı, yetki, olay kuyruğu. Katılımcı yazma yetkisi gerçek bir kod gerektirdiği için
     // Firebase'de yazma testi sadece araştırmacı girişliyken yapılır (selftest/yazma yazılır ve okunur; politika A'da silme yolu olmadığı için belge silinmez, her testte üzerine yazılır).
     selfTest: async function () {
-      var innerItems = [],
-        isValid = function (items, data) {
-          innerItems.push({ ad: items, ok: true, d: data || '' });
-        },
-        no = function (items, data) {
-          innerItems.push({ ad: items, ok: false, d: data || '' });
-        },
-        bil = function (items, data) {
-          innerItems.push({ ad: items, ok: null, d: data || '' });
-        };
+      const innerItems = [];
+      const isValid = function (items, data) {
+        innerItems.push({ ad: items, ok: true, d: data || '' });
+      };
+      const no = function (items, data) {
+        innerItems.push({ ad: items, ok: false, d: data || '' });
+      };
+      const bil = function (items, data) {
+        innerItems.push({ ad: items, ok: null, d: data || '' });
+      };
       if (memMode)
         no(
           'Tarayıcı deposu',
@@ -244,9 +244,9 @@ export const participantRepository = (function () {
       else {
         try {
           localStorage.setItem('ilklot:_st', '1');
-          var value = localStorage.getItem('ilklot:_st');
+          const storedValue = localStorage.getItem('ilklot:_st');
           localStorage.removeItem('ilklot:_st');
-          value === '1'
+          storedValue === '1'
             ? isValid('Tarayıcı deposu', 'yazma ve okuma çalışıyor')
             : no('Tarayıcı deposu', 'yazılan değer okunamadı');
         } catch (error) {
@@ -263,18 +263,18 @@ export const participantRepository = (function () {
           'CFG.firebase dolu ama bağlanılamadı; yerel kayda düşüldü. Ağı, apiKey/projectId değerlerini ve Authentication > Authorized domains listesini kontrol et.'
         );
       if (mode === 'firebase') {
-        var startTime = Date.now();
+        const timestamp = Date.now();
         try {
           await feedback.db.collection('allocations').doc('__selftest__').get();
-          isValid('Firestore okuma ve anonim giriş', 'erişildi (' + (Date.now() - startTime) + ' ms)');
+          isValid('Firestore okuma ve anonim giriş', 'erişildi (' + (Date.now() - timestamp) + ' ms)');
         } catch (error) {
           no('Firestore okuma', (error && error.code) || String(error));
         }
         if (adminUser) {
           try {
-            var reference = feedback.db.collection('selftest').doc('yazma');
+            const reference = feedback.db.collection('selftest').doc('yazma');
             await reference.set({ t: Date.now() });
-            var reader = await reference.get();
+            const reader = await reference.get();
             reader.exists
               ? isValid('Firestore yazma (araştırmacı)', 'yazma ve okuma başarılı')
               : no('Firestore yazma', 'yazılan kayıt okunamadı');
@@ -289,7 +289,7 @@ export const participantRepository = (function () {
       } else {
         try {
           list('p:__selftest__', { t: Date.now() });
-          var quantity = list('p:__selftest__');
+          const quantity = list('p:__selftest__');
           if (memMode) delete innerMap['p:__selftest__'];
           else localStorage.removeItem('ilklot:p:__selftest__');
           quantity && quantity.t
@@ -308,7 +308,7 @@ export const participantRepository = (function () {
       return innerItems;
     },
     resetLocal: function () {
-      for (var marketChange in innerMap) delete innerMap[marketChange];
+      for (const marketChange in innerMap) delete innerMap[marketChange];
       try {
         Object.keys(localStorage)
           .filter(function (item) {

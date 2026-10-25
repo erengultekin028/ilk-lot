@@ -11,8 +11,8 @@ import { participantRepository } from '../repositories/participant-repository.js
 
 // ═════════════════ ANLIK GÖRÜNTÜ VE DEVAM ═════════════════
 function createSnapshot() {
-  var simulation = state.simulation;
-  var quickMode = QUICK_TEST_MODE ? 1 : 0;
+  const simulation = state.simulation;
+  const quickMode = QUICK_TEST_MODE ? 1 : 0;
   if (typeof trackTabTime === 'function') trackTabTime();
   return {
     quick: quickMode,
@@ -51,7 +51,7 @@ function createSnapshot() {
 
 export async function saveSnapshot() {
   if (DEMO_MODE || state.practice || state.freePlay || !state.participantCode) return;
-  var map = {};
+  const map = {};
   map['sess_' + CONFIG.session] = createSnapshot();
   map.updatedAt = new Date().toISOString();
   map.lastVersion = APP_VERSION;
@@ -65,9 +65,22 @@ export async function saveSnapshot() {
 // Uyaranlar tohumdan sabit olduğu için sadece kararlar ve sıradaki deneme numarası geri yüklenir
 // Kayıtlı anlık görüntüdeki anahtar (veri sözleşmesi, değişmez) -> durum nesnesindeki alan adı
 const PERSISTED_STATE_KEYS = {
-  phase: 'phase', block: 'block', ti: 'trialIndex', dec: 'decisions', total: 'totalDecisions', pulses: 'pulses',
-  practiced: 'practiceDone', cd: 'cooldownStats', ended: 'ended', endedAt: 'endedAt', guess: 'purposeGuess',
-  tourSeen: 'seenTourSteps', comp: 'comprehension', helpN: 'helpOpenCount', tabT: 'tabTimes', readMs: 'readingMs',
+  phase: 'phase',
+  block: 'block',
+  ti: 'trialIndex',
+  dec: 'decisions',
+  total: 'totalDecisions',
+  pulses: 'pulses',
+  practiced: 'practiceDone',
+  cd: 'cooldownStats',
+  ended: 'ended',
+  endedAt: 'endedAt',
+  guess: 'purposeGuess',
+  tourSeen: 'seenTourSteps',
+  comp: 'comprehension',
+  helpN: 'helpOpenCount',
+  tabT: 'tabTimes',
+  readMs: 'readingMs',
 };
 
 export function restoreSnapshot(snapshot) {
@@ -91,8 +104,8 @@ export function restoreSnapshot(snapshot) {
 // ═════════════════ GİRİŞ AKIŞI ═════════════════
 // Sıradaki oturum: bitmemiş ilk oturum. Böylece tek link bütün oturumlar için yeterli
 export function findNextSession(participant) {
-  for (var i = 1; i <= CONFIG.totalSessions; i++) {
-    var snapshot = participant['sess_' + i];
+  for (let i = 1; i <= CONFIG.totalSessions; i++) {
+    const snapshot = participant['sess_' + i];
     if (!snapshot || !snapshot.ended) return { n: String(i), prev: participant['sess_' + (i - 1)] };
   }
   return null;
@@ -105,93 +118,93 @@ export function gapLeftMs(previousSession) {
 
 // Katılımcı özeti: her satır bir katılımcı. pre = 1. bölüm, post = 3. bölüm (VERI_SOZLUGU.md)
 export function summarizeSnapshot(code, innerGroup, session, snapshot) {
-  var innerData = snapshot.dec || [],
-    cd = snapshot.cd || { n: 0, v: 0, g: 0 },
-    pulses = snapshot.pulses || {},
-    sim = snapshot.sim || { trades: [] },
-    trials = sim.trades || [],
-    bounds = function (other) {
-      return innerData.filter(function (item) {
-        return item.block === other;
-      });
-    },
-    rate = function (items, handler, group) {
-      items = items.filter(handler);
-      return items.length ? round2(items.filter(group).length / items.length) : '';
-    },
-    isSell = function (data) {
-      return data.final === 'sat';
-    },
-    classNames = function (data) {
-      return data.kind === 'kriz' && data.pos === 'zarar';
-    },
-    med = function (items) {
-      items = items
-        .filter(function (item) {
-          return item != null;
-        })
-        .sort(function (left, right) {
-          return left - right;
-        });
-      return items.length
-        ? items.length % 2
-          ? items[(items.length - 1) / 2]
-          : Math.round((items[items.length / 2 - 1] + items[items.length / 2]) / 2)
-        : '';
-    },
-    blk = function (other) {
-      var items = bounds(other),
-        group = rate(
-          items,
-          function (data) {
-            return data.kind === 'normal' && data.pos === 'kar';
-          },
-          isSell
-        ),
-        level = rate(
-          items,
-          function (data) {
-            return data.kind === 'normal' && data.pos === 'zarar';
-          },
-          isSell
-        );
-      return [
-        rate(items, classNames, isSell),
-        rate(
-          items,
-          function (data) {
-            return data.kind === 'kriz';
-          },
-          isSell
-        ),
-        group,
-        level,
-        group !== '' && level !== '' ? round2(group - level) : '',
-        rate(
-          items,
-          function (data) {
-            return data.kind === 'kriz';
-          },
-          function (data) {
-            return data.final === 'al';
-          }
-        ),
-        med(
-          items
-            .filter(function (item) {
-              return !item.hid;
-            })
-            .map(function (item) {
-              return item.rtFirst;
-            })
-        ),
-      ];
-    },
-    pre = blk('pre'),
-    post = blk('post'),
-    sells = trials.filter(function (item) {
-      return item.side === 'S';
+  const innerData = snapshot.dec || [];
+  const cd = snapshot.cd || { n: 0, v: 0, g: 0 };
+  const pulses = snapshot.pulses || {};
+  const sim = snapshot.sim || { trades: [] };
+  const trials = sim.trades || [];
+  const bounds = function (other) {
+    return innerData.filter(function (item) {
+      return item.block === other;
     });
+  };
+  const rate = function (items, handler, group) {
+    items = items.filter(handler);
+    return items.length ? round2(items.filter(group).length / items.length) : '';
+  };
+  const isSell = function (data) {
+    return data.final === 'sat';
+  };
+  const classNames = function (data) {
+    return data.kind === 'kriz' && data.pos === 'zarar';
+  };
+  const med = function (items) {
+    items = items
+      .filter(function (item) {
+        return item != null;
+      })
+      .sort(function (left, right) {
+        return left - right;
+      });
+    return items.length
+      ? items.length % 2
+        ? items[(items.length - 1) / 2]
+        : Math.round((items[items.length / 2 - 1] + items[items.length / 2]) / 2)
+      : '';
+  };
+  const blk = function (other) {
+    const items = bounds(other);
+    const group = rate(
+      items,
+      function (data) {
+        return data.kind === 'normal' && data.pos === 'kar';
+      },
+      isSell
+    );
+    const level = rate(
+      items,
+      function (data) {
+        return data.kind === 'normal' && data.pos === 'zarar';
+      },
+      isSell
+    );
+    return [
+      rate(items, classNames, isSell),
+      rate(
+        items,
+        function (data) {
+          return data.kind === 'kriz';
+        },
+        isSell
+      ),
+      group,
+      level,
+      group !== '' && level !== '' ? round2(group - level) : '',
+      rate(
+        items,
+        function (data) {
+          return data.kind === 'kriz';
+        },
+        function (data) {
+          return data.final === 'al';
+        }
+      ),
+      med(
+        items
+          .filter(function (item) {
+            return !item.hid;
+          })
+          .map(function (item) {
+            return item.rtFirst;
+          })
+      ),
+    ];
+  };
+  const pre = blk('pre');
+  const post = blk('post');
+  const sells = trials.filter(function (item) {
+    return item.side === 'S';
+  });
   return [
     snapshot.v || '',
     code,
@@ -227,7 +240,7 @@ export function summarizeSnapshot(code, innerGroup, session, snapshot) {
     }).length,
     // Satış gerekçeleri: "Korktum:2|Haber yüzünden:1" biçiminde
     SELL_REASONS.map(function (innerItem) {
-      var length = sells.filter(function (item) {
+      const length = sells.filter(function (item) {
         return item.why === innerItem;
       }).length;
       return length ? innerItem + ':' + length : '';

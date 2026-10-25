@@ -6,6 +6,6 @@ export function byId(id) {
 }
 
 export function setText(id, text) {
-  var element = byId(id);
+  const element = byId(id);
   if (element && element.textContent !== text) element.textContent = text;
 }

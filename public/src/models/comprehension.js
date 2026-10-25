@@ -5,12 +5,12 @@ import { COMPREHENSION_POOLS } from '../constants/comprehension-questions.js';
 
 // Her havuzdan bir soru; aynı tarayıcıda bir önceki oturumda gösterilen soru art arda gelmez (depolama kapalıysa saf rastgele)
 export function newComprehensionSelection() {
-  var items = [];
+  let items = [];
   try {
     items = JSON.parse(localStorage.getItem('ilklot_comp_son') || '[]');
   } catch (error) {}
-  var handler = COMPREHENSION_POOLS.map(function (item, index) {
-    var key;
+  const handler = COMPREHENSION_POOLS.map(function (item, index) {
+    let key;
     do {
       key = Math.floor(Math.random() * item.length);
     } while (item.length > 1 && key === items[index]);
@@ -23,6 +23,6 @@ export function newComprehensionSelection() {
 }
 
 export function comprehensionQuestionAt(index) {
-  var handler = (state.comprehension && state.comprehension.f) || [];
+  const handler = (state.comprehension && state.comprehension.f) || [];
   return COMPREHENSION_POOLS[index][handler[index] || 0];
 }

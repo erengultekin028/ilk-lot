@@ -66,7 +66,7 @@ export const QUICK_TEST_MODE = (function () {
   if (CONFIG.firebase) return false;
   if (QUERY_PARAMS.get('hizli') === '1') return true;
   try {
-    var value = +localStorage.getItem('ilklot:quick');
+    const value = +localStorage.getItem('ilklot:quick');
     return !!value && Date.now() - value < 1800000;
   } catch (error) {
     return false;

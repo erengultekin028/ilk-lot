@@ -14,7 +14,7 @@ import { TRIAL_SETS } from '../models/trial-generator.js';
 // veri toplama bitene kadar bilerek gösterilmez; ara sonuçlara bakmak analiz yanlılığı yaratır.
 // Anlık görüntüden "şu an nerede" metni
 function stageDescription(snapshot) {
-  var length = TRIAL_SETS.X.length;
+  const length = TRIAL_SETS.X.length;
   if (snapshot.phase === 'sim')
     return snapshot.sim
       ? 'simülatör, gün ' + snapshot.sim.tick + '/' + CONFIG.simTicks
@@ -31,42 +31,42 @@ export async function loadDashboard() {
   state.dashboardBusy = true;
   render();
   try {
-    var participants = await participantRepository.listP(),
-      alert = await participantRepository.listAlloc(),
-      now = Date.now(),
-      totalSessions = CONFIG.totalSessions;
-    var isQuick = function (price) {
-      for (var j = 1; j <= totalSessions; j++) {
-        var startValue = price['sess_' + j];
+    const participants = await participantRepository.listP();
+    const allocations = await participantRepository.listAlloc();
+    const timestamp = Date.now();
+    const totalSessions = CONFIG.totalSessions;
+    const isQuick = function (value) {
+      for (let j = 1; j <= totalSessions; j++) {
+        const startValue = value['sess_' + j];
         if (startValue && startValue.quick) return true;
       }
       return false;
     };
-    var tmode = participants.filter(function (item) {
+    const tmode = participants.filter(function (item) {
       return item.consentAt && !item.withdrawn && isQuick(item);
     }).length; // hızlı test modu oturumları sayılmaz (analizden de çıkarılır)
-    var real = participants.filter(function (item) {
-        return item.consentAt && !item.withdrawn && !isQuick(item);
-      }),
-      sess = [],
-      flags = [],
-      days = {},
-      act = 0,
-      done = 0,
-      map = { A: 0, B: 0 },
-      live = [];
-    for (var i2 = 1; i2 <= totalSessions; i2++) sess.push({ c: 0, r: 0 });
+    const real = participants.filter(function (item) {
+      return item.consentAt && !item.withdrawn && !isQuick(item);
+    });
+    const sess = [];
+    const flags = [];
+    const days = {};
+    let act = 0;
+    let done = 0;
+    const map = { A: 0, B: 0 };
+    const live = [];
+    for (let i2 = 1; i2 <= totalSessions; i2++) sess.push({ c: 0, r: 0 });
     real.forEach(function (innerItem) {
       map[innerItem.grp] = (map[innerItem.grp] || 0) + 1;
-      var all = true;
-      for (var i = 1; i <= totalSessions; i++) {
+      let all = true;
+      for (let i = 1; i <= totalSessions; i++) {
         var snapshot = innerItem['sess_' + i];
         if (snapshot && snapshot.ended) sess[i - 1].c++;
         else {
           all = false;
           if (snapshot) {
             sess[i - 1].r++;
-            var age = now - new Date(snapshot.updatedAt || innerItem.updatedAt || 0).getTime();
+            const age = timestamp - new Date(snapshot.updatedAt || innerItem.updatedAt || 0).getTime();
             if (age < 180000) act++;
             else if (age > 86400000)
               flags.push([innerItem.code, 'Oturum ' + i + ' yarıda kaldı (24 saatten fazla)']);
@@ -92,12 +92,12 @@ export async function loadDashboard() {
       if (all) done++;
       if (innerItem.attPass === false) flags.push([innerItem.code, 'Dikkat kontrolünü geçemedi']);
       if (all && innerItem.post == null) flags.push([innerItem.code, 'Son test eksik']);
-      var data = String(innerItem.consentAt).slice(0, 10);
+      const data = String(innerItem.consentAt).slice(0, 10);
       days[data] = (days[data] || 0) + 1;
     });
     state.dashboard = {
-      at: now,
-      codes: Object.keys(alert).length,
+      at: timestamp,
+      codes: Object.keys(allocations).length,
       cons: real.length,
       act: act,
       done: done,
@@ -124,9 +124,9 @@ export async function loadDashboard() {
 }
 
 function renderProgressRing(fraction) {
-  var result = 34,
-    value = 2 * Math.PI * result,
-    position = value * (1 - fraction);
+  const result = 34;
+  const value = 2 * Math.PI * result;
+  const position = value * (1 - fraction);
   return (
     '<svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="' +
     result +
@@ -143,7 +143,7 @@ function renderProgressRing(fraction) {
 }
 
 export function renderDashboard() {
-  var dashboard = state.dashboard;
+  const dashboard = state.dashboard;
   if (!dashboard)
     return section(
       'Canlı pano',
@@ -153,29 +153,29 @@ export function renderDashboard() {
         (state.dashboardBusy ? 'Yükleniyor…' : 'Panoyu yükle') +
         '</button>'
     );
-  var totalSessions = CONFIG.totalSessions,
-    cons = Math.max(1, dashboard.cons);
+  const totalSessions = CONFIG.totalSessions;
+  const cons = Math.max(1, dashboard.cons);
   // Günlük katılım: son 14 gün
-  var items = [],
-    today = new Date();
-  for (var i = 13; i >= 0; i--) {
-    var innerValue = new Date(today.getTime() - i * 86400000).toISOString().slice(0, 10);
-    items.push([innerValue, dashboard.days[innerValue] || 0]);
+  const items = [];
+  const today = new Date();
+  for (let i = 13; i >= 0; i--) {
+    const isoText = new Date(today.getTime() - i * 86400000).toISOString().slice(0, 10);
+    items.push([isoText, dashboard.days[isoText] || 0]);
   }
-  var max = Math.max.apply(
-      0,
-      items
-        .map(function (item) {
-          return item[1];
-        })
-        .concat([1])
-    ),
-    bw = 300 / 14;
-  var bars =
+  const max = Math.max.apply(
+    0,
+    items
+      .map(function (item) {
+        return item[1];
+      })
+      .concat([1])
+  );
+  const bw = 300 / 14;
+  const bars =
     '<svg viewBox="0 0 300 100" width="100%" role="img" aria-label="Son 14 günde onam veren katılımcı sayısı">' +
     items
       .map(function (item, index) {
-        var height = (item[1] / max) * 58;
+        const height = (item[1] / max) * 58;
         return (
           '<rect x="' +
           (index * bw + 3).toFixed(1) +
@@ -210,10 +210,10 @@ export function renderDashboard() {
       })
       .join('') +
     '</svg>';
-  var sideBar = dashboard.sess
+  const sideBar = dashboard.sess
     .map(function (item, index) {
-      var value = (item.c / cons) * 100,
-        result = (item.r / cons) * 100;
+      const value = (item.c / cons) * 100;
+      const result = (item.r / cons) * 100;
       return (
         '<div class="metric"><div class="metric-header"><span>Oturum ' +
         (index + 1) +
@@ -229,7 +229,7 @@ export function renderDashboard() {
       );
     })
     .join('');
-  var tabBar = dashboard.bal.A + dashboard.bal.B || 1;
+  const tabBar = dashboard.bal.A + dashboard.bal.B || 1;
   return section(
     'Canlı pano',
     '<div style="display:flex;align-items:center;gap:14px;margin:2px 0 14px">' +
@@ -331,7 +331,7 @@ export function renderDashboard() {
 export function dashboardAutoRefresh() {
   if (!state.dashboardAutoRefresh || state.stage !== 'admin' || state.dashboardBusy || !state.dashboard)
     return false;
-  var activeElement = document.activeElement;
+  const activeElement = document.activeElement;
   if (activeElement && /^(INPUT|TEXTAREA)$/.test(activeElement.tagName) && activeElement.type !== 'checkbox')
     return false;
   loadDashboard();

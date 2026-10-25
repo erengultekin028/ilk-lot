@@ -9,9 +9,9 @@ import { participantRepository } from '../repositories/participant-repository.js
 // Pilot geri bildirimi: hiçbiri seçilmeden gönderilirse atlama sayılır. Atlayan da bir daha sorulmaz.
 export function savePilotFeedback(skip) {
   if (!PILOT_MODE || !state.participantCode || state.pilotFeedback) return;
-  var data = state.feedbackDraft || {};
+  const data = state.feedbackDraft || {};
   if (!skip && !data.clear && !data.dur && !data.unease) skip = true;
-  var position = skip
+  const position = skip
     ? { skip: 1 }
     : { clear: data.clear ? +data.clear : null, dur: data.dur || null, unease: data.unease || null };
   position.at = new Date().toISOString();

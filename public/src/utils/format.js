@@ -21,7 +21,7 @@ export function directionClass(value) {
 
 // Yön sadece renkle değil işaretle de gösterilir (renk körü katılımcılar için)
 export function formatPercentChange(value) {
-  var rounded = round2(value);
+  const rounded = round2(value);
   return (rounded > 0 ? '▲ ' : rounded < 0 ? '▼ ' : '') + formatNumber(Math.abs(value)) + '%';
 }
 

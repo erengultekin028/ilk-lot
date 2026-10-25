@@ -10,9 +10,9 @@ const callbackParams = {
 // Ad önerisi sözlüğü: eski kısa ad -> varsayılan yeni ad (bağlam kuralları uygulanamadığında).
 const DEFAULTS = {
   a: 'items', b: 'other', c: 'value', d: 'data', e: 'element', f: 'handler', g: 'group', h: 'html', i: 'i', j: 'j', k: 'key',
-  l: 'level', m: 'simulation', n: 'count', o: 'position', p: 'price', q: 'quantity', r: 'result', s: 'text', t: 'value', u: 'unit',
+  l: 'level', m: 'simulation', n: 'count', o: 'position', p: 'value', q: 'quantity', r: 'result', s: 'text', t: 'value', u: 'unit',
   v: 'value', w: 'width', x: 'x', y: 'y', z: 'z', A: 'allocations', B: 'bounds', D: 'data', F: 'frame', H: 'height', I: 'index',
-  L: 'list', M: 'month', N: 'count', Q: 'question', S: 'sides', T: 'trials', W: 'width', X: 'xValue', Y: 'yValue',
+  L: 'items', M: 'month', N: 'count', Q: 'question', S: 'sides', T: 'trials', W: 'width', X: 'xValue', Y: 'yValue',
   ch: 'change', el: 'element', col: 'color', cx: 'centerX', cy: 'centerY', dc: 'decimals', hh: 'height', ks: 'keys', mx: 'max',
   mn: 'min', nn: 'next', od: 'order', ok: 'isValid', pc: 'percent', pd: 'padding', pl: 'profitLossPercent', ps: 'participants',
   pt: 'point', st: 'scrollTop', sn: 'snapshot', tr: 'trialState', up: 'isUp', w2: 'width', has: 'hasPosition', on: 'isOn', now: 'now',
@@ -46,6 +46,8 @@ function fromInit(init, nameOfTop, idNameOf) {
       if (['getElementById', 'querySelector'].includes(p)) return 'element';
       if (p === 'closest') return 'target';
       if (['slice', 'concat', 'filter', 'map', 'sort', 'reverse'].includes(p)) return fromInit(c.object, nameOfTop, idNameOf) ?? null;
+      const METHOD_RESULT = { getAlloc: 'allocation', getP: 'participant', listAlloc: 'allocations', listP: 'participants', listEvents: 'events', selfTest: 'results', getItem: 'storedValue', parse: 'parsed', querySelectorAll: 'elements', closest: 'target', now: 'timestamp', toISOString: 'isoText', stringify: 'json', getBoundingClientRect: 'rect' };
+      if (METHOD_RESULT[p]) return METHOD_RESULT[p];
       if (p === 'getContext') return 'context';
       if (p === 'createElement') return 'element';
       return null;

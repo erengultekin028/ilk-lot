@@ -14,8 +14,8 @@ import { PILOT_FEEDBACK_QUESTIONS } from '../constants/ui-constants.js';
 
 // ───────────────── Bitiş, son test, manipülasyon kontrolü, bilgilendirme ─────────────────
 export function renderEnd() {
-  var count = function (block) {
-    var decisions = state.decisions.filter(function (item) {
+  const count = function (block) {
+    const decisions = state.decisions.filter(function (item) {
       return item.block === block && item.kind === 'kriz' && item.pos === 'zarar';
     });
     return (
@@ -26,15 +26,15 @@ export function renderEnd() {
       decisions.length
     );
   };
-  var html =
-      '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><h1 style="margin-top:4px">Üç bölüm tamamlandı</h1><p>Teşekkürler. Verilerin kaydedildi.</p>',
-    summary =
-      filmHtml() +
-      '<div class="stat-row" style="margin:4px 0 14px"><div class="stat"><span>1. bölüm, düşüşte satış</span><b>' +
-      count('pre') +
-      '</b></div><div class="stat"><span>3. bölüm, düşüşte satış</span><b>' +
-      count('post') +
-      '</b></div></div>';
+  const html =
+    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><h1 style="margin-top:4px">Üç bölüm tamamlandı</h1><p>Teşekkürler. Verilerin kaydedildi.</p>';
+  const summary =
+    filmHtml() +
+    '<div class="stat-row" style="margin:4px 0 14px"><div class="stat"><span>1. bölüm, düşüşte satış</span><b>' +
+    count('pre') +
+    '</b></div><div class="stat"><span>3. bölüm, düşüşte satış</span><b>' +
+    count('post') +
+    '</b></div></div>';
   if (state.postTest == null)
     return (
       html +
@@ -114,7 +114,7 @@ export function renderEnd() {
 
 // Karar kartı: yalnızca katılımcının kendi karar sayıları. Grup ve çalışmanın amacı resimde YOK (paylaşılırsa diğer katılımcıları etkiler).
 function decisionCounts(block) {
-  var map = { sat: 0, tut: 0, al: 0 };
+  const map = { sat: 0, tut: 0, al: 0 };
   state.decisions.forEach(function (item) {
     if (item.block === block && map[item.final] != null) map[item.final]++;
   });
@@ -122,14 +122,14 @@ function decisionCounts(block) {
 }
 
 function summaryCardHtml() {
-  var innerSimulationChartSvg = simulationChartSvg(),
-    other =
-      (innerSimulationChartSvg
-        ? '<p class="muted" style="margin:0 0 8px">Simülatörde toplam paranın seyri</p>' +
-          innerSimulationChartSvg +
-          '<p class="muted small-text" style="margin:6px 0 14px">● sattığın an · ○ aldığın an · gri bant: haberlerdeki sert düşüş dönemleri</p>'
-        : '') +
-      '<p class="muted" style="margin:0 0 10px">Kararlarının kısa bir özetini resim olarak kaydedebilirsin. Resimde grubun ya da çalışmanın amacı yazmaz.</p>';
+  const innerSimulationChartSvg = simulationChartSvg();
+  let other =
+    (innerSimulationChartSvg
+      ? '<p class="muted" style="margin:0 0 8px">Simülatörde toplam paranın seyri</p>' +
+        innerSimulationChartSvg +
+        '<p class="muted small-text" style="margin:6px 0 14px">● sattığın an · ○ aldığın an · gri bant: haberlerdeki sert düşüş dönemleri</p>'
+      : '') +
+    '<p class="muted" style="margin:0 0 10px">Kararlarının kısa bir özetini resim olarak kaydedebilirsin. Resimde grubun ya da çalışmanın amacı yazmaz.</p>';
   if (!state.summaryCardUrl)
     other += '<button class="button" data-a="downloadSummaryCard">Karar kartımı oluştur</button>';
   else
@@ -145,21 +145,21 @@ function summaryCardHtml() {
 }
 
 export async function createSummaryCard() {
-  var innerWidth = 1080,
-    height = 1350,
-    element = document.createElement('canvas');
+  const innerWidth = 1080;
+  const height = 1350;
+  const element = document.createElement('canvas');
   element.width = innerWidth;
   element.height = height;
-  var context = element.getContext('2d'),
-    cells = getComputedStyle(document.documentElement),
-    innerValue = function (count) {
-      return cells.getPropertyValue(count).trim() || '#000';
-    };
+  const context = element.getContext('2d');
+  const cells = getComputedStyle(document.documentElement);
+  const innerValue = function (count) {
+    return cells.getPropertyValue(count).trim() || '#000';
+  };
   try {
     await document.fonts.load('700 40px "Bricolage Grotesque"');
     await document.fonts.load('400 40px "Bricolage Grotesque"');
   } catch (error) {}
-  var text = '"Bricolage Grotesque",system-ui,sans-serif';
+  const text = '"Bricolage Grotesque",system-ui,sans-serif';
   context.fillStyle = innerValue('--bg');
   context.fillRect(0, 0, innerWidth, height);
   context.fillStyle = innerValue('--tx');
@@ -168,11 +168,11 @@ export async function createSummaryCard() {
   context.fillStyle = innerValue('--mu');
   context.font = '400 38px ' + text;
   context.fillText('İlk Lot · kurgusal piyasa araştırması', 72, 210);
-  var rows = [
-      ['1. bölüm', decisionCounts('pre')],
-      ['3. bölüm', decisionCounts('post')],
-    ],
-    y = 260;
+  const rows = [
+    ['1. bölüm', decisionCounts('pre')],
+    ['3. bölüm', decisionCounts('post')],
+  ];
+  let y = 260;
   rows.forEach(function (innerItem) {
     context.fillStyle = innerValue('--sf');
     context.strokeStyle = innerValue('--ln');
@@ -188,22 +188,22 @@ export async function createSummaryCard() {
       ['Tut', innerItem[1].tut],
       ['Al', innerItem[1].al],
     ].forEach(function (item, index) {
-      var centerX = 112 + index * 290;
+      const centerX = 112 + index * 290;
       context.fillStyle = innerValue('--tx');
       context.font = '700 84px ' + text;
       context.fillText(String(item[1]), centerX, y + 170);
-      var width = context.measureText(String(item[1])).width;
+      const width = context.measureText(String(item[1])).width;
       context.fillStyle = innerValue('--mu');
       context.font = '400 38px ' + text;
       context.fillText(item[0], centerX + width + 16, y + 170);
     });
     y += 260;
   });
-  var innerCount = 0;
+  let innerCount = 0;
   try {
     innerCount = state.simulation && state.simulation.trades ? state.simulation.trades.length : 0;
   } catch (error) {}
-  var sharesHeld = 380;
+  const sharesHeld = 380;
   context.fillStyle = innerValue('--sf');
   context.strokeStyle = innerValue('--ln');
   roundedRectPath(context, 72, y, innerWidth - 144, sharesHeld, 28);
@@ -218,18 +218,18 @@ export async function createSummaryCard() {
   context.fillText(innerCount + ' işlem yaptın', innerWidth - 112, y + 66);
   context.textAlign = 'left';
   if (simulationSeries()) {
-    var startX = 112,
-      canvasWidth = innerWidth - 224,
-      startY = y + 96,
-      change = sharesHeld - 96 - 70,
-      innerSimulationChartGeometry = simulationChartGeometry(canvasWidth, change, 0, 0, 6, 6),
-      xValue = function (value) {
-        return startX + innerSimulationChartGeometry.X(value);
-      },
-      yValue = function (quantity) {
-        return startY + innerSimulationChartGeometry.Y(quantity);
-      },
-      data = innerSimulationChartGeometry.d;
+    const startX = 112;
+    const canvasWidth = innerWidth - 224;
+    const startY = y + 96;
+    const change = sharesHeld - 96 - 70;
+    const innerSimulationChartGeometry = simulationChartGeometry(canvasWidth, change, 0, 0, 6, 6);
+    const xValue = function (value) {
+      return startX + innerSimulationChartGeometry.X(value);
+    };
+    const yValue = function (quantity) {
+      return startY + innerSimulationChartGeometry.Y(quantity);
+    };
+    const data = innerSimulationChartGeometry.d;
     context.fillStyle = innerValue('--sf2');
     CONFIG.simCrises.forEach(function (item) {
       context.fillRect(xValue(item.at), startY, xValue(item.at + item.len) - xValue(item.at), change);
@@ -251,8 +251,8 @@ export async function createSummaryCard() {
     });
     context.stroke();
     data.tr.forEach(function (item) {
-      var pixels = xValue(item.t),
-        py = yValue(data.v[item.t]);
+      const pixels = xValue(item.t);
+      const py = yValue(data.v[item.t]);
       context.beginPath();
       context.arc(pixels, py, 10, 0, 6.2832);
       if (item.side === 'S') {
@@ -304,7 +304,7 @@ function pilotFeedbackHtml() {
       'Pilot geri bildirimi',
       '<p class="muted" style="margin:0">Teşekkürler, geri bildirimin kaydedildi.</p>'
     );
-  var data = state.feedbackDraft || {};
+  const data = state.feedbackDraft || {};
   return section(
     'Pilot geri bildirimi',
     '<p class="muted" style="margin:0 0 4px">Bu 3 soru yalnızca pilot katılımcılarına soruluyor. İsteğe bağlı; atlayabilirsin.</p>' +

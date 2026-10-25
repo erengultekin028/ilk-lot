@@ -4,10 +4,11 @@ import { byId } from '../utils/dom.js';
 import { syncStatus } from '../services/event-log.js';
 
 export function updateSyncIndicator() {
-  var syncDotElement = byId('sync-dot');
+  const syncDotElement = byId('sync-dot');
   if (!syncDotElement) return;
-  var status = syncStatus();
-  syncDotElement.className = 'dosheet-title' + (status === 'is-correct' ? '' : ' ' + (status === 'pend' ? 'is-pending' : 'is-error'));
+  const status = syncStatus();
+  syncDotElement.className =
+    'dosheet-title' + (status === 'is-correct' ? '' : ' ' + (status === 'pend' ? 'is-pending' : 'is-error'));
   syncDotElement.setAttribute(
     'aria-label',
     status === 'ok'

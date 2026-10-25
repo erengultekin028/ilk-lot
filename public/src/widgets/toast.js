@@ -6,7 +6,7 @@ import { byId } from '../utils/dom.js';
 let toastTimer;
 
 export function showToast(message) {
-  var toastElement = byId('toast');
+  const toastElement = byId('toast');
   toastElement.textContent = message;
   toastElement.classList.add('is-visible');
   clearTimeout(toastTimer);

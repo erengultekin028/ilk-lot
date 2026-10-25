@@ -17,13 +17,13 @@ export function renderBridge() {
       ' dakika. Alıştırmadaki işlemler sayılmaz; buradan sonrası sayılır.</p><button class="button is-primary" data-a="startSimulation">Simülatörü başlat</button></div>'
     );
   if (state.bridge === 'sim') {
-    var total = CONFIG.cash0 + STOCK_BASES.length * CONFIG.posValue;
-    var facts = [
+    const total = CONFIG.cash0 + STOCK_BASES.length * CONFIG.posValue;
+    const facts = [
       ['₺' + formatNumber(total, 0), 'toplam paran'],
       [STOCK_BASES.length + ' hisse', 'her biri yaklaşık ₺' + formatNumber(CONFIG.posValue, 0)],
       [simulationMinutesText() + ' dk', 'her ' + tickSecondsText() + ' sn bir gün'],
     ];
-    var items = [
+    const items = [
       [
         'Fiyatlar kendiliğinden akar',
         'Sen bir şey yapmasan da zaman ilerler ve fiyatlar değişir. Sağ üstte kalan süre görünür.',
@@ -44,7 +44,7 @@ export function renderBridge() {
       ],
       ['İşlem yapmak zorunda değilsin', 'İstediğin kadar işlem yapabilir ya da hiç yapmayabilirsin.'],
     ];
-    var tabs = [
+    const tabs = [
       ['Portföy', 'hisselerin, nakdin ve işlem düğmeleri'],
       ['Piyasa', 'haberler ve fiyat grafikleri'],
       ['Analiz', 'bu bölümdeki işlemlerinin özeti'],

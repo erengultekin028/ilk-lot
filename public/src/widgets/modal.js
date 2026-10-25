@@ -13,15 +13,15 @@ export function isModalOpen() {
 // Odak yönetimi: pencere açılınca odak pencerenin kutusuna (klavye ve ekran okuyucu için), kapanınca eski yerine döner.
 // Kutuya odaklanılır, ilk düğmeye değil: alan içeren pencerelerde mobil klavye kendiliğinden açılmasın.
 export function openModal(html) {
-  var modalElement = byId('modal'),
-    modalBoxElement = byId('modal-box');
+  const modalElement = byId('modal');
+  const modalBoxElement = byId('modal-box');
   if (!modalElement.classList.contains('is-open')) {
-    var activeElement = document.activeElement;
+    const activeElement = document.activeElement;
     state.focusReturnElement = activeElement && activeElement !== document.body ? activeElement : null;
   }
   modalBoxElement.innerHTML = html;
   modalElement.classList.add('is-open');
-  var element = modalBoxElement.querySelector('h2');
+  const element = modalBoxElement.querySelector('h2');
   if (element) {
     element.id = 'modal-title';
     modalElement.setAttribute('aria-labelledby', 'modal-title');
@@ -35,7 +35,7 @@ export function openModal(html) {
 export function closeModal() {
   byId('modal').classList.remove('is-open');
   byId('modal-box').innerHTML = '';
-  var focusReturnElement = state.focusReturnElement;
+  const focusReturnElement = state.focusReturnElement;
   state.focusReturnElement = null;
   if (focusReturnElement && document.contains(focusReturnElement) && focusReturnElement.focus) {
     try {

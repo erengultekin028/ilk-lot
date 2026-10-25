@@ -19,7 +19,7 @@ export function termButtonHtml(termIndex, label) {
 }
 
 export function termHtml(index) {
-  var group = GLOSSARY[index];
+  const group = GLOSSARY[index];
   return (
     '<h2>' +
     group[0] +
@@ -40,12 +40,12 @@ export function helpHtml() {
 }
 
 function fontSizeLevel() {
-  var value = document.documentElement.getAttribute('data-fs');
+  const value = document.documentElement.getAttribute('data-fs');
   return value === '1' || value === '2' ? +value : 0;
 }
 
 export function fontSizeHtml() {
-  var level = fontSizeLevel();
+  const level = fontSizeLevel();
   return (
     '<div class="font-size-selector" role="group" aria-labelledby="font-size-label"><span class="selector-label" id="font-size-label">Yazı boyutu</span>' +
     FONT_SIZE_LEVELS.map(function (item, index) {
@@ -78,7 +78,7 @@ export function menuHtml() {
             : '<div class="font-size-selector"><span class="selector-label">Tanıtım hızı</span>' +
               [1, 2, 4]
                 .map(function (item) {
-                  var isOn = (state.demoSpeed || 1) === item;
+                  const isOn = (state.demoSpeed || 1) === item;
                   return (
                     '<button class="chip' +
                     (isOn ? ' is-active' : '') +

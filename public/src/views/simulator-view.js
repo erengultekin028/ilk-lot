@@ -23,7 +23,7 @@ import { section } from '../widgets/section.js';
 
 // Sekmeler: Portföy (işlem), Piyasa (haberler + grafikler), Analiz (bu bölümdeki işlemlerin, yargısız)
 export function simulatorNavHtml() {
-  var map = {
+  const map = {
     p: '<path d="M4 19V9m6 10V5m6 14v-7m4 7H2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>',
     m: '<path d="M3 17l5-6 4 4 7-9" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
     a: '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 12 18 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
@@ -34,8 +34,8 @@ export function simulatorNavHtml() {
     ['a', 'Analiz'],
   ]
     .map(function (item) {
-      var isOn = state.marketTab === item[0];
-      var now = item[0] === 'm' && hasUnreadNews();
+      const isOn = state.marketTab === item[0];
+      const now = item[0] === 'm' && hasUnreadNews();
       return (
         '<button class="' +
         (isOn ? 'is-active' : '') +
@@ -56,13 +56,13 @@ export function simulatorNavHtml() {
 }
 
 export function renderSimulator() {
-  var simulation = state.simulation,
-    html = '<div id="crisis-alert"></div>' + (state.freePlay ? '<div id="news-banner"></div>' : '');
+  const simulation = state.simulation;
+  let html = '<div id="crisis-alert"></div>' + (state.freePlay ? '<div id="news-banner"></div>' : '');
   if (state.detailSymbol) return html + stockDetailHtml(state.detailSymbol);
   if (state.marketTab === 'm') return html + marketTabHtml();
   if (state.marketTab === 'a') return html + '<div id="analysis-panel">' + analysisTabHtml() + '</div>';
-  var portfolioTotal = portfolioValue(),
-    change = (portfolioTotal / simulation.v0 - 1) * 100;
+  const portfolioTotal = portfolioValue();
+  const change = (portfolioTotal / simulation.v0 - 1) * 100;
   html +=
     '<div class="hero" id="portfolio-hero" style="padding-bottom:12px"><div class="hero-label">' +
     (state.freePlay
@@ -99,7 +99,7 @@ export function renderSimulator() {
     termButtonHtml(1, 'Lot') +
     ', hisse adedidir.</p>' +
     STOCK_BASES.map(function (item) {
-      var key = item[0];
+      const key = item[0];
       return (
         '<button class="stock-row" data-a="openStockDetail" data-v="' +
         key +
@@ -129,21 +129,21 @@ export function renderSimulator() {
 
 // ── Dağılım: her hissenin ve nakdin toplam paraya oranı ──
 function allocationHtml() {
-  var simulation = state.simulation,
-    portfolioTotal = portfolioValue(),
-    parts = STOCK_BASES.map(function (item) {
-      var position = simulation.pos[item[0]];
-      return [item[0], position.q * simulation.p[item[0]]];
-    }).concat([['Nakit', simulation.cash]]);
-  var rawValue = parts.map(function (item) {
-      return (item[1] / portfolioTotal) * 100;
-    }),
-    percent = rawValue.map(Math.floor),
-    rest =
-      100 -
-      percent.reduce(function (accumulator, item) {
-        return accumulator + item;
-      }, 0);
+  const simulation = state.simulation;
+  const portfolioTotal = portfolioValue();
+  const parts = STOCK_BASES.map(function (item) {
+    const position = simulation.pos[item[0]];
+    return [item[0], position.q * simulation.p[item[0]]];
+  }).concat([['Nakit', simulation.cash]]);
+  const rawValue = parts.map(function (item) {
+    return (item[1] / portfolioTotal) * 100;
+  });
+  const percent = rawValue.map(Math.floor);
+  const rest =
+    100 -
+    percent.reduce(function (accumulator, item) {
+      return accumulator + item;
+    }, 0);
   rawValue
     .map(function (item, index) {
       return [item - Math.floor(item), index];
@@ -189,13 +189,13 @@ function allocationHtml() {
 }
 
 function stockDetailInfoHtml(symbol) {
-  var simulation = state.simulation,
-    position = simulation.pos[symbol],
-    price = simulation.p[symbol],
-    hasPosition = position && position.q > 0,
-    profitLossPercent = hasPosition ? (price / position.avg - 1) * 100 : 0,
-    data = hasPosition ? position.q * (price - position.avg) : 0,
-    change = (price / simulation.p0[symbol] - 1) * 100;
+  const simulation = state.simulation;
+  const position = simulation.pos[symbol];
+  const price = simulation.p[symbol];
+  const hasPosition = position && position.q > 0;
+  const profitLossPercent = hasPosition ? (price / position.avg - 1) * 100 : 0;
+  const data = hasPosition ? position.q * (price - position.avg) : 0;
+  const change = (price / simulation.p0[symbol] - 1) * 100;
   return (
     '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span><b style="font:750 30px var(--fd);letter-spacing:-.6px" class="tabular-number">₺' +
     formatNumber(price) +
@@ -239,7 +239,7 @@ function stockDetailInfoHtml(symbol) {
 }
 
 function stockNewsHtml(symbol, tick) {
-  var news = newsItems()
+  const news = newsItems()
     .filter(function (item) {
       return item[0] <= tick && item[3].indexOf(symbol) >= 0;
     })
@@ -262,10 +262,10 @@ function stockNewsHtml(symbol, tick) {
 }
 
 function stockDetailHtml(symbol) {
-  var simulation = state.simulation,
-    position = simulation.pos[symbol],
-    hasPosition = position && position.q > 0,
-    buyQuantity = Math.floor(CONFIG.addAmount / simulation.p[symbol]);
+  const simulation = state.simulation;
+  const position = simulation.pos[symbol];
+  const hasPosition = position && position.q > 0;
+  const buyQuantity = Math.floor(CONFIG.addAmount / simulation.p[symbol]);
   return (
     '<div class="detail-header"><button class="icon-button" data-a="closeStockDetail" aria-label="Geri">‹</button><div><div style="font:700 22px/1.1 var(--fd)">' +
     symbol +
@@ -311,11 +311,11 @@ function stockDetailHtml(symbol) {
 }
 
 function marketTabHtml() {
-  var simulation = state.simulation,
-    html =
-      '<div class="card-section"><div class="card-header"><h3>Haberler</h3><span class="muted small-text">en yeni üstte</span></div><div class="card-body" id="market-news">' +
-      newsListHtml(simulation.tick) +
-      '</div></div>';
+  const simulation = state.simulation;
+  let html =
+    '<div class="card-section"><div class="card-header"><h3>Haberler</h3><span class="muted small-text">en yeni üstte</span></div><div class="card-body" id="market-news">' +
+    newsListHtml(simulation.tick) +
+    '</div></div>';
   html +=
     '<div class="market-grid" id="market-grid">' +
     STOCK_BASES.map(function (item) {
@@ -332,7 +332,7 @@ function marketTabHtml() {
 }
 
 function newsListHtml(tick) {
-  var news = newsItems()
+  const news = newsItems()
     .filter(function (item) {
       return item[0] <= tick;
     })
@@ -353,11 +353,11 @@ function newsListHtml(tick) {
 }
 
 function stockCardHtml(symbol) {
-  var simulation = state.simulation,
-    history = simulation.h[symbol],
-    change = (simulation.p[symbol] / simulation.p0[symbol] - 1) * 100,
-    position = simulation.pos[symbol],
-    hasPosition = position && position.q > 0;
+  const simulation = state.simulation;
+  const history = simulation.h[symbol];
+  const change = (simulation.p[symbol] / simulation.p0[symbol] - 1) * 100;
+  const position = simulation.pos[symbol];
+  const hasPosition = position && position.q > 0;
   return (
     '<div style="display:flex;justify-content:space-between;align-items:baseline"><b>' +
     symbol +
@@ -383,30 +383,30 @@ function stockCardHtml(symbol) {
 }
 
 function analysisTabHtml() {
-  var simulation = state.simulation,
-    trades = simulation.trades,
-    sells = trades.filter(function (item) {
-      return item.side === 'S';
-    }),
-    buys = trades.filter(function (item) {
-      return item.side === 'B';
-    }),
-    portfolioTotal = portfolioValue(),
-    length = sells.filter(function (item) {
-      return item.pl != null && item.pl <= CONFIG.lossThreshold;
-    }).length,
-    row = function (key, value, data) {
-      return (
-        '<div style="padding:11px 0;border-top:1px solid var(--ln)"><div class="key-value" style="padding:0"><span style="color:var(--tx);font-weight:600">' +
-        key +
-        '</span><b>' +
-        value +
-        '</b></div>' +
-        (data ? '<div class="muted small-text" style="margin-top:2px">' + data + '</div>' : '') +
-        '</div>'
-      );
-    },
-    map = {};
+  const simulation = state.simulation;
+  const trades = simulation.trades;
+  const sells = trades.filter(function (item) {
+    return item.side === 'S';
+  });
+  const buys = trades.filter(function (item) {
+    return item.side === 'B';
+  });
+  const portfolioTotal = portfolioValue();
+  const length = sells.filter(function (item) {
+    return item.pl != null && item.pl <= CONFIG.lossThreshold;
+  }).length;
+  const row = function (key, value, data) {
+    return (
+      '<div style="padding:11px 0;border-top:1px solid var(--ln)"><div class="key-value" style="padding:0"><span style="color:var(--tx);font-weight:600">' +
+      key +
+      '</span><b>' +
+      value +
+      '</b></div>' +
+      (data ? '<div class="muted small-text" style="margin-top:2px">' + data + '</div>' : '') +
+      '</div>'
+    );
+  };
+  const map = {};
   sells.forEach(function (item) {
     if (item.why) map[item.why] = (map[item.why] || 0) + 1;
   });
@@ -443,7 +443,7 @@ function analysisTabHtml() {
               .slice()
               .reverse()
               .map(function (item) {
-                var stateCopy = item.side === 'S';
+                const stateCopy = item.side === 'S';
                 return (
                   '<div class="key-value"><span style="flex:none;font-size:11px;font-weight:700;background:var(--sf2);border-radius:8px;padding:3px 7px;color:var(--mu)">Gün ' +
                   item.t +
@@ -476,7 +476,7 @@ function isNewsFresh(tick, news) {
 } // "Yeni" rozeti ~15 sn (10 gün) görünür
 
 function newsHtml(tick) {
-  var news = latestNewsAt(tick);
+  const news = latestNewsAt(tick);
   if (!news) return '';
   return (
     '<div class="row-subtitleews' +
@@ -494,16 +494,16 @@ function newsHtml(tick) {
 
 // Piyasa sekmesinde okunmamış haber noktası: son haberin günü, Piyasa sekmesinde en son görülen günden büyükse
 function hasUnreadNews() {
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   if (!simulation || state.marketTab === 'm') return false;
-  var news = latestNewsAt(simulation.tick);
+  const news = latestNewsAt(simulation.tick);
   return !!news && news[0] > (state.newsSeenDay == null ? 0 : state.newsSeenDay);
 }
 
 function updateNewsDot() {
-  var element = document.querySelector('nav [data-a=switchMarketTab][data-v=m]');
+  const element = document.querySelector('nav [data-a=switchMarketTab][data-v=m]');
   if (!element) return;
-  var innerHasUnreadNews = hasUnreadNews();
+  const innerHasUnreadNews = hasUnreadNews();
   element.classList.toggle('has-news', innerHasUnreadNews);
   if (innerHasUnreadNews) element.setAttribute('aria-label', 'Piyasa, yeni haber');
   else element.removeAttribute('aria-label');
@@ -511,13 +511,13 @@ function updateNewsDot() {
 
 // Kriz anında Portföy dışındaysa çağrı: kimse krizi kaçırmasın
 function updateCrisisAlert() {
-  var simulation = state.simulation,
-    crisisAlertElement = byId('crisis-alert');
+  const simulation = state.simulation;
+  const crisisAlertElement = byId('crisis-alert');
   if (!crisisAlertElement) return;
-  var crisis = crisisAt(simulation.tick),
-    text = '';
+  const crisis = crisisAt(simulation.tick);
+  let text = '';
   if (crisis && state.marketTab !== 'p') {
-    var news = latestNewsAt(simulation.tick);
+    const news = latestNewsAt(simulation.tick);
     text =
       '<div class="crisis-alert-box" role="alert"><span>' +
       escapeHtml(news ? news[1] : 'Sert düşüş') +
@@ -532,18 +532,18 @@ function updateCrisisAlert() {
 // b25 (yalnızca serbest mod): yeni haber gelince üstte geçici şerit; haberden etkilenen hisse satırında "Haber" işareti.
 // Çalışma simülatöründe ve alıştırmada hiç çizilmez (#sbanner yok, S.free yok).
 export function freePlayBannerNews() {
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   if (!state.freePlay || !simulation) return null;
-  var news = latestNewsAt(simulation.tick);
+  const news = latestNewsAt(simulation.tick);
   return news && isNewsFresh(simulation.tick, news) ? news : null;
 }
 
 export function updateNewsBanner() {
-  var newsBannerElement = byId('news-banner');
+  const newsBannerElement = byId('news-banner');
   if (!newsBannerElement) return;
-  var simulation = state.simulation,
-    news = freePlayBannerNews(),
-    text = '';
+  const simulation = state.simulation;
+  const news = freePlayBannerNews();
+  let text = '';
   if (
     news &&
     state.marketTab !== 'm' &&
@@ -565,20 +565,20 @@ export function updateNewsBanner() {
 }
 
 export function updateSimulatorLive() {
-  var simulation = state.simulation;
+  const simulation = state.simulation;
   if (!simulation) return;
   updateCrisisAlert();
   updateNewsBanner();
   updateNewsDot();
   if (state.detailSymbol) {
-    var detailSymbol = state.detailSymbol,
-      detailInfoElement = byId('detail-info'),
-      detailChartElement = byId('detail-chart'),
-      detailNewsElement = byId('detail-news');
+    const detailSymbol = state.detailSymbol;
+    const detailInfoElement = byId('detail-info');
+    const detailChartElement = byId('detail-chart');
+    const detailNewsElement = byId('detail-news');
     if (detailInfoElement) detailInfoElement.innerHTML = stockDetailInfoHtml(detailSymbol);
     if (detailChartElement) detailChartElement.innerHTML = renderDetailChart(detailSymbol);
     if (detailNewsElement) {
-      var innerStockNewsHtml = stockNewsHtml(detailSymbol, simulation.tick);
+      const innerStockNewsHtml = stockNewsHtml(detailSymbol, simulation.tick);
       if (detailNewsElement._h !== innerStockNewsHtml) {
         detailNewsElement.innerHTML = innerStockNewsHtml;
         detailNewsElement._h = innerStockNewsHtml;
@@ -586,32 +586,32 @@ export function updateSimulatorLive() {
     }
     return;
   }
-  var allocationBarsElement = byId('allocation-bars');
+  const allocationBarsElement = byId('allocation-bars');
   if (allocationBarsElement) {
-    var innerAllocationHtml = allocationHtml();
+    const innerAllocationHtml = allocationHtml();
     if (allocationBarsElement._h !== innerAllocationHtml) {
       allocationBarsElement.innerHTML = innerAllocationHtml;
       allocationBarsElement._h = innerAllocationHtml;
     }
   }
   if (state.marketTab === 'm') {
-    var innerNews = latestNewsAt(simulation.tick);
+    const innerNews = latestNewsAt(simulation.tick);
     state.newsSeenDay = innerNews ? innerNews[0] : 0;
-    var marketNewsElement = byId('market-news');
+    const marketNewsElement = byId('market-news');
     if (marketNewsElement && marketNewsElement._t !== latestNewsAt(simulation.tick)[0]) {
       marketNewsElement.innerHTML = newsListHtml(simulation.tick);
       marketNewsElement._t = latestNewsAt(simulation.tick)[0];
     }
     STOCK_BASES.forEach(function (item) {
-      var element = byId('mc-' + item[0]);
+      const element = byId('mc-' + item[0]);
       if (element) element.innerHTML = stockCardHtml(item[0]);
     });
     return;
   }
   if (state.marketTab === 'a') {
-    var analysisPanelElement = byId('analysis-panel');
+    const analysisPanelElement = byId('analysis-panel');
     if (analysisPanelElement) {
-      var innerAnalysisTabHtml = analysisTabHtml();
+      const innerAnalysisTabHtml = analysisTabHtml();
       if (analysisPanelElement._h !== innerAnalysisTabHtml) {
         analysisPanelElement.innerHTML = innerAnalysisTabHtml;
         analysisPanelElement._h = innerAnalysisTabHtml;
@@ -620,57 +620,57 @@ export function updateSimulatorLive() {
     return;
   }
   if (!byId('portfolio-value')) return;
-  var portfolioTotal = portfolioValue(),
-    change = (portfolioTotal / simulation.v0 - 1) * 100;
+  const portfolioTotal = portfolioValue();
+  const change = (portfolioTotal / simulation.v0 - 1) * 100;
   setText('sv', '₺' + formatNumber(portfolioTotal, 0));
   setText('sinv', '₺' + formatNumber(portfolioTotal - simulation.cash, 0));
-  var portfolioChangeElement = byId('portfolio-change');
+  const portfolioChangeElement = byId('portfolio-change');
   portfolioChangeElement.textContent = formatPercentChange(change) + ' başlangıca göre';
   portfolioChangeElement.className = 'direction-badge ' + directionClass(change);
   setText('scash', '₺' + formatNumber(simulation.cash, 0));
   setText('sday', dayText(simulation));
-  var freePlayPanelElement = byId('free-play-panel');
+  const freePlayPanelElement = byId('free-play-panel');
   if (freePlayPanelElement) {
-    var innerFreePlayHeaderHtml = freePlayHeaderHtml();
+    const innerFreePlayHeaderHtml = freePlayHeaderHtml();
     if (freePlayPanelElement._h !== innerFreePlayHeaderHtml) {
       freePlayPanelElement.innerHTML = innerFreePlayHeaderHtml;
       freePlayPanelElement._h = innerFreePlayHeaderHtml;
     }
   }
-  var news2 = latestNewsAt(simulation.tick),
-    nextKey = news2 ? news2[0] + ':' + (isNewsFresh(simulation.tick, news2) ? 1 : 0) : -1,
-    newsSectionElement = byId('news-section');
+  const news2 = latestNewsAt(simulation.tick);
+  const nextKey = news2 ? news2[0] + ':' + (isNewsFresh(simulation.tick, news2) ? 1 : 0) : -1;
+  const newsSectionElement = byId('news-section');
   if (newsSectionElement && newsSectionElement._k !== nextKey) {
     newsSectionElement.innerHTML = newsHtml(simulation.tick);
     newsSectionElement._k = nextKey;
   }
   document.querySelectorAll('[data-sim]').forEach(function (item) {
-    var sim = item.dataset.sim,
-      position = simulation.pos[sim],
-      price = simulation.p[sim],
-      history = simulation.h[sim],
-      isUp = history[history.length - 1] >= history[Math.max(0, history.length - 8)];
-    var innerElement = item.querySelector('.news-flag');
+    const sim = item.dataset.sim;
+    const position = simulation.pos[sim];
+    const price = simulation.p[sim];
+    const history = simulation.h[sim];
+    const isUp = history[history.length - 1] >= history[Math.max(0, history.length - 8)];
+    const innerElement = item.querySelector('.news-flag');
     if (innerElement) {
-      var news = freePlayBannerNews(),
-        isOn = !!news && (news[3] || []).indexOf(sim) >= 0;
+      const news = freePlayBannerNews();
+      const isOn = !!news && (news[3] || []).indexOf(sim) >= 0;
       if (innerElement.hidden === isOn) innerElement.hidden = !isOn;
     }
-    var element2 = item.querySelector('.sa'),
-      element3 = item.querySelector('.sl'),
-      element4 = item.querySelector('.span-item'),
-      element5 = item.querySelector('.percent-chip'),
-      element6 = item.querySelector('.row-primary'),
-      element7 = item.querySelector('.row-secondary'),
-      element = item.querySelector('.ordl');
+    const element2 = item.querySelector('.sa');
+    const element3 = item.querySelector('.sl');
+    const element4 = item.querySelector('.span-item');
+    const element5 = item.querySelector('.percent-chip');
+    const element6 = item.querySelector('.row-primary');
+    const element7 = item.querySelector('.row-secondary');
+    const element = item.querySelector('.ordl');
     if (element) {
-      var order = simulation.orders && simulation.orders[sim],
-        overTime = order
-          ? 'Otomatik emir: ' +
-            (order.stop != null ? 'zarar −%' + Math.round(order.stop * 100) : '') +
-            (order.stop != null && order.take != null ? ' · ' : '') +
-            (order.take != null ? 'kâr +%' + Math.round(order.take * 100) : '')
-          : '';
+      const order = simulation.orders && simulation.orders[sim];
+      const overTime = order
+        ? 'Otomatik emir: ' +
+          (order.stop != null ? 'zarar −%' + Math.round(order.stop * 100) : '') +
+          (order.stop != null && order.take != null ? ' · ' : '') +
+          (order.take != null ? 'kâr +%' + Math.round(order.take * 100) : '')
+        : '';
       element.hidden = !overTime;
       if (element._t !== overTime) {
         element.textContent = overTime;
@@ -683,8 +683,8 @@ export function updateSimulatorLive() {
       element3.textContent = position.q + ' lot';
       element2.textContent = '₺' + formatNumber(position.avg);
       element6.textContent = '₺' + formatNumber(position.q * price, 0);
-      var profitLossPercent = (price / position.avg - 1) * 100,
-        data = position.q * (price - position.avg);
+      const profitLossPercent = (price / position.avg - 1) * 100;
+      const data = position.q * (price - position.avg);
       element5.textContent = formatPercentChange(profitLossPercent);
       element5.className = 'percent-chip ' + directionClass(profitLossPercent);
       element7.textContent = (data >= 0 ? '+' : '−') + '₺' + formatNumber(Math.abs(data), 0);
@@ -704,16 +704,16 @@ export function updateSimulatorLive() {
 // ── İşlem penceresi: yön (Sat/Al), lot kutusu (elle yazılır), hızlı oranlar, anlık özet ──
 // Kutu BOŞ başlar: hazır bir miktar önermek kararı yönlendirirdi (çıpalama). İki yön aynı görünümde.
 export function calculateTrade() {
-  var tradeDraft = state.tradeDraft,
-    simulation = state.simulation,
-    key = tradeDraft.k,
-    price = simulation.p[key],
-    position = simulation.pos[key],
-    held = position ? position.q : 0,
-    maxB = Math.floor(simulation.cash / price),
-    sell = tradeDraft.side === 'S',
-    limit = sell ? held : maxB,
-    quantity = tradeDraft.q || 0;
+  const tradeDraft = state.tradeDraft;
+  const simulation = state.simulation;
+  const key = tradeDraft.k;
+  const price = simulation.p[key];
+  const position = simulation.pos[key];
+  const held = position ? position.q : 0;
+  const maxB = Math.floor(simulation.cash / price);
+  const sell = tradeDraft.side === 'S';
+  const limit = sell ? held : maxB;
+  const quantity = tradeDraft.q || 0;
   return {
     k: key,
     p: price,
@@ -772,18 +772,18 @@ function tradeSummaryHtml(calc) {
 }
 
 export function tradeWindowHtml(symbol) {
-  var tradeDraft = state.tradeDraft,
-    simulation = state.simulation,
-    position = simulation.pos[symbol],
-    price = simulation.p[symbol],
-    hasPosition = position && position.q > 0,
-    profitLossPercent = hasPosition ? (price / position.avg - 1) * 100 : 0,
-    data = hasPosition ? position.q * (price - position.avg) : 0,
-    isUp =
-      simulation.h[symbol][simulation.h[symbol].length - 1] >=
-      simulation.h[symbol][Math.max(0, simulation.h[symbol].length - 8)],
-    trade = calculateTrade(),
-    isValid = trade.q >= 1 && !trade.over;
+  const tradeDraft = state.tradeDraft;
+  const simulation = state.simulation;
+  const position = simulation.pos[symbol];
+  const price = simulation.p[symbol];
+  const hasPosition = position && position.q > 0;
+  const profitLossPercent = hasPosition ? (price / position.avg - 1) * 100 : 0;
+  const data = hasPosition ? position.q * (price - position.avg) : 0;
+  const isUp =
+    simulation.h[symbol][simulation.h[symbol].length - 1] >=
+    simulation.h[symbol][Math.max(0, simulation.h[symbol].length - 8)];
+  const trade = calculateTrade();
+  const isValid = trade.q >= 1 && !trade.over;
   return (
     '<h2>' +
     symbol +
@@ -863,12 +863,12 @@ export function tradeWindowHtml(symbol) {
 
 // Yazarken pencere baştan çizilmez (odak ve klavye kaybolmasın): sadece özet, düğme ve yön güncellenir
 export function updateTradePreview() {
-  var tradeDraft = state.tradeDraft;
+  const tradeDraft = state.tradeDraft;
   if (!tradeDraft || !byId('trade-summary')) return;
-  var trade = calculateTrade(),
-    isValid = trade.q >= 1 && !trade.over;
+  const trade = calculateTrade();
+  const isValid = trade.q >= 1 && !trade.over;
   byId('trade-summary').innerHTML = tradeSummaryHtml(trade);
-  var tradeSubmitElement = byId('trade-submit');
+  const tradeSubmitElement = byId('trade-submit');
   tradeSubmitElement.disabled = !isValid;
   tradeSubmitElement.textContent =
     trade.q < 1
@@ -877,7 +877,7 @@ export function updateTradePreview() {
         ? 'Lot sayısı çok fazla'
         : trade.q + ' lot ' + (trade.sell ? 'sat' : 'al');
   document.querySelectorAll('#modal-box .trade-side button').forEach(function (item) {
-    var isOn = item.dataset.v === tradeDraft.side;
+    const isOn = item.dataset.v === tradeDraft.side;
     item.classList.toggle('is-active', isOn);
     if (isOn) item.setAttribute('aria-pressed', 'true');
     else item.removeAttribute('aria-pressed');
@@ -885,9 +885,9 @@ export function updateTradePreview() {
   document.querySelectorAll('#modal-box .quantity-chips button').forEach(function (item) {
     item.disabled = trade.lim < 1;
   });
-  var innerElement = document.querySelector('#modal-box .quantity-label');
+  const innerElement = document.querySelector('#modal-box .quantity-label');
   if (innerElement) innerElement.textContent = 'Kaç lot ' + (trade.sell ? 'satacaksın' : 'alacaksın') + '?';
-  var element = document.querySelector('#modal-box .quantity-chips button[data-v=max]');
+  const element = document.querySelector('#modal-box .quantity-chips button[data-v=max]');
   if (element) element.textContent = trade.sell ? 'Tümü' : 'Maks';
 }
 

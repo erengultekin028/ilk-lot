@@ -18,20 +18,18 @@ import { PROGRESS_LABELS, PROGRESS_WEIGHTS } from '../constants/ui-constants.js'
 export function render() {
   // Kaldığı yerden devam: "app" aşaması akıştaki doğru ekrana çevrilir
   if (state.stage === 'app') resumeFlow();
-  var mainViewElement = byId('main-view'),
-    key = [
-      state.stage,
-      state.marketTab,
-      state.detailSymbol,
-      state.testQuestion ? state.testQuestion.kind + state.testQuestion.i : '',
-      state.introStep,
-      state.bridge,
-      state.stressKey,
-      state.trial
-        ? state.trial.mode + state.trial.i + state.trial.phase + state.trialIndex + state.block
-        : '',
-    ].join('|'),
-    scrollTop = mainViewElement.scrollTop;
+  const mainViewElement = byId('main-view');
+  const key = [
+    state.stage,
+    state.marketTab,
+    state.detailSymbol,
+    state.testQuestion ? state.testQuestion.kind + state.testQuestion.i : '',
+    state.introStep,
+    state.bridge,
+    state.stressKey,
+    state.trial ? state.trial.mode + state.trial.i + state.trial.phase + state.trialIndex + state.block : '',
+  ].join('|');
+  const scrollTop = mainViewElement.scrollTop;
   mainViewElement.innerHTML = renderStage();
   mainViewElement.scrollTop = key === state.renderKey ? scrollTop : 0;
   if (key !== state.renderKey) {
@@ -41,7 +39,7 @@ export function render() {
   }
   state.renderKey = key;
   byId('disclaimer').hidden = !(state.stage === 'task' || state.stage === 'sim');
-  var simulatorNavElement = byId('simulator-nav');
+  const simulatorNavElement = byId('simulator-nav');
   if (state.stage === 'sim') {
     simulatorNavElement.innerHTML = simulatorNavHtml();
     simulatorNavElement.hidden = false;
@@ -63,11 +61,11 @@ export function updateHeader() {
   else if (state.practice) byId('mode-banner').textContent = 'ALIŞTIRMA · işlemlerin sayılmaz';
   else if (DEMO_MODE) byId('mode-banner').textContent = 'TANITIM MODU · hiçbir veri kaydedilmez';
   byId('sync-dot').hidden = DEMO_MODE || !!state.freePlay;
-  var inTask = state.stage === 'task' && state.trial && state.trial.mode === 'main',
-    inSim = state.stage === 'sim' && state.simulation;
+  const inTask = state.stage === 'task' && state.trial && state.trial.mode === 'main';
+  const inSim = state.stage === 'sim' && state.simulation;
   byId('timer-chip').hidden = !(inTask || inSim);
   if (inTask) {
-    var shown = state.trial.phase === 'outcome' ? state.trialIndex : state.trialIndex + 1;
+    const shown = state.trial.phase === 'outcome' ? state.trialIndex : state.trialIndex + 1;
     byId('timer-text').textContent =
       'Karar ' +
       Math.min(Math.max(shown, 1), currentBlockTrials().length) +
@@ -88,12 +86,12 @@ export function updateHeader() {
     ['task', 'intro', 'sim', 'bridge'].indexOf(state.stage) >= 0
   );
   // Yön ışığı (iki gruba da aynı): kararda son haftanın yönü, sonuçta sonucun yönü, simülatörde kriz anı
-  var direction = 0,
-    strong = false;
+  let direction = 0;
+  let strong = false;
   if (CONFIG.crisisFx && state.stage === 'task' && state.trial) {
-    var phase = state.trial.phase;
+    const phase = state.trial.phase;
     if (phase === 'choose' || phase === 'cool') {
-      var innerLastWeekChangePercent = lastWeekChangePercent(currentTrial());
+      const innerLastWeekChangePercent = lastWeekChangePercent(currentTrial());
       direction = innerLastWeekChangePercent >= 0 ? 1 : -1;
       strong = innerLastWeekChangePercent <= -8;
     } else if (phase === 'outcome' && state.trial.last) {
@@ -104,7 +102,7 @@ export function updateHeader() {
     direction = -1;
     strong = true;
   }
-  var appElement = byId('app');
+  const appElement = byId('app');
   appElement.classList.toggle('glow-up', direction > 0);
   appElement.classList.toggle('glow-down', direction < 0);
   appElement.classList.toggle('glow-strong', strong);
@@ -114,8 +112,8 @@ export function updateHeader() {
 
 function progressState() {
   if (DEMO_MODE || state.freePlay) return null;
-  var stage = state.stage,
-    length = TRIAL_SETS.X.length;
+  const stage = state.stage;
+  const length = TRIAL_SETS.X.length;
   if (state.testQuestion && state.testQuestion.kind === 'post') return [4, 0.1];
   if (stage === 'demo') return [0, 0.12];
   if (stage === 'pre') return [0, 0.3];
@@ -149,18 +147,18 @@ function progressState() {
 }
 
 function updateProgressBar() {
-  var studyProgressElement = byId('study-progress'),
-    innerProgressState = progressState();
+  const studyProgressElement = byId('study-progress');
+  const innerProgressState = progressState();
   if (!innerProgressState) {
     studyProgressElement.hidden = true;
     return;
   }
-  var percent = 0,
-    i;
+  let percent = 0;
+  let i;
   for (i = 0; i < innerProgressState[0]; i++) percent += PROGRESS_WEIGHTS[i];
   percent = Math.round((percent + PROGRESS_WEIGHTS[innerProgressState[0]] * innerProgressState[1]) * 100);
-  var html = PROGRESS_LABELS.map(function (item, index) {
-    var fill =
+  const html = PROGRESS_LABELS.map(function (item, index) {
+    const fill =
       index < innerProgressState[0]
         ? 100
         : index === innerProgressState[0]

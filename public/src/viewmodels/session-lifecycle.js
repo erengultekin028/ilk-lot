@@ -31,7 +31,7 @@ function showCodeError(message) {
   state.codeError = message;
   state.stage = 'code';
   render();
-  var codeErrorElement = byId('code-error');
+  const codeErrorElement = byId('code-error');
   if (codeErrorElement) {
     codeErrorElement.classList.remove('is-shaking');
     void codeErrorElement.offsetWidth;
@@ -47,8 +47,8 @@ export async function bootstrap() {
     state.stage = 'demoland';
     return render();
   }
-  var fromLink = normalizeCode(HASH_PARAMS.get('k')),
-    code = fromLink || rememberedCode();
+  const fromLink = normalizeCode(HASH_PARAMS.get('k'));
+  const code = fromLink || rememberedCode();
   // Kodu adres çubuğundan ve geçmişten kaldır (ekran görüntüsünde ya da yan bakışta görünmesin)
   if (fromLink)
     try {
@@ -63,8 +63,8 @@ export async function bootstrap() {
     return render();
   }
   try {
-    var items = await participantRepository.getAlloc(code);
-    if (!items) {
+    const allocation = await participantRepository.getAlloc(code);
+    if (!allocation) {
       rememberCode(null);
       state.codeInput = code;
       state.codeError = fromLink
@@ -74,15 +74,15 @@ export async function bootstrap() {
       state.pendingCode = null;
       return render();
     }
-    var price = (await participantRepository.getP(code)) || {};
-    if (price.withdrawn) {
+    const value = (await participantRepository.getP(code)) || {};
+    if (value.withdrawn) {
       rememberCode(null);
       state.stage = 'withdrawn';
       return render();
     }
     state.pendingCode = code;
-    state.welcomeBack = { code: code, next: findNextSession(price) };
-    state.stage = price.consentAt ? 'welcome' : 'consent';
+    state.welcomeBack = { code: code, next: findNextSession(value) };
+    state.stage = value.consentAt ? 'welcome' : 'consent';
     render();
   } catch (error) {
     state.stage = 'consent';
@@ -92,15 +92,15 @@ export async function bootstrap() {
 
 export async function enterCode(rawCode) {
   await storeReady;
-  var code = normalizeCode(rawCode);
+  const code = normalizeCode(rawCode);
   state.codeError = '';
   if (!code) return showCodeError('Kod 12 karakter olmalı, örneğin KM7D-P2XR-9TQA.');
   state.busy = true;
   render();
   try {
-    var items = await participantRepository.getAlloc(code);
+    const allocation = await participantRepository.getAlloc(code);
     // Demo modunda kod listesi her cihazda ayrı üretilir: başka cihazda indirilen kart kodu burada geçersizdir
-    if (!items) {
+    if (!allocation) {
       rememberCode(null);
       return showCodeError(
         participantRepository.mode() === 'local'
@@ -108,8 +108,8 @@ export async function enterCode(rawCode) {
           : 'Bu kod listede yok. Kartındaki kodu kontrol et.'
       );
     }
-    var price = (await participantRepository.getP(code)) || {};
-    if (price.withdrawn) {
+    const value = (await participantRepository.getP(code)) || {};
+    if (value.withdrawn) {
       rememberCode(null);
       return showCodeError(
         participantRepository.mode() === 'local'
@@ -117,27 +117,27 @@ export async function enterCode(rawCode) {
           : 'Bu kodla çalışmadan çekilmişsin. Tekrar katılmak istersen araştırmacıyla konuş.'
       );
     }
-    var nextX = FORCED_SESSION ? { n: FORCED_SESSION, prev: null } : findNextSession(price);
+    const nextX = FORCED_SESSION ? { n: FORCED_SESSION, prev: null } : findNextSession(value);
     // Tüm oturumlar bitti: son oturumun sonuna götür (son test / bilgilendirme eksikse orada tamamlanır)
     if (!nextX) {
-      var list = String(CONFIG.totalSessions);
-      CONFIG.session = list;
+      const items = String(CONFIG.totalSessions);
+      CONFIG.session = items;
       state.participantCode = code;
-      state.group = items.grp;
-      state.setOrder = items.order != null ? items.order : hashSeed(code) % 2;
-      state.preTest = price.pre != null ? price.pre : null;
-      state.preTestBigThree = price.preB3 != null ? price.preB3 : null;
-      state.postTest = price.post != null ? price.post : null;
-      state.manipulationCheck = price.manip || null;
-      state.pilotFeedback = price.fb || null;
+      state.group = allocation.grp;
+      state.setOrder = allocation.order != null ? allocation.order : hashSeed(code) % 2;
+      state.preTest = value.pre != null ? value.pre : null;
+      state.preTestBigThree = value.preB3 != null ? value.preB3 : null;
+      state.postTest = value.post != null ? value.post : null;
+      state.manipulationCheck = value.manip || null;
+      state.pilotFeedback = value.fb || null;
       rememberCode(code);
-      if (price['sess_' + list]) restoreSnapshot(price['sess_' + list]);
+      if (value['sess_' + items]) restoreSnapshot(value['sess_' + items]);
       state.ended = true;
       state.busy = false;
       state.stage = 'end';
       return render();
     }
-    var wait = gapLeftMs(nextX.prev);
+    const wait = gapLeftMs(nextX.prev);
     if (wait > 0) {
       state.busy = false;
       state.waitUntil = Date.now() + wait;
@@ -149,10 +149,10 @@ export async function enterCode(rawCode) {
     CONFIG.session = nextX.n;
     rememberCode(code);
     // İlk onam zamanı katılımcı kaydına yazılır; sonraki oturumlarda onam tekrar sorulmaz
-    if (state.consentAt && !price.consentAt)
+    if (state.consentAt && !value.consentAt)
       await participantRepository.saveP(code, {
         code: code,
-        grp: items.grp,
+        grp: allocation.grp,
         consentAt: state.consentAt,
         quick: QUICK_TEST_MODE || undefined,
         consentVer: CONSENT_VERSION,
@@ -161,17 +161,17 @@ export async function enterCode(rawCode) {
         consentMs: state.consentMs,
       });
     state.participantCode = code;
-    state.group = items.grp;
-    state.setOrder = items.order != null ? items.order : hashSeed(code) % 2;
-    state.preTest = price.pre != null ? price.pre : null;
-    state.preTestBigThree = price.preB3 != null ? price.preB3 : null;
-    state.postTest = price.post != null ? price.post : null;
-    state.manipulationCheck = price.manip || null;
-    state.hasDemographics = !!price.demo;
+    state.group = allocation.grp;
+    state.setOrder = allocation.order != null ? allocation.order : hashSeed(code) % 2;
+    state.preTest = value.pre != null ? value.pre : null;
+    state.preTestBigThree = value.preB3 != null ? value.preB3 : null;
+    state.postTest = value.post != null ? value.post : null;
+    state.manipulationCheck = value.manip || null;
+    state.hasDemographics = !!value.demo;
     // Önceki oturumdan gönderilemeyen olaylar varsa kuyruğa geri al
     try {
-      var quantity = JSON.parse(localStorage.getItem('ilklot:q:' + code) || '[]');
-      if (quantity.length) eventLog.queue = quantity;
+      const parsed = JSON.parse(localStorage.getItem('ilklot:q:' + code) || '[]');
+      if (parsed.length) eventLog.queue = parsed;
     } catch (error) {}
     // Olay numarası sürekliliği: anlık görüntü eski kalmış olabilir; saklı sayaç ve kuyruktaki en büyük numaradan devam edilir
     eventLog.counter = 0;
@@ -181,7 +181,7 @@ export async function enterCode(rawCode) {
     eventLog.queue.forEach(function (item) {
       if (item.n > eventLog.counter) eventLog.counter = item.n;
     });
-    var snapshot = price['sess_' + CONFIG.session];
+    const snapshot = value['sess_' + CONFIG.session];
     if (snapshot && snapshot.seed === CONFIG.seed) {
       restoreSnapshot(snapshot);
       state.busy = false;
@@ -198,8 +198,8 @@ export async function enterCode(rawCode) {
     }
     await participantRepository.saveP(code, {
       code: code,
-      grp: items.grp,
-      firstSeen: price.firstSeen || new Date().toISOString(),
+      grp: allocation.grp,
+      firstSeen: value.firstSeen || new Date().toISOString(),
     });
     errorState.pending.forEach(function (item) {
       logEvent('client_error', item);
@@ -260,8 +260,8 @@ export function endSession() {
 }
 
 export async function withdrawParticipant() {
-  var participantCode = state.participantCode,
-    group = state.group;
+  const participantCode = state.participantCode;
+  const group = state.group;
   rememberCode(null);
   state.allocationCache = null;
   try {

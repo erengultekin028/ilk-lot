@@ -11,7 +11,7 @@ import { SIMULATOR_TOUR_STEPS, TASK_TOUR_STEPS } from '../constants/tour-steps.j
 // Görev turunda her adım bir kez gösterilir: 2. alıştırmada sadece ilkinde olmayan öğe (ör. satanların oranı) anlatılır.
 export function maybeStartTour() {
   if (state.tour) return;
-  var scrollTop;
+  let scrollTop;
   if (
     state.stage === 'task' &&
     state.trial &&
@@ -36,8 +36,8 @@ function startTour(steps, key) {
 }
 
 export function renderTour() {
-  var tourPopupElement = byId('tour-popup'),
-    appElement = byId('app');
+  const tourPopupElement = byId('tour-popup');
+  const appElement = byId('app');
   document.querySelectorAll('.highlight').forEach(function (item) {
     item.classList.remove('highlight');
   });
@@ -47,10 +47,10 @@ export function renderTour() {
     appElement.classList.remove('is-touring');
     return;
   }
-  var tour = state.tour,
-    text = tour.steps[tour.i],
-    element = byId(text[0]),
-    last = tour.i + 1 >= tour.steps.length;
+  const tour = state.tour;
+  const text = tour.steps[tour.i];
+  const element = byId(text[0]);
+  const last = tour.i + 1 >= tour.steps.length;
   appElement.classList.add('is-touring');
   tourPopupElement.classList.toggle('is-top', text[0] === 'nav');
   tourPopupElement.innerHTML =
@@ -68,10 +68,10 @@ export function renderTour() {
   tourPopupElement.hidden = false;
   if (element) {
     element.classList.add('highlight');
-    var viewWidth = byId('main-view').getBoundingClientRect(),
-      result = element.getBoundingClientRect(),
-      cardTop = tourPopupElement.getBoundingClientRect().top;
-    if (text[0] !== 'nav' && (result.top < viewWidth.top || result.bottom > cardTop - 12)) {
+    const innerRect = byId('main-view').getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
+    const cardTop = tourPopupElement.getBoundingClientRect().top;
+    if (text[0] !== 'nav' && (rect.top < innerRect.top || rect.bottom > cardTop - 12)) {
       try {
         element.scrollIntoView({
           block: 'start',
@@ -83,7 +83,7 @@ export function renderTour() {
 }
 
 export function endTour(skipped) {
-  var tour = state.tour;
+  const tour = state.tour;
   if (!tour) return;
   tour.steps.forEach(function (item) {
     state.seenTourSteps[item[0]] = 1;

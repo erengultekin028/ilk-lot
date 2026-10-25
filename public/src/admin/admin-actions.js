@@ -31,7 +31,7 @@ export const ADMIN_ACTIONS = {
     });
   },
   downloadPosterQr: function () {
-    var unit = (state.landingUrlInput || '').trim();
+    const unit = (state.landingUrlInput || '').trim();
     if (!/^https?:\/\//.test(unit)) {
       showToast('Önce tanıtım sayfasının adresini yaz (https:// ile).');
       return;
@@ -61,7 +61,7 @@ export const ADMIN_ACTIONS = {
     render();
   },
   generateAllocations: function () {
-    var count = Math.max(4, Math.round((parseInt(byId('allocation-count').value, 10) || 0) / 4) * 4);
+    const count = Math.max(4, Math.round((parseInt(byId('allocation-count').value, 10) || 0) / 4) * 4);
     askConfirm(
       'Yeni liste',
       count +
@@ -78,9 +78,9 @@ export const ADMIN_ACTIONS = {
   },
   generateAllocationsConfirmed: async function (count) {
     try {
-      var current =
-          participantRepository.mode() === 'firebase' ? await participantRepository.listAlloc() : {},
-        allocationList = buildAllocationList(count, 4, Object.keys(current).length);
+      const current =
+        participantRepository.mode() === 'firebase' ? await participantRepository.listAlloc() : {};
+      const allocationList = buildAllocationList(count, 4, Object.keys(current).length);
       // Firebase'de sadece yeni kodlar yazılır; mevcut kodlar ve grupları değişmez
       await participantRepository.saveAlloc(allocationList);
       state.allocationCache = await participantRepository.listAlloc();
@@ -123,7 +123,7 @@ export const ADMIN_ACTIONS = {
     );
   },
   countWithdrawn: async function () {
-    var participants = await participantRepository.listP();
+    const participants = await participantRepository.listP();
     state.withdrawnCount = participants.filter(function (item) {
       return item.withdrawn;
     }).length;
@@ -134,58 +134,57 @@ export const ADMIN_ACTIONS = {
 export const adminSelfTestActions = {
   runSelfTest: async function () {
     openModal('<h2>Sistem testi</h2><p>Çalışıyor…</p>');
-    var innerItems = [];
+    let innerItems = [];
     try {
       innerItems = await participantRepository.selfTest();
     } catch (error) {
       innerItems = [{ ad: 'Sistem testi', ok: false, d: String((error && error.message) || error) }];
     }
-    var timezoneOffset = -new Date().getTimezoneOffset() / 60,
-      items = [
-        { ad: 'Uyaran parmak izi', ok: null, d: stimulusFingerprint() + ' (tüm cihazlarda aynı olmalı)' },
-        {
-          ad: 'Uygulama sürümü',
-          ok: null,
-          d: APP_VERSION + (QUICK_TEST_MODE ? ' · HIZLI TEST MODU AÇIK' : ''),
-        },
-        {
-          ad: 'Cihaz saati',
-          ok: null,
-          d:
-            new Date().toLocaleString('tr-TR') + ' · UTC' + (timezoneOffset >= 0 ? '+' : '') + timezoneOffset,
-        },
-        {
-          ad: 'Ekran ve ağ',
-          ok: navigator.onLine,
-          d:
-            innerWidth +
-            '×' +
-            innerHeight +
-            ' · yoğunluk ' +
-            devicePixelRatio +
-            ' · ' +
-            (navigator.onLine ? 'çevrimiçi' : 'ÇEVRİMDIŞI'),
-        },
-        { ad: 'Tarayıcı', ok: null, d: (navigator.userAgent || '').slice(0, 110) },
-        {
-          ad: 'Titreşim ve hareket azaltma',
-          ok: null,
-          d:
-            (navigator.vibrate ? 'titreşim var' : 'titreşim yok') +
-            ' · ' +
-            (matchMedia('(prefers-reduced-motion: reduce)').matches
-              ? 'hareket azaltma AÇIK'
-              : 'hareket azaltma kapalı'),
-        },
-      ];
-    var all = innerItems.concat(items);
-    state.selfTestResults = all;
-    var sim = function (x) {
-        return x.ok === true ? '✓' : x.ok === false ? '✗' : 'ⓘ';
+    const timezoneOffset = -new Date().getTimezoneOffset() / 60;
+    const items = [
+      { ad: 'Uyaran parmak izi', ok: null, d: stimulusFingerprint() + ' (tüm cihazlarda aynı olmalı)' },
+      {
+        ad: 'Uygulama sürümü',
+        ok: null,
+        d: APP_VERSION + (QUICK_TEST_MODE ? ' · HIZLI TEST MODU AÇIK' : ''),
       },
-      renderClass = function (x) {
-        return x.ok === true ? 'up' : x.ok === false ? 'dn' : 'mu';
-      };
+      {
+        ad: 'Cihaz saati',
+        ok: null,
+        d: new Date().toLocaleString('tr-TR') + ' · UTC' + (timezoneOffset >= 0 ? '+' : '') + timezoneOffset,
+      },
+      {
+        ad: 'Ekran ve ağ',
+        ok: navigator.onLine,
+        d:
+          innerWidth +
+          '×' +
+          innerHeight +
+          ' · yoğunluk ' +
+          devicePixelRatio +
+          ' · ' +
+          (navigator.onLine ? 'çevrimiçi' : 'ÇEVRİMDIŞI'),
+      },
+      { ad: 'Tarayıcı', ok: null, d: (navigator.userAgent || '').slice(0, 110) },
+      {
+        ad: 'Titreşim ve hareket azaltma',
+        ok: null,
+        d:
+          (navigator.vibrate ? 'titreşim var' : 'titreşim yok') +
+          ' · ' +
+          (matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'hareket azaltma AÇIK'
+            : 'hareket azaltma kapalı'),
+      },
+    ];
+    const all = innerItems.concat(items);
+    state.selfTestResults = all;
+    const sim = function (x) {
+      return x.ok === true ? '✓' : x.ok === false ? '✗' : 'ⓘ';
+    };
+    const renderClass = function (x) {
+      return x.ok === true ? 'up' : x.ok === false ? 'dn' : 'mu';
+    };
     byId('modal-box').innerHTML =
       '<h2>Sistem testi</h2><div style="max-height:52vh;overflow:auto;text-align:left">' +
       all
@@ -212,7 +211,7 @@ export const adminSelfTestActions = {
       '<button class="button" data-a="copySelfTest">Sonucu kopyala</button><button class="button is-primary" data-a="cancelModal">Kapat</button>';
   },
   copySelfTest: function () {
-    var value = (state.selfTestResults || [])
+    const value = (state.selfTestResults || [])
       .map(function (item) {
         return (
           (item.ok === true ? '[OK] ' : item.ok === false ? '[HATA] ' : '[BİLGİ] ') + item.ad + ': ' + item.d

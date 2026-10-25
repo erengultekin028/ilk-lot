@@ -61,7 +61,7 @@ function persistEventQueue() {
 export async function flushEvents() {
   if (DEMO_MODE || eventLog.flushing || !eventLog.queue.length || !state.participantCode) return;
   eventLog.flushing = true;
-  var batch = eventLog.queue.slice(0, 400);
+  const batch = eventLog.queue.slice(0, 400);
   try {
     await participantRepository.addEvents(state.participantCode, batch);
     eventLog.queue = eventLog.queue.slice(batch.length);

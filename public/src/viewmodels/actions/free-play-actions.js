@@ -52,7 +52,7 @@ export const freePlayActions = {
   },
   selectFreePlayLimit: function (value) {
     if (!state.freePlay) return;
-    var count = value === 'd' ? null : +value;
+    const count = value === 'd' ? null : +value;
     if (count !== null && FREE_PLAY_LOSS_LIMITS.indexOf(count) < 0) return;
     state.freePlay.lim = count;
     render();
@@ -68,37 +68,37 @@ export const freePlayActions = {
     render();
   },
   closeNewsBanner: function () {
-    var news = freePlayBannerNews();
+    const news = freePlayBannerNews();
     if (state.freePlay && news) {
       state.freePlay.bn = news[0];
       updateNewsBanner();
     }
   },
   setFreePlaySpeed: function (value) {
-    var count = +value;
+    const count = +value;
     if (!state.freePlay || [0, 1, 2, 4].indexOf(count) < 0) return;
     state.freePlay.speed = count;
     document.querySelectorAll('[data-a=setFreePlaySpeed]').forEach(function (item) {
-      var isOn = +item.dataset.v === count;
+      const isOn = +item.dataset.v === count;
       item.classList.toggle('is-active', isOn);
       item.setAttribute('aria-pressed', isOn);
     });
   },
   setFreePlayOrder: function (innerValue) {
-    var items = String(innerValue).split('|'),
-      key = items[0],
-      value = items[1],
-      simulation = state.simulation;
+    const items = String(innerValue).split('|');
+    const key = items[0];
+    const value = items[1];
+    const simulation = state.simulation;
     if (!state.freePlay || !simulation || !simulation.pos[key] || (value !== 'stop' && value !== 'take'))
       return;
-    var count = items[2] === 'x' ? null : +items[2];
+    const count = items[2] === 'x' ? null : +items[2];
     if (count !== null && (value === 'stop' ? [0.05, 0.1, 0.15, 0.2] : [0.1, 0.2, 0.3]).indexOf(count) < 0)
       return;
     if (!simulation.pos[key].q) return;
-    var order = (simulation.orders[key] = simulation.orders[key] || { stop: null, take: null });
+    const order = (simulation.orders[key] = simulation.orders[key] || { stop: null, take: null });
     order[value] = count;
     if (order.stop == null && order.take == null) delete simulation.orders[key];
-    var orderSectionElement = byId('order-section');
+    const orderSectionElement = byId('order-section');
     if (orderSectionElement) orderSectionElement.innerHTML = freePlayOrderHtml(key);
   },
   showFreePlayMenu: function () {
@@ -108,7 +108,7 @@ export const freePlayActions = {
     render();
   },
   startFreePlay: function () {
-    var freePlay = state.freePlay;
+    const freePlay = state.freePlay;
     if (!freePlay || !FREE_PLAY_LEVELS[freePlay.lvl]) return;
     closeModal();
     clearInterval(state.cooldownTimer);
@@ -140,9 +140,9 @@ export const freePlayActions = {
     finishFreePlay('quit');
   },
   leaveFreePlay: function () {
-    var freePlay = state.freePlay;
+    const freePlay = state.freePlay;
     if (!freePlay) return;
-    var keep = freePlay.keep;
+    const keep = freePlay.keep;
     closeModal();
     clearInterval(state.cooldownTimer);
     state.simulation = keep.sim;

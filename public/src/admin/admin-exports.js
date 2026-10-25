@@ -24,15 +24,15 @@ function toCsv(rows) {
 }
 
 export async function saveFile(name, text) {
-  var innerData = /\.svg$/.test(name) ? text : '\ufeff' + text; // BOM: Excel'de Türkçe karakterler bozulmasın
-  var data = typeof claude !== 'undefined' && claude.use ? await claude.use('downloads') : null,
-    mime = /\.html$/.test(name)
-      ? 'text/html'
-      : /\.svg$/.test(name)
-        ? 'image/svg+xml'
-        : /\.txt$/.test(name)
-          ? 'text/plain'
-          : 'text/csv';
+  const innerData = /\.svg$/.test(name) ? text : '\ufeff' + text; // BOM: Excel'de Türkçe karakterler bozulmasın
+  const data = typeof claude !== 'undefined' && claude.use ? await claude.use('downloads') : null;
+  const mime = /\.html$/.test(name)
+    ? 'text/html'
+    : /\.svg$/.test(name)
+      ? 'image/svg+xml'
+      : /\.txt$/.test(name)
+        ? 'text/plain'
+        : 'text/csv';
   if (data) {
     try {
       await data.save({ filename: name, data: innerData });
@@ -44,7 +44,7 @@ export async function saveFile(name, text) {
     }
     return;
   }
-  var element = document.createElement('a');
+  const element = document.createElement('a');
   element.href = URL.createObjectURL(new Blob([innerData], { type: mime + ';charset=utf-8' }));
   element.download = name;
   document.body.appendChild(element);
@@ -56,79 +56,79 @@ export async function saveFile(name, text) {
 }
 
 export async function exportParticipants() {
-  var participants = await participantRepository.listP(),
-    rows = [
-      [
-        'app_version',
-        'code',
-        'grp',
-        'set_order',
-        'completed',
-        'decisions',
-        'panic_rate_pre',
-        'panic_rate_post',
-        'panic_rate_change',
-        'sell_rate_crisis_pre',
-        'sell_rate_crisis_post',
-        'sell_rate_gain_pre',
-        'sell_rate_loss_pre',
-        'sell_rate_gain_post',
-        'sell_rate_loss_post',
-        'disposition_pre',
-        'disposition_post',
-        'buy_more_crisis_pre',
-        'buy_more_crisis_post',
-        'rt_median_pre_ms',
-        'rt_median_post_ms',
-        'sim_trades',
-        'sim_sells',
-        'sim_loss_sells',
-        'sim_loss_sells_crisis',
-        'sim_buys',
-        'sim_sell_reasons',
-        'cooldown_shown',
-        'cooldown_cancel',
-        'cooldown_proceed',
-        'sim_time_portfolio_s',
-        'sim_time_market_s',
-        'sim_time_analysis_s',
-        'reading_s',
-        'stress_pre',
-        'stress_sim',
-        'stress_post',
-        'updated_at',
-        'test_mode',
-        'pre_test',
-        'pre_test_b3',
-        'post_test',
-        'attention_pass',
-        'comprehension_first_try',
-        'help_opens',
-        'manip_saw_wait',
-        'purpose_guess',
-        'age',
-        'gender',
-        'field',
-        'year',
-        'invest_exp',
-        'sim_exp',
-        'consent_version',
-        'consent_sections_opened',
-        'consent_downloaded',
-        'consent_read_s',
-        'pilot_clear',
-        'pilot_duration',
-        'pilot_unease',
-      ],
-    ];
+  let participants = await participantRepository.listP();
+  const rows = [
+    [
+      'app_version',
+      'code',
+      'grp',
+      'set_order',
+      'completed',
+      'decisions',
+      'panic_rate_pre',
+      'panic_rate_post',
+      'panic_rate_change',
+      'sell_rate_crisis_pre',
+      'sell_rate_crisis_post',
+      'sell_rate_gain_pre',
+      'sell_rate_loss_pre',
+      'sell_rate_gain_post',
+      'sell_rate_loss_post',
+      'disposition_pre',
+      'disposition_post',
+      'buy_more_crisis_pre',
+      'buy_more_crisis_post',
+      'rt_median_pre_ms',
+      'rt_median_post_ms',
+      'sim_trades',
+      'sim_sells',
+      'sim_loss_sells',
+      'sim_loss_sells_crisis',
+      'sim_buys',
+      'sim_sell_reasons',
+      'cooldown_shown',
+      'cooldown_cancel',
+      'cooldown_proceed',
+      'sim_time_portfolio_s',
+      'sim_time_market_s',
+      'sim_time_analysis_s',
+      'reading_s',
+      'stress_pre',
+      'stress_sim',
+      'stress_post',
+      'updated_at',
+      'test_mode',
+      'pre_test',
+      'pre_test_b3',
+      'post_test',
+      'attention_pass',
+      'comprehension_first_try',
+      'help_opens',
+      'manip_saw_wait',
+      'purpose_guess',
+      'age',
+      'gender',
+      'field',
+      'year',
+      'invest_exp',
+      'sim_exp',
+      'consent_version',
+      'consent_sections_opened',
+      'consent_downloaded',
+      'consent_read_s',
+      'pilot_clear',
+      'pilot_duration',
+      'pilot_unease',
+    ],
+  ];
   participants = participants.filter(function (item) {
     return !item.withdrawn;
   });
   participants.forEach(function (item) {
-    var snapshot = item['sess_1'];
+    const snapshot = item['sess_1'];
     if (!snapshot) return;
-    var data = item.demo || {},
-      feedback = item.fb || {};
+    const data = item.demo || {};
+    const feedback = item.fb || {};
     rows.push(
       summarizeSnapshot(item.code, item.grp, '1', snapshot).concat([
         item.pre,
@@ -163,18 +163,18 @@ export async function exportParticipants() {
 }
 
 export async function exportEvents() {
-  var participants = (await participantRepository.listP()).filter(function (item) {
-      return !item.withdrawn;
-    }),
-    rows = [['app_version', 'code', 'grp', 'session', 'n', 'ts', 'trial_index', 'type', 'data']];
-  for (var i = 0; i < participants.length; i++) {
-    var entry = await participantRepository.listEvents(participants[i].code);
-    entry.sort(function (left, right) {
+  const participants = (await participantRepository.listP()).filter(function (item) {
+    return !item.withdrawn;
+  });
+  const rows = [['app_version', 'code', 'grp', 'session', 'n', 'ts', 'trial_index', 'type', 'data']];
+  for (let i = 0; i < participants.length; i++) {
+    const events = await participantRepository.listEvents(participants[i].code);
+    events.sort(function (left, right) {
       return left.session === right.session
         ? left.n - right.n
         : String(left.session).localeCompare(String(right.session));
     });
-    entry.forEach(function (item) {
+    events.forEach(function (item) {
       rows.push([
         item.v || '',
         item.code,
@@ -199,15 +199,15 @@ function sortedByNumber(map) {
 
 // Araştırmacı listesi: grup SADECE burada var, kartlarda yok
 export async function exportAllocations() {
-  var simulation = await participantRepository.listAlloc(),
-    rows = [['no', 'code', 'grp', 'set_order', 'block', 'link']];
-  sortedByNumber(simulation).forEach(function (item) {
+  const allocations = await participantRepository.listAlloc();
+  const rows = [['no', 'code', 'grp', 'set_order', 'block', 'link']];
+  sortedByNumber(allocations).forEach(function (item) {
     rows.push([
-      simulation[item].no,
+      allocations[item].no,
       item,
-      simulation[item].grp,
-      simulation[item].order === 1 ? 'Y→X' : 'X→Y',
-      simulation[item].block,
+      allocations[item].grp,
+      allocations[item].order === 1 ? 'Y→X' : 'X→Y',
+      allocations[item].block,
       participantLinkFor(item),
     ]);
   });
@@ -216,13 +216,13 @@ export async function exportAllocations() {
 
 // Yazdırılabilir katılım kartları (A4, sayfada 6-8 kart): QR + kod. Grup bilgisi YOK
 export async function exportCards() {
-  var simulation = await participantRepository.listAlloc(),
-    innerSortedByNumber = sortedByNumber(simulation);
-  var cards = innerSortedByNumber
+  const allocations = await participantRepository.listAlloc();
+  const innerSortedByNumber = sortedByNumber(allocations);
+  const cards = innerSortedByNumber
     .map(function (item) {
       return (
         '<div class="c"><div class="n">No ' +
-        simulation[item].no +
+        allocations[item].no +
         '</div><div class="h">İlk Lot · Katılım kartın</div>' +
         renderQrSvg(participantLinkFor(item), 150) +
         '<div class="k">' +
@@ -231,7 +231,7 @@ export async function exportCards() {
       );
     })
     .join('');
-  var html =
+  const html =
     '<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İlk Lot katılım kartları</title><style>@page{size:A4;margin:10mm}body{font-family:system-ui,-apple-system,sans-serif;margin:10px;color:#111}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(85mm,1fr));gap:6mm}.c{border:1px dashed #999;border-radius:4mm;padding:5mm;text-align:center;break-inside:avoid;position:relative}.h{font-weight:700;font-size:13px;margin-bottom:2mm}.k{font:700 18px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;margin:2mm 0}p{font-size:11px;margin:1mm 0}.w{font-weight:600}.n{position:absolute;top:3mm;right:4mm;font-size:9px;color:#888}</style></head><body><div class="g">' +
     cards +
     '</div></body></html>';
@@ -242,21 +242,21 @@ export async function exportCards() {
 // Yazdırılabilir A4/A3 poster. Tüm ölçüler mm × k ile verilir; A3'te k = √2 ve her şey orantılı büyür.
 // Metin tanıtım sayfasıyla aynı: araştırmanın amacı genel, hipotez yok.
 export async function exportPoster(size) {
-  var unit = (state.landingUrlInput || '').trim();
+  const unit = (state.landingUrlInput || '').trim();
   if (!/^https?:\/\//.test(unit)) {
     showToast('Önce tanıtım sayfasının adresini yaz (https:// ile).');
     return;
   }
-  var key = size === 'A3' ? 1.4142 : 1,
-    simulation = function (value) {
-      return (value * key).toFixed(2) + 'mm';
-    },
-    mail = escapeHtml((state.posterEmail || '').trim()),
-    foot = escapeHtml((state.posterFooter || '').trim());
-  var fact = function (other, value) {
+  const key = size === 'A3' ? 1.4142 : 1;
+  const simulation = function (value) {
+    return (value * key).toFixed(2) + 'mm';
+  };
+  const mail = escapeHtml((state.posterEmail || '').trim());
+  const foot = escapeHtml((state.posterFooter || '').trim());
+  const fact = function (other, value) {
     return '<div class="f"><b>' + other + '</b><span>' + value + '</span></div>';
   };
-  var html =
+  const html =
     '<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>İlk Lot poster ' +
     size +
     '</title><style>' +

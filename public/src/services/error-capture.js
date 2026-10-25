@@ -8,12 +8,12 @@ import { logEvent } from './event-log.js';
 export const errorState = { seen: {}, count: 0, pending: [] };
 
 function captureError(kind, msg, extra) {
-  var innerKey = kind + msg;
+  const innerKey = kind + msg;
   if (errorState.seen[innerKey] || errorState.count >= 20) return;
   errorState.seen[innerKey] = 1;
   errorState.count++;
-  var map = { kind: kind, msg: String(msg).slice(0, 300), stage: state.stage, tab: state.tab };
-  for (var key in extra || {}) map[key] = extra[key];
+  const map = { kind: kind, msg: String(msg).slice(0, 300), stage: state.stage, tab: state.tab };
+  for (const key in extra || {}) map[key] = extra[key];
   if (state.participantCode) logEvent('client_error', map);
   else errorState.pending.push(map);
 }
@@ -28,7 +28,7 @@ addEventListener('error', function (event) {
 });
 
 addEventListener('unhandledrejection', function (event) {
-  var reason = event.reason;
+  const reason = event.reason;
   captureError('promise', (reason && reason.message) || reason, {
     stack: reason && reason.stack ? String(reason.stack).slice(0, 500) : null,
   });

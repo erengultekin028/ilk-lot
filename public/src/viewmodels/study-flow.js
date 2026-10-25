@@ -82,27 +82,27 @@ export function startTrial() {
 
 // Görevlerde bekleme süresi YOK (iki grupta da): 1. ve 3. bölüm aktarımı ölçer
 export function chooseOption(choice) {
-  var trialState = state.trial,
-    now = Date.now();
+  const trialState = state.trial;
+  const timestamp = Date.now();
   if (trialState.first == null) {
     trialState.first = choice;
-    trialState.firstMs = now - trialState.t0;
+    trialState.firstMs = timestamp - trialState.t0;
   }
   finalizeChoice(choice);
 }
 
 function finalizeChoice(choice) {
-  var trialState = state.trial,
-    trial = currentTrial(),
-    now = Date.now(),
-    // Sonuç: sat = fiyat değişiminden etkilenmez; tut = pozisyon × değişim; daha al = (pozisyon + ek) × değişim
-    resolve =
-      choice === 'sat'
-        ? 0
-        : choice === 'tut'
-          ? CONFIG.stake * trial.out
-          : (CONFIG.stake + CONFIG.addAmount) * trial.out;
-  var map = {
+  const trialState = state.trial;
+  const trial = currentTrial();
+  const timestamp = Date.now();
+  // Sonuç: sat = fiyat değişiminden etkilenmez; tut = pozisyon × değişim; daha al = (pozisyon + ek) × değişim
+  const resolve =
+    choice === 'sat'
+      ? 0
+      : choice === 'tut'
+        ? CONFIG.stake * trial.out
+        : (CONFIG.stake + CONFIG.addAmount) * trial.out;
+  const map = {
     id: trial.id,
     block: state.block,
     set: trial.set,
@@ -117,7 +117,7 @@ function finalizeChoice(choice) {
     first: trialState.first,
     final: choice,
     rtFirst: trialState.firstMs,
-    rtFinal: now - trialState.t0,
+    rtFinal: timestamp - trialState.t0,
     hid: (state.lastHiddenAt || 0) > trialState.t0,
     res: Math.round(resolve),
   };
@@ -135,7 +135,7 @@ function finalizeChoice(choice) {
 }
 
 export function advanceAfterOutcome() {
-  var trialState = state.trial;
+  const trialState = state.trial;
   if (trialState.mode === 'practice') {
     if (trialState.i + 1 < PRACTICE_TRIALS.length) {
       trialState.i++;
