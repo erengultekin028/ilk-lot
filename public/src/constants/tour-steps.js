@@ -22,6 +22,22 @@ export const TASK_TOUR_STEPS = [
   ],
 ];
 
+// Tur adımının anahtarı → vurgulanacak öğenin DOM kimliği.
+// Adım anahtarları kayıtlı anlık görüntüde (görülen adımlar) saklandığı için değiştirilmez; kimlikler ayrı tutulur.
+export const TOUR_TARGET_IDS = {
+  tc: 'tour-chart',
+  tpos: 'tour-position',
+  tnews: 'tour-news',
+  tcrowd: 'tour-crowd',
+  tch: 'tour-choices',
+  snews: 'news-section',
+  shero: 'portfolio-hero',
+  salloc: 'allocation-section',
+  slist: 'stock-list',
+  nav: 'simulator-nav',
+  tm: 'timer-chip',
+};
+
 export const SIMULATOR_TOUR_STEPS = [
   [
     'snews',

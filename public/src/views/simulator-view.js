@@ -624,13 +624,13 @@ export function updateSimulatorLive() {
   if (!byId('portfolio-value')) return;
   const portfolioTotal = portfolioValue();
   const change = (portfolioTotal / simulation.v0 - 1) * 100;
-  setText('sv', '₺' + formatNumber(portfolioTotal, 0));
-  setText('sinv', '₺' + formatNumber(portfolioTotal - simulation.cash, 0));
+  setText('portfolio-value', '₺' + formatNumber(portfolioTotal, 0));
+  setText('invested-value', '₺' + formatNumber(portfolioTotal - simulation.cash, 0));
   const portfolioChangeElement = byId('portfolio-change');
   portfolioChangeElement.textContent = formatPercentChange(change) + ' başlangıca göre';
   portfolioChangeElement.className = 'direction-badge ' + directionClass(change);
-  setText('scash', '₺' + formatNumber(simulation.cash, 0));
-  setText('sday', dayText(simulation));
+  setText('cash-value', '₺' + formatNumber(simulation.cash, 0));
+  setText('day-counter', dayText(simulation));
   const freePlayPanelElement = byId('free-play-panel');
   if (freePlayPanelElement) {
     const innerFreePlayHeaderHtml = freePlayHeaderHtml();

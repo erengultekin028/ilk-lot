@@ -144,6 +144,43 @@ def _():
     assert 'admin' not in open(os.path.join(KOK, 'public', 'index.html'), encoding='utf-8').read().lower()
 
 
+def dom_kimlik_tarama(kaynaklar):
+    """Kodun aradığı DOM kimlikleri (byId/setText/getElementById/#kimlik) işaretlemede tanımlı mı; tur hedefleri var mı.
+    Yeniden adlandırmada işaretleme güncelleniyor da arama unutuluyorsa (geri sayım, canlı toplam, tur) yakalar."""
+    tum = '\n'.join(kaynaklar)
+    tanimli = set(re.findall(r'id="([\w-]+)', tum)) | set(re.findall(r"id=\\?'([\w-]+)", tum))
+    onekler = re.findall(r'id="([\w-]+-)\'? ?\+', tum)
+    eksik = set()
+    for m in re.finditer(r"(?:byId|setText|getElementById)\(\s*'([\w-]+)'", tum):
+        if m.group(1) not in tanimli and not any(m.group(1).startswith(p) for p in onekler):
+            eksik.add(m.group(1))
+    for m in re.finditer(r"querySelector(?:All)?\(\s*'[^']*#([\w-]+)", tum):
+        if m.group(1) not in tanimli:
+            eksik.add(m.group(1))
+    hedefler = re.search(r'TOUR_TARGET_IDS\s*=\s*\{(.*?)\}', tum, re.S)
+    for hedef in re.findall(r":\s*'([\w-]+)'", hedefler.group(1)) if hedefler else []:
+        if hedef not in tanimli:
+            eksik.add(hedef)
+    return sorted(eksik)
+
+
+@test('Yapı: koddaki DOM kimlik aramaları (geri sayım, canlı toplam, tur hedefleri…) işaretlemede tanımlı; arama yeniden adlandırmada unutulursa yakalanır')
+def _():
+    dosyalar = []
+    for kok, _dizinler, adlar in os.walk(os.path.join(KOK, 'public')):
+        if os.sep + 'vendor' in kok:
+            continue
+        for d in adlar:
+            if d.endswith('.js') or d.endswith('.html'):
+                dosyalar.append(open(os.path.join(kok, d), encoding='utf-8').read())
+    assert dom_kimlik_tarama(dosyalar) == [], dom_kimlik_tarama(dosyalar)
+    # Bozma: aramalardan biri eski ada döndürülünce tarama bunu bulmalı
+    bozuk = [t.replace("setText('cooldown-number'", "setText('cdn'") for t in dosyalar]
+    assert 'cdn' in dom_kimlik_tarama(bozuk)
+    bozuk = [t.replace("tc: 'tour-chart'", "tc: 'tour-grafik'") for t in dosyalar]
+    assert 'tour-grafik' in dom_kimlik_tarama(bozuk)
+
+
 @test('Ön kontrol: pilot formu açık kalırsa ana veri toplamada HATA; --pilot ile TAMAM; kapalıyken --pilot UYARI; alan silinirse HATA')
 def _():
     h, k = hazir_html(), hazir_kural()

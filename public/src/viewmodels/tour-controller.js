@@ -4,7 +4,12 @@ import { state } from './app-state.js';
 import { byId } from '../utils/dom.js';
 import { logEvent } from '../services/event-log.js';
 import { saveSnapshot } from '../services/session-persistence.js';
-import { SIMULATOR_TOUR_STEPS, TASK_TOUR_STEPS } from '../constants/tour-steps.js';
+import { SIMULATOR_TOUR_STEPS, TASK_TOUR_STEPS, TOUR_TARGET_IDS } from '../constants/tour-steps.js';
+
+// Tur adımının hedef öğesi (adım anahtarından DOM kimliğine)
+function tourTarget(stepKey) {
+  return byId(TOUR_TARGET_IDS[stepKey] || stepKey);
+}
 
 // ═════════════════ REHBERLİ TUR ═════════════════
 // İlk alıştırmada ve simülatörün başında ekranın parçalarını sırayla vurgular.
@@ -19,12 +24,12 @@ export function maybeStartTour() {
     state.trial.phase === 'choose'
   ) {
     scrollTop = TASK_TOUR_STEPS.filter(function (item) {
-      return byId(item[0]) && !state.seenTourSteps[item[0]];
+      return tourTarget(item[0]) && !state.seenTourSteps[item[0]];
     });
     if (scrollTop.length) startTour(scrollTop, 'task');
   } else if (state.stage === 'sim' && !state.freePlay && !state.seenTourSteps.sim) {
     scrollTop = SIMULATOR_TOUR_STEPS.filter(function (item) {
-      return byId(item[0]);
+      return tourTarget(item[0]);
     });
     if (scrollTop.length) startTour(scrollTop, 'sim');
   }
@@ -49,7 +54,7 @@ export function renderTour() {
   }
   const tour = state.tour;
   const text = tour.steps[tour.i];
-  const element = byId(text[0]);
+  const element = tourTarget(text[0]);
   const last = tour.i + 1 >= tour.steps.length;
   appElement.classList.add('is-touring');
   tourPopupElement.classList.toggle('is-top', text[0] === 'nav');

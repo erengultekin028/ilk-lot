@@ -235,7 +235,7 @@ export const marketActions = {
           return;
         }
         state.simulatorCooldown.left--;
-        setText('cdn', String(Math.max(0, state.simulatorCooldown.left)));
+        setText('cooldown-number',String(Math.max(0, state.simulatorCooldown.left)));
         if (state.simulatorCooldown.left <= 0) {
           clearInterval(state.cooldownTimer);
           const cooldownConfirmElement = byId('cooldown-confirm');
