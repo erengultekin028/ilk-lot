@@ -1,6 +1,6 @@
 // Simülatör grafikleri: mini grafik, hisse detay grafiği, portföy seyri.
 
-import { CONFIG, DEMO_MODE } from '../constants/app-config.js';
+import { CONFIG } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { formatNumber } from '../utils/format.js';
 import { STOCK_BASES } from '../constants/market-data.js';
@@ -148,7 +148,7 @@ export function renderDetailChart(symbol) {
 export function simulationSeries() {
   if (state.simulationSeriesCache) return state.simulationSeriesCache;
   const keep = state.simulation;
-  if (DEMO_MODE || !keep || keep.tick < CONFIG.simTicks) return null;
+  if (!keep || keep.tick < CONFIG.simTicks) return null;
   const simTicks = CONFIG.simTicks;
   const trades = keep.trades
     .map(function (item, index) {
@@ -199,11 +199,13 @@ export function simulationSeries() {
     v: items,
     v0: keep.v0,
     tr: trades.map(function (item) {
-      return { t: item.t, side: item.side };
+      return {
+        t: item.t,
+        side: item.side,
+      };
     }),
   });
 }
-
 export function simulationChartGeometry(width, height, left, right, top, bottom) {
   const series = simulationSeries();
   const simTicks = CONFIG.simTicks;
@@ -222,7 +224,6 @@ export function simulationChartGeometry(width, height, left, right, top, bottom)
     },
   };
 }
-
 export function simulationChartSvg() {
   if (!simulationSeries()) return '';
   const width = 340;

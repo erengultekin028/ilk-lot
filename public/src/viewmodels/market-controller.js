@@ -1,6 +1,5 @@
 // Simülatör denetleyicisi: piyasa adımı, alım/satım, bitiş, grafik gezinme.
 
-import { DEMO_MODE } from '../constants/app-config.js';
 import { render, updateHeader } from '../views/app-shell.js';
 import { state } from './app-state.js';
 import { byId } from '../utils/dom.js';
@@ -39,7 +38,10 @@ export function marketTick() {
   const simulation = state.simulation;
   const crisis = crisisAt(simulation.tick);
   if (crisis && simulation.tick === crisis.at) {
-    logEvent('sim_crisis_start', { stocks: crisis.stocks, tab: state.marketTab });
+    logEvent('sim_crisis_start', {
+      stocks: crisis.stocks,
+      tab: state.marketTab,
+    });
     if (state.marketTab !== 'p') showToast('Sert düşüş: ' + crisis.stocks.join(', ') + '. Portföyüne bak.');
     if (navigator.vibrate)
       try {
@@ -99,7 +101,6 @@ function executeFreePlayOrders() {
     );
   });
 }
-
 export function trackTabTime() {
   if (state.stage !== 'sim' || !state.tabActiveSince) return;
   const timestamp = Date.now();
@@ -107,7 +108,6 @@ export function trackTabTime() {
     (state.tabTimes[state.marketTab] || 0) + (timestamp - state.tabActiveSince);
   state.tabActiveSince = timestamp;
 }
-
 export function endPractice(skipped) {
   const practice = state.practice;
   if (!practice) return;
@@ -125,13 +125,17 @@ export function endPractice(skipped) {
   state.simulatorCooldown = null;
   state.tour = null;
   renderTour();
-  logEvent('practice_sim', { trades: count, tick: tick, skipped: !!skipped, ms: Date.now() - practice.t0 });
+  logEvent('practice_sim', {
+    trades: count,
+    tick: tick,
+    skipped: !!skipped,
+    ms: Date.now() - practice.t0,
+  });
   flushEvents();
   state.stage = 'bridge';
   state.bridge = 'simready';
   render();
 }
-
 export function finishFreePlay(kind) {
   const freePlay = state.freePlay;
   const simulation = state.simulation;
@@ -153,19 +157,16 @@ export function finishFreePlay(kind) {
   render();
   window.scrollTo(0, 0);
 }
-
 function endSimulation() {
   trackTabTime();
   state.tabActiveSince = null;
   closeModal();
   clearInterval(state.cooldownTimer);
   const simulation = state.simulation;
-  if (DEMO_MODE) {
-    state.stage = 'demoend';
-    render();
-    return;
-  }
-  logEvent('sim_end', { value: Math.round(portfolioValue()), trades: simulation.trades.length });
+  logEvent('sim_end', {
+    value: Math.round(portfolioValue()),
+    trades: simulation.trades.length,
+  });
   state.stage = 'stress';
   state.stressKey = 'b_sim';
   state.stressStartedAt = Date.now();
@@ -173,7 +174,6 @@ function endSimulation() {
   flushEvents();
   render();
 }
-
 function recordTrade(symbol, side, quantity, price, extra) {
   const simulation = state.simulation;
   const position = simulation.pos[symbol];
@@ -192,7 +192,6 @@ function recordTrade(symbol, side, quantity, price, extra) {
   for (const x in extra) map[x] = extra[x];
   return map;
 }
-
 export function sellStock(symbol, quantity, afterCooldown) {
   const simulation = state.simulation;
   const position = simulation.pos[symbol];
@@ -204,7 +203,7 @@ export function sellStock(symbol, quantity, afterCooldown) {
     afterCooldown: !!afterCooldown,
     value: Math.round(quantity * price),
     why: state.sellReasonDraft ? state.sellReasonDraft.why : null,
-    qMode: value.mode || null,
+    qMode: value.mode,
     qEdits: value.edits || 0,
   });
   state.sellReasonDraft = null;
@@ -220,7 +219,6 @@ export function sellStock(symbol, quantity, afterCooldown) {
   else updateSimulatorLive();
   showToast(symbol + ': ' + quantity + ' lot satıldı (₺' + formatNumber(quantity * price, 0) + ').');
 }
-
 export function buyStock(symbol, quantity) {
   const simulation = state.simulation;
   const price = simulation.p[symbol];
@@ -230,7 +228,7 @@ export function buyStock(symbol, quantity) {
   const value = state.tradeDraft || {};
   const innerRecordTrade = recordTrade(symbol, 'B', quantity, price, {
     value: Math.round(innerValue),
-    qMode: value.mode || null,
+    qMode: value.mode,
     qEdits: value.edits || 0,
   });
   position.avg =
@@ -249,8 +247,10 @@ export function buyStock(symbol, quantity) {
 
 // Hisse grafiğinde parmakla (ya da fareyle) gezme: o günün fiyatı gösterilir. Bırakılınca 1,5 sn sonra kaybolur.
 // Hareketler tek tek kaydedilmez; jest bitince tek olay (sim_chart_scrub: k, moves, ms, tick)
-export const scrubState = { timer: null, gesture: null };
-
+export const scrubState = {
+  timer: null,
+  gesture: null,
+};
 export function scrubChartAt(event) {
   const element = document.querySelector('#detail-chart svg');
   if (!element || !state.simulation || !state.detailSymbol) return;
@@ -265,7 +265,6 @@ export function scrubChartAt(event) {
   const detailChartElement = byId('detail-chart');
   if (detailChartElement) detailChartElement.innerHTML = renderDetailChart(detailSymbol);
 }
-
 export function endChartScrub() {
   clearTimeout(scrubState.timer);
   scrubState.timer = null;

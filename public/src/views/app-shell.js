@@ -1,6 +1,6 @@
 // Uygulama kabuğu: ekran çizimi, başlık, ilerleme çubuğu.
 
-import { CONFIG, DEMO_MODE, QUICK_TEST_MODE } from '../constants/app-config.js';
+import { CONFIG } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { byId } from '../utils/dom.js';
 import { startFilm } from '../widgets/film-widget.js';
@@ -53,14 +53,12 @@ export function render() {
   maybeStartTour();
   renderTour();
 }
-
 export function updateHeader() {
-  byId('quick-test-banner').hidden = !QUICK_TEST_MODE;
-  byId('mode-banner').hidden = !(DEMO_MODE || state.practice || state.freePlay);
+  byId('quick-test-banner').hidden = true;
+  byId('mode-banner').hidden = !(state.practice || state.freePlay);
   if (state.freePlay) byId('mode-banner').textContent = 'SERBEST MOD · araştırmaya dahil değil, kaydedilmez';
   else if (state.practice) byId('mode-banner').textContent = 'ALIŞTIRMA · işlemlerin sayılmaz';
-  else if (DEMO_MODE) byId('mode-banner').textContent = 'TANITIM MODU · hiçbir veri kaydedilmez';
-  byId('sync-dot').hidden = DEMO_MODE || !!state.freePlay;
+  byId('sync-dot').hidden = !!state.freePlay;
   const inTask = state.stage === 'task' && state.trial && state.trial.mode === 'main';
   const inSim = state.stage === 'sim' && state.simulation;
   byId('timer-chip').hidden = !(inTask || inSim);
@@ -78,12 +76,11 @@ export function updateHeader() {
       : '⏱ ' +
         formatMinutesSeconds(((simulationTickLimit() - state.simulation.tick) * CONFIG.simTickMs) / 1000);
   byId('menu-button').hidden = !(
-    (state.participantCode || DEMO_MODE) &&
+    state.participantCode &&
     ['task', 'intro', 'pre', 'demo', 'end', 'sim', 'bridge', 'stress'].indexOf(state.stage) >= 0
   );
   byId('help-button').hidden = !(
-    (state.participantCode || DEMO_MODE) &&
-    ['task', 'intro', 'sim', 'bridge'].indexOf(state.stage) >= 0
+    state.participantCode && ['task', 'intro', 'sim', 'bridge'].indexOf(state.stage) >= 0
   );
   // Yön ışığı (iki gruba da aynı): kararda son haftanın yönü, sonuçta sonucun yönü, simülatörde kriz anı
   let direction = 0;
@@ -109,9 +106,8 @@ export function updateHeader() {
   updateSyncIndicator();
   updateProgressBar();
 }
-
 function progressState() {
-  if (DEMO_MODE || state.freePlay) return null;
+  if (state.freePlay) return null;
   const stage = state.stage;
   const length = TRIAL_SETS.X.length;
   if (state.testQuestion && state.testQuestion.kind === 'post') return [4, 0.1];
@@ -145,7 +141,6 @@ function progressState() {
     ];
   return null;
 }
-
 function updateProgressBar() {
   const studyProgressElement = byId('study-progress');
   const innerProgressState = progressState();

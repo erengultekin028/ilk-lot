@@ -9,7 +9,7 @@ import {
   exportPoster,
   saveFile,
 } from './admin-exports.js';
-import { APP_VERSION, CONFIG, QUERY_PARAMS, QUICK_TEST_MODE } from '../constants/app-config.js';
+import { APP_VERSION, CONFIG } from '../constants/app-config.js';
 import { render } from '../views/app-shell.js';
 import { state } from '../viewmodels/app-state.js';
 import { byId } from '../utils/dom.js';
@@ -20,7 +20,6 @@ import { participantRepository } from '../repositories/participant-repository.js
 import { renderQrSvg } from '../widgets/qr-code.js';
 import { showToast } from '../widgets/toast.js';
 import { stimulusFingerprint } from '../models/trial-generator.js';
-
 export const ADMIN_ACTIONS = {
   refreshDashboard: function () {
     loadDashboard();
@@ -130,7 +129,6 @@ export const ADMIN_ACTIONS = {
     render();
   },
 };
-
 export const adminSelfTestActions = {
   runSelfTest: async function () {
     openModal('<h2>Sistem testi</h2><p>Çalışıyor…</p>');
@@ -138,15 +136,25 @@ export const adminSelfTestActions = {
     try {
       innerItems = await participantRepository.selfTest();
     } catch (error) {
-      innerItems = [{ ad: 'Sistem testi', ok: false, d: String((error && error.message) || error) }];
+      innerItems = [
+        {
+          ad: 'Sistem testi',
+          ok: false,
+          d: String((error && error.message) || error),
+        },
+      ];
     }
     const timezoneOffset = -new Date().getTimezoneOffset() / 60;
     const items = [
-      { ad: 'Uyaran parmak izi', ok: null, d: stimulusFingerprint() + ' (tüm cihazlarda aynı olmalı)' },
+      {
+        ad: 'Uyaran parmak izi',
+        ok: null,
+        d: stimulusFingerprint() + ' (tüm cihazlarda aynı olmalı)',
+      },
       {
         ad: 'Uygulama sürümü',
         ok: null,
-        d: APP_VERSION + (QUICK_TEST_MODE ? ' · HIZLI TEST MODU AÇIK' : ''),
+        d: APP_VERSION + '',
       },
       {
         ad: 'Cihaz saati',
@@ -165,7 +173,11 @@ export const adminSelfTestActions = {
           ' · ' +
           (navigator.onLine ? 'çevrimiçi' : 'ÇEVRİMDIŞI'),
       },
-      { ad: 'Tarayıcı', ok: null, d: (navigator.userAgent || '').slice(0, 110) },
+      {
+        ad: 'Tarayıcı',
+        ok: null,
+        d: (navigator.userAgent || '').slice(0, 110),
+      },
       {
         ad: 'Titreşim ve hareket azaltma',
         ok: null,
@@ -234,8 +246,7 @@ export const adminSelfTestActions = {
   toggleQuickMode: function () {
     if (CONFIG.firebase) return;
     try {
-      if (QUICK_TEST_MODE && !QUERY_PARAMS.get('hizli')) localStorage.removeItem('ilklot:quick');
-      else localStorage.setItem('ilklot:quick', String(Date.now()));
+      localStorage.setItem('ilklot:quick', String(Date.now()));
     } catch (error) {
       showToast('Bu görünümde kalıcı kayıt yok; adresin sonuna ?hizli=1 ekle.');
       return;

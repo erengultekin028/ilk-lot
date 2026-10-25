@@ -1,7 +1,7 @@
 // Eylemler: menü, tema, yazı boyutu, pencereler, çekilme.
 
 import { actions } from './index.js';
-import { CONFIG, DEMO_MODE, setDemoMode, setPilotMode } from '../../constants/app-config.js';
+import { CONFIG } from '../../constants/app-config.js';
 import { render } from '../../views/app-shell.js';
 import { state } from '../app-state.js';
 import { eventLog, flushEvents, logEvent } from '../../services/event-log.js';
@@ -17,7 +17,6 @@ import { endTour, renderTour } from '../tour-controller.js';
 
 // ═════════════════ EYLEMLER ═════════════════// ═════════════════ EYLEMLER ═════════════════
 let logoTaps = [];
-
 export const uiActions = {
   startDemo: function () {
     if (state.participantCode) {
@@ -42,7 +41,7 @@ export const uiActions = {
   },
   setDemoSpeed: function (value) {
     const count = +value;
-    if (!DEMO_MODE || [1, 2, 4].indexOf(count) < 0) return;
+    return;
     state.demoSpeed = count;
     document.querySelectorAll('[data-a=setDemoSpeed]').forEach(function (item) {
       const isOn = +item.dataset.v === count;
@@ -51,7 +50,7 @@ export const uiActions = {
     });
   },
   skipToNextCrisis: function () {
-    if (!DEMO_MODE || !state.simulation || state.freePlay) return;
+    return;
     const simulation = state.simulation;
     const value = CONFIG.simCrises.filter(function (item) {
       return item.at - 2 > simulation.tick;
@@ -75,7 +74,11 @@ export const uiActions = {
     state.simulatorCooldown = null;
     initSimulation();
     state.marketTab = 'p';
-    state.tabTimes = { p: 0, m: 0, a: 0 };
+    state.tabTimes = {
+      p: 0,
+      m: 0,
+      a: 0,
+    };
     state.tabActiveSince = Date.now();
     state.stage = 'sim';
     render();
@@ -94,12 +97,17 @@ export const uiActions = {
   openTerm: function (value) {
     const i = +value;
     if (!(i >= 0 && i < GLOSSARY.length)) return;
-    logEvent('term_open', { k: GLOSSARY[i][0], stage: state.stage });
+    logEvent('term_open', {
+      k: GLOSSARY[i][0],
+      stage: state.stage,
+    });
     openModal(termHtml(i));
   },
   openHelp: function () {
     state.helpOpenCount = (state.helpOpenCount || 0) + 1;
-    logEvent('help_open', { stage: state.stage });
+    logEvent('help_open', {
+      stage: state.stage,
+    });
     openModal(helpHtml());
   },
   openMenu: function () {
@@ -121,7 +129,10 @@ export const uiActions = {
       'Devam',
       false,
       async function () {
-        logEvent('device_transfer', { ti: state.trialIndex, phase: state.phase });
+        logEvent('device_transfer', {
+          ti: state.trialIndex,
+          phase: state.phase,
+        });
         clearInterval(state.cooldownTimer);
         await saveSnapshot();
         await flushEvents();
@@ -167,7 +178,9 @@ export const uiActions = {
       item.classList.toggle('is-active', isOn);
       item.setAttribute('aria-pressed', isOn);
     });
-    logEvent('fs_set', { level: count });
+    logEvent('fs_set', {
+      level: count,
+    });
   },
   toggleTheme: function () {
     const documentElement = document.documentElement;
@@ -176,10 +189,11 @@ export const uiActions = {
     try {
       localStorage.setItem('ilklot:theme', count);
     } catch (error) {}
-    logEvent('theme_set', { theme: count });
+    logEvent('theme_set', {
+      theme: count,
+    });
   },
   tapLogo: function () {
-    if (DEMO_MODE) return;
     const timestamp = Date.now();
     logoTaps = logoTaps.filter(function (item) {
       return timestamp - item < 2500;

@@ -2,7 +2,7 @@
 
 import { actions } from './actions/index.js';
 import { dashboardAutoRefresh } from '../admin/admin-dashboard.js';
-import { CONFIG, DEMO_MODE } from '../constants/app-config.js';
+import { CONFIG } from '../constants/app-config.js';
 import { state } from './app-state.js';
 import { byId } from '../utils/dom.js';
 import { eventLog, flushEvents, logEvent } from '../services/event-log.js';
@@ -15,23 +15,18 @@ import { updateTradePreview } from '../views/simulator-view.js';
 // Tanıtım modunda hız çarpanı (1, 2, 4): aynı turu art arda çalıştırır; gerçek akışta çarpan hep 1
 // b23: serbest modda hız (0 duraklat, 1, 2, 4) oyuncunun kendi seçimidir; tanıtım hızı yalnızca serbest dışında geçerli
 setInterval(function () {
-  const count = state.freePlay
-    ? state.freePlay.speed == null
-      ? 1
-      : state.freePlay.speed
-    : DEMO_MODE
-      ? state.demoSpeed || 1
-      : 1;
+  const count = state.freePlay ? (state.freePlay.speed == null ? 1 : state.freePlay.speed) : 1;
   for (let i = 0; i < count; i++) marketTick();
 }, CONFIG.simTickMs);
-
 document.addEventListener('pointerdown', function (event) {
   if (!event.target.closest || !event.target.closest('#detail-chart')) return;
   clearTimeout(scrubState.timer);
-  scrubState.gesture = { moves: 0, t0: Date.now() };
+  scrubState.gesture = {
+    moves: 0,
+    t0: Date.now(),
+  };
   scrubChartAt(event);
 });
-
 document.addEventListener('pointermove', function (event) {
   const insideChart = event.target.closest && event.target.closest('#detail-chart');
   if (!insideChart) {
@@ -47,11 +42,9 @@ document.addEventListener('pointermove', function (event) {
   }
   if (scrubState.gesture) scrubChartAt(event);
 });
-
 document.addEventListener('pointerup', function () {
   if (scrubState.gesture || state.scrubDay != null) endChartScrub();
 });
-
 document.addEventListener('pointercancel', function () {
   if (scrubState.gesture || state.scrubDay != null) endChartScrub();
 });
@@ -66,7 +59,6 @@ document.addEventListener('click', function (event) {
     handler(target.dataset.v, target);
   }
 });
-
 document.addEventListener('input', function (event) {
   const key = event.target.dataset && event.target.dataset.in;
   if (!key) return;
@@ -118,12 +110,10 @@ document.addEventListener(
   },
   true
 );
-
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Enter' && event.target && event.target.id === 'code-input')
     enterCode(event.target.value);
 });
-
 document.addEventListener('compositionend', function (event) {
   if (event.target && event.target.id === 'code-input') {
     const formatted = formatCodeInput(event.target.value);
@@ -131,7 +121,6 @@ document.addEventListener('compositionend', function (event) {
     state.codeInput = formatted;
   }
 });
-
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape' && byId('modal').classList.contains('is-open')) actions.cancelModal();
 });
@@ -146,18 +135,15 @@ document.addEventListener('visibilitychange', function () {
     flushEvents();
   }
 });
-
 addEventListener('pagehide', function () {
   if (state.participantCode) {
     saveSnapshot();
     flushEvents();
   }
 });
-
 setInterval(function () {
   if (state.participantCode && eventLog.queue.length) flushEvents();
 }, 15000);
-
 setInterval(dashboardAutoRefresh, 30000); // Bağlantı kopmuşsa kuyruğu düzenli dene
 
 // Yazı boyutu (b22 geri geldi): kayıtlı tercih 'ilklot:fs' (0/1/2); geçersiz değer yok sayılır. Bir arayüz ayarıdır, katılımcı verisi değil.

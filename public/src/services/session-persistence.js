@@ -1,6 +1,6 @@
 // Oturum anlık görüntüsü: kaydet, geri yükle, özetle.
 
-import { APP_VERSION, CONFIG, DEMO_MODE, QUICK_TEST_MODE } from '../constants/app-config.js';
+import { APP_VERSION, CONFIG } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { eventLog } from './event-log.js';
 import { round2 } from '../utils/format.js';
@@ -12,7 +12,7 @@ import { participantRepository } from '../repositories/participant-repository.js
 // ═════════════════ ANLIK GÖRÜNTÜ VE DEVAM ═════════════════
 function createSnapshot() {
   const simulation = state.simulation;
-  const quickMode = QUICK_TEST_MODE ? 1 : 0;
+  const quickMode = 0;
   if (typeof trackTabTime === 'function') trackTabTime();
   return {
     quick: quickMode,
@@ -43,14 +43,13 @@ function createSnapshot() {
     practiced: !!state.practiceDone,
     cd: state.cooldownStats,
     ended: state.ended,
-    endedAt: state.endedAt || null,
+    endedAt: state.endedAt,
     evN: eventLog.counter,
     updatedAt: new Date().toISOString(),
   };
 }
-
 export async function saveSnapshot() {
-  if (DEMO_MODE || state.practice || state.freePlay || !state.participantCode) return;
+  if (state.practice || state.freePlay || !state.participantCode) return;
   const map = {};
   map['sess_' + CONFIG.session] = createSnapshot();
   map.updatedAt = new Date().toISOString();
@@ -82,7 +81,6 @@ const PERSISTED_STATE_KEYS = {
   tabT: 'tabTimes',
   readMs: 'readingMs',
 };
-
 export function restoreSnapshot(snapshot) {
   Object.keys(PERSISTED_STATE_KEYS).forEach(function (key) {
     if (snapshot[key] !== undefined) state[PERSISTED_STATE_KEYS[key]] = snapshot[key];
@@ -98,7 +96,12 @@ export function restoreSnapshot(snapshot) {
     state.marketTab = 'p';
     state.tabActiveSince = Date.now();
   }
-  if (!state.tabTimes) state.tabTimes = { p: 0, m: 0, a: 0 };
+  if (!state.tabTimes)
+    state.tabTimes = {
+      p: 0,
+      m: 0,
+      a: 0,
+    };
 }
 
 // ═════════════════ GİRİŞ AKIŞI ═════════════════
@@ -106,11 +109,14 @@ export function restoreSnapshot(snapshot) {
 export function findNextSession(participant) {
   for (let i = 1; i <= CONFIG.totalSessions; i++) {
     const snapshot = participant['sess_' + i];
-    if (!snapshot || !snapshot.ended) return { n: String(i), prev: participant['sess_' + (i - 1)] };
+    if (!snapshot || !snapshot.ended)
+      return {
+        n: String(i),
+        prev: participant['sess_' + (i - 1)],
+      };
   }
   return null;
 }
-
 export function gapLeftMs(previousSession) {
   if (!previousSession || !previousSession.endedAt || !CONFIG.minGapHours) return 0;
   return Math.max(0, new Date(previousSession.endedAt).getTime() + CONFIG.minGapHours * 3600000 - Date.now());
@@ -119,9 +125,15 @@ export function gapLeftMs(previousSession) {
 // Katılımcı özeti: her satır bir katılımcı. pre = 1. bölüm, post = 3. bölüm (VERI_SOZLUGU.md)
 export function summarizeSnapshot(code, innerGroup, session, snapshot) {
   const innerData = snapshot.dec || [];
-  const cd = snapshot.cd || { n: 0, v: 0, g: 0 };
+  const cd = snapshot.cd || {
+    n: 0,
+    v: 0,
+    g: 0,
+  };
   const pulses = snapshot.pulses || {};
-  const sim = snapshot.sim || { trades: [] };
+  const sim = snapshot.sim || {
+    trades: [],
+  };
   const trials = sim.trades || [];
   const bounds = function (other) {
     return innerData.filter(function (item) {
@@ -214,7 +226,8 @@ export function summarizeSnapshot(code, innerGroup, session, snapshot) {
     innerData.length,
     pre[0],
     post[0],
-    pre[0] !== '' && post[0] !== '' ? round2(post[0] - pre[0]) : '', // ana ölçüt: panik satış oranı ve değişimi
+    pre[0] !== '' && post[0] !== '' ? round2(post[0] - pre[0]) : '',
+    // ana ölçüt: panik satış oranı ve değişimi
     pre[1],
     post[1],
     pre[2],

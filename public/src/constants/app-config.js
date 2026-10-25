@@ -1,14 +1,9 @@
-// Uygulama sürümü, çalışma ayarları (CONFIG) ve çalışma kipi bayrakları. Tüm modüller buradan okur; pilot başladıktan sonra ölçüt ayarları DEĞİŞTİRİLMEZ.
+// Uygulama sürümü ve çalışma ayarları (CONFIG). Tüm modüller buradan okur; pilot başladıktan sonra ölçüt ayarları DEĞİŞTİRİLMEZ.
 
 // Her olay ve anlık görüntü bu sürümle etiketlenir. Pilot ortasında kodu değiştirirsen MUTLAKA artır.
 export const APP_VERSION = '2026.10.22-b26';
 
 // ═════════════════ ÇALIŞMA AYARLARI ═════════════════
-export const QUERY_PARAMS = new URLSearchParams(location.search);
-
-// Kişiye özel link: ...ilk-lot.html#k=KM7D-P2XR-9TQA  (# sonrası sunucuya gönderilmez)
-export const HASH_PARAMS = new URLSearchParams(location.hash.slice(1));
-
 export const CONFIG = {
   session: '1',
   totalSessions: 1, // Tek oturum, ~30 dk: 1. bölüm (6 karar) → simülatör (7,5 dk) → 3. bölüm (6 karar)
@@ -50,6 +45,7 @@ export const CONFIG = {
   // Pilot yayını için true: bilgilendirme ekranının sonunda 3 soruluk geri bildirim formu çıkar (CSV: pilot_clear, pilot_duration, pilot_unease).
   // Gerçek veri toplamada MUTLAKA false: ana veride bu sorular olmamalı. firebase/dagit.py true bırakılmışsa yayını durdurur.
   pilot: false,
+  seed: 'ilklot-gorev-v1', // karar anı uyaranlarının tohumu; pilot başladıktan sonra DEĞİŞTİRME
   firebase: {
     apiKey: 'AIzaSyBQEsokUK7ShXU2sj35dM4wTN5UW6HDHgM',
     authDomain: 'ilk-lot-pilot.firebaseapp.com',
@@ -58,46 +54,8 @@ export const CONFIG = {
   }, // ilk-lot-pilot web uygulaması (KURULUM.md)
 };
 
-// ── Hızlı test modu ──
-// Sadece geliştirme/demo içindir: piyasa 10 kat hızlı akar (7,5 dk yerine ~45 sn), bekleme 3 sn olur.
-// Fiyatlar, krizler ve haberler AYNI günlerde olur (sadece gerçek zaman kısalır). Açma yolları: adrese ?hizli=1 ya da
-// araştırmacı panelindeki düğme (30 dk sonra kendiliğinden kapanır). CFG.firebase doluysa (gerçek pilot) HİÇBİR ZAMAN açılmaz.
-export const QUICK_TEST_MODE = (function () {
-  if (CONFIG.firebase) return false;
-  if (QUERY_PARAMS.get('hizli') === '1') return true;
-  try {
-    const value = +localStorage.getItem('ilklot:quick');
-    return !!value && Date.now() - value < 1800000;
-  } catch (error) {
-    return false;
-  }
-})();
-
-if (QUICK_TEST_MODE) {
-  CONFIG.simTickMs = 150;
-  CONFIG.cooldownSec = 3;
-}
-
-// ── Tanıtım modu (?demo=1) ──
-// Okulda, sunumda ya da arkadaşa gösterirken kullanılır: simülatör serbestçe oynanır, HİÇBİR şey kaydedilmez (ne yerel ne Firebase),
-// bekleme ekranı çıkmaz (müdahale gösterilmez, böylece tanıtımı gören biri sonradan gerçek katılımcı olursa ön bilgi edinmez).
-// CFG.firebase dolu olsa da Firebase'e hiç bağlanılmaz. Gerçek veri toplamada bu adres kartlara/linklere KONMAZ.
-export let DEMO_MODE = QUERY_PARAMS.get('demo') === '1';
-export function setDemoMode(value) {
-  DEMO_MODE = value;
-}
-
-// Pilot geri bildirim formu: CFG.pilot ya da (Firebase yokken) adrese ?pilot=1. CFG.firebase doluyken adres parametresi çalışmaz;
-// gerçek kurulumda formu yalnızca yayındaki dosyanın kendisi açar, katılımcı linkine parametre eklenerek açılamaz.
-export let PILOT_MODE =
-  !DEMO_MODE && (CONFIG.pilot === true || (!CONFIG.firebase && QUERY_PARAMS.get('pilot') === '1'));
-export function setPilotMode(value) {
-  PILOT_MODE = value;
-}
-
-CONFIG.seed = 'ilklot-gorev-v1';
-
-export const FORCED_SESSION = QUERY_PARAMS.get('oturum');
+// Pilot geri bildirim formu: yalnızca CONFIG.pilot ile açılır. Gerçek veri toplamada MUTLAKA false (firebase/dagit.py kontrol eder).
+export const PILOT_MODE = CONFIG.pilot === true;
 
 // ═════════════════ DURUM ═════════════════
 export const CONSENT_VERSION = 'v1';

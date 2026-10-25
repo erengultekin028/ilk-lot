@@ -1,7 +1,7 @@
 // Yönetim paneli görünümleri.
 
 import { renderDashboard } from './admin-dashboard.js';
-import { APP_VERSION, CONFIG, CONSENT_VERSION, QUICK_TEST_MODE } from '../constants/app-config.js';
+import { APP_VERSION, CONFIG, CONSENT_VERSION } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { eventLog } from '../services/event-log.js';
 import { escapeHtml } from '../utils/format.js';
@@ -19,7 +19,10 @@ function renderAdminPanel() {
           accumulator[allocationCache[item].grp]++;
           return accumulator;
         },
-        { A: 0, B: 0 }
+        {
+          A: 0,
+          B: 0,
+        }
       )
     : null;
   let html =
@@ -61,11 +64,11 @@ function renderAdminPanel() {
     CONFIG.firebase
       ? '<p class="muted small-text" style="margin:0">Gerçek pilot modunda (Firebase ayarlı) kullanılamaz; bu bilerek böyle.</p>'
       : '<div class="key-value"><span>Durum</span><b>' +
-          (QUICK_TEST_MODE ? 'AÇIK' : 'kapalı') +
+          'kapalı' +
           '</b></div><p class="muted small-text" style="margin:6px 0 10px">Piyasa 10 kat hızlı akar (7,5 dk yerine yaklaşık 45 sn), bekleme 3 sn olur; fiyatlar, krizler ve haberler aynı günlerde gelir. Açıkken ekranda uyarı şeridi görünür ve 30 dk sonra kendiliğinden kapanır. Bu modda üretilen veri analizde kullanılmamalı (CSV\'de <code>test_mode</code> = 1). Adresin sonuna <code>?hizli=1</code> ekleyerek de açabilirsin.</p><button class="button' +
-          (QUICK_TEST_MODE ? '' : ' is-primary') +
+          ' is-primary' +
           '" data-a="toggleQuickMode">' +
-          (QUICK_TEST_MODE ? 'Hızlı test modunu kapat' : 'Hızlı test modunu aç') +
+          'Hızlı test modunu aç' +
           '</button>'
   );
   html += section(

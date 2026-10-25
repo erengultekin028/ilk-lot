@@ -1,6 +1,5 @@
 // Eylemler: serbest mod.
 
-import { DEMO_MODE } from '../../constants/app-config.js';
 import { render } from '../../views/app-shell.js';
 import { state } from '../app-state.js';
 import { byId } from '../../utils/dom.js';
@@ -16,14 +15,9 @@ import { finishFreePlay } from '../market-controller.js';
 import { initSimulation } from '../../models/market-simulation.js';
 import { closeModal, openModal } from '../../widgets/modal.js';
 import { freePlayBannerNews, updateNewsBanner } from '../../views/simulator-view.js';
-
 export const freePlayActions = {
   openFreePlay: function () {
-    if (
-      state.freePlay ||
-      !(state.stage === 'end' || (DEMO_MODE && ['demoland', 'demoend', 'sim'].indexOf(state.stage) >= 0))
-    )
-      return;
+    if (state.freePlay || !(state.stage === 'end')) return;
     closeModal();
     state.freePlay = {
       lvl: 'o',
@@ -95,7 +89,10 @@ export const freePlayActions = {
     if (count !== null && (value === 'stop' ? [0.05, 0.1, 0.15, 0.2] : [0.1, 0.2, 0.3]).indexOf(count) < 0)
       return;
     if (!simulation.pos[key].q) return;
-    const order = (simulation.orders[key] = simulation.orders[key] || { stop: null, take: null });
+    const order = (simulation.orders[key] = simulation.orders[key] || {
+      stop: null,
+      take: null,
+    });
     order[value] = count;
     if (order.stop == null && order.take == null) delete simulation.orders[key];
     const orderSectionElement = byId('order-section');
@@ -125,7 +122,11 @@ export const freePlayActions = {
     state.tour = null;
     state.scrubDay = null;
     state.detailRangeDays = state.detailRangeDays || 30;
-    state.tabTimes = { p: 0, m: 0, a: 0 };
+    state.tabTimes = {
+      p: 0,
+      m: 0,
+      a: 0,
+    };
     state.tabActiveSince = Date.now();
     state.stage = 'sim';
     render();

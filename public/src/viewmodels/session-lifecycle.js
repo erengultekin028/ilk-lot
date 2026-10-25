@@ -1,14 +1,6 @@
 // Oturumun açılışı, kod girişi ve bitişi.
 
-import {
-  APP_VERSION,
-  CONFIG,
-  CONSENT_VERSION,
-  DEMO_MODE,
-  FORCED_SESSION,
-  HASH_PARAMS,
-  QUICK_TEST_MODE,
-} from '../constants/app-config.js';
+import { APP_VERSION, CONFIG, CONSENT_VERSION } from '../constants/app-config.js';
 import { render } from '../views/app-shell.js';
 import { state } from './app-state.js';
 import { byId } from '../utils/dom.js';
@@ -25,7 +17,6 @@ import {
 } from '../services/session-persistence.js';
 import { showToast } from '../widgets/toast.js';
 import { stimulusFingerprint } from '../models/trial-generator.js';
-
 function showCodeError(message) {
   state.busy = false;
   state.codeError = message;
@@ -42,11 +33,6 @@ function showCodeError(message) {
 // Açılış: linkte kod varsa ya da bu cihaz bir katılımcıyı hatırlıyorsa onu karşıla
 export async function bootstrap() {
   await storeReady;
-  if (DEMO_MODE) {
-    state.group = 'B';
-    state.stage = 'demoland';
-    return render();
-  }
   const fromLink = normalizeCode(HASH_PARAMS.get('k'));
   const code = fromLink || rememberedCode();
   // Kodu adres çubuğundan ve geçmişten kaldır (ekran görüntüsünde ya da yan bakışta görünmesin)
@@ -81,7 +67,10 @@ export async function bootstrap() {
       return render();
     }
     state.pendingCode = code;
-    state.welcomeBack = { code: code, next: findNextSession(value) };
+    state.welcomeBack = {
+      code: code,
+      next: findNextSession(value),
+    };
     state.stage = value.consentAt ? 'welcome' : 'consent';
     render();
   } catch (error) {
@@ -89,7 +78,6 @@ export async function bootstrap() {
     render();
   }
 }
-
 export async function enterCode(rawCode) {
   await storeReady;
   const code = normalizeCode(rawCode);
@@ -117,7 +105,7 @@ export async function enterCode(rawCode) {
           : 'Bu kodla çalışmadan çekilmişsin. Tekrar katılmak istersen araştırmacıyla konuş.'
       );
     }
-    const nextX = FORCED_SESSION ? { n: FORCED_SESSION, prev: null } : findNextSession(value);
+    const nextX = findNextSession(value);
     // Tüm oturumlar bitti: son oturumun sonuna götür (son test / bilgilendirme eksikse orada tamamlanır)
     if (!nextX) {
       const items = String(CONFIG.totalSessions);
@@ -128,8 +116,8 @@ export async function enterCode(rawCode) {
       state.preTest = value.pre != null ? value.pre : null;
       state.preTestBigThree = value.preB3 != null ? value.preB3 : null;
       state.postTest = value.post != null ? value.post : null;
-      state.manipulationCheck = value.manip || null;
-      state.pilotFeedback = value.fb || null;
+      state.manipulationCheck = value.manip;
+      state.pilotFeedback = value.fb;
       rememberCode(code);
       if (value['sess_' + items]) restoreSnapshot(value['sess_' + items]);
       state.ended = true;
@@ -154,7 +142,7 @@ export async function enterCode(rawCode) {
         code: code,
         grp: allocation.grp,
         consentAt: state.consentAt,
-        quick: QUICK_TEST_MODE || undefined,
+        quick: undefined,
         consentVer: CONSENT_VERSION,
         consentOpened: Object.keys(state.consentOpenSections || {}),
         consentDl: !!state.consentDownloaded,
@@ -166,7 +154,7 @@ export async function enterCode(rawCode) {
     state.preTest = value.pre != null ? value.pre : null;
     state.preTestBigThree = value.preB3 != null ? value.preB3 : null;
     state.postTest = value.post != null ? value.post : null;
-    state.manipulationCheck = value.manip || null;
+    state.manipulationCheck = value.manip;
     state.hasDemographics = !!value.demo;
     // Önceki oturumdan gönderilemeyen olaylar varsa kuyruğa geri al
     try {
@@ -191,7 +179,9 @@ export async function enterCode(rawCode) {
         return;
       }
       state.stage = state.practiceDone ? 'app' : state.preTest == null ? 'pre' : 'intro';
-      logEvent('session_resume', { ti: state.trialIndex });
+      logEvent('session_resume', {
+        ti: state.trialIndex,
+      });
       render();
       showToast('Kaldığın yerden devam ediyorsun.');
       return;
@@ -214,7 +204,7 @@ export async function enterCode(rawCode) {
       });
     logEvent('session_start', {
       theme: document.documentElement.getAttribute('data-theme') || 'light',
-      quick: QUICK_TEST_MODE,
+      quick: false,
       v: APP_VERSION,
       seed: CONFIG.seed,
       order: state.setOrder,
@@ -227,7 +217,9 @@ export async function enterCode(rawCode) {
     state.busy = false;
     if (state.preTest == null) {
       state.stage = state.hasDemographics ? 'pre' : 'demo';
-      state.demographics = { inv: [] };
+      state.demographics = {
+        inv: [],
+      };
       state.introStep = 0;
     } else {
       state.stage = 'app';
@@ -241,7 +233,6 @@ export async function enterCode(rawCode) {
     render();
   }
 }
-
 export function endSession() {
   if (state.ended) return;
   state.ended = true;
@@ -258,7 +249,6 @@ export function endSession() {
   saveSnapshot();
   flushEvents();
 }
-
 export async function withdrawParticipant() {
   const participantCode = state.participantCode;
   const group = state.group;
@@ -282,5 +272,4 @@ export async function withdrawParticipant() {
   state.stage = 'withdrawn';
   render();
 }
-
 const storeReady = participantRepository.init();

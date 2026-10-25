@@ -1,6 +1,6 @@
 // Veri katmanı: yerel/Firebase kayıt, randomizasyon listesi, olay yazma, araştırmacı girişi.
 
-import { CONFIG, DEMO_MODE } from '../constants/app-config.js';
+import { CONFIG } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { eventLog } from '../services/event-log.js';
 import { CODE_PATTERN, buildAllocationList, rememberCode } from '../utils/participant-code.js';
@@ -59,7 +59,10 @@ export const participantRepository = (function () {
     firebase.initializeApp(CONFIG.firebase);
     // Katılımcılar anonim oturum açar: kimlik bilgisi toplanmaz ama güvenlik kuralları çalışır
     if (!firebase.auth().currentUser) await firebase.auth().signInAnonymously();
-    feedback = { db: firebase.firestore(), auth: firebase.auth() };
+    feedback = {
+      db: firebase.firestore(),
+      auth: firebase.auth(),
+    };
     const currentUser = feedback.auth.currentUser;
     adminUser = currentUser && !currentUser.isAnonymous ? currentUser.email : null;
   }
@@ -77,10 +80,7 @@ export const participantRepository = (function () {
       return adminUser;
     },
     init: async function () {
-      if (DEMO_MODE) {
-        ready = true;
-        return;
-      } // Tanıtım: sunucuya bağlanma, yerel liste oluşturma
+      // Tanıtım: sunucuya bağlanma, yerel liste oluşturma
       if (CONFIG.firebase) {
         try {
           await initFb();
@@ -110,7 +110,7 @@ export const participantRepository = (function () {
         const data = await feedback.db.collection('allocations').doc(code).get();
         return data.exists ? data.data() : null;
       }
-      return (list('alloc') || {})[code] || null;
+      return (list('alloc') || {})[code];
     },
     getP: async function (code) {
       if (mode === 'firebase') {
@@ -120,9 +120,10 @@ export const participantRepository = (function () {
       return list('p:' + code);
     },
     saveP: async function (code, data) {
-      if (DEMO_MODE) return;
       if (mode === 'firebase')
-        return feedback.db.collection('participants').doc(code).set(data, { merge: true });
+        return feedback.db.collection('participants').doc(code).set(data, {
+          merge: true,
+        });
       const current = list('p:' + code) || {};
       for (const key in data) current[key] = data[key];
       list('p:' + code, current);
@@ -133,7 +134,7 @@ export const participantRepository = (function () {
       }
     },
     addEvents: async function (code, evs) {
-      if (DEMO_MODE || !evs.length) return;
+      if (!evs.length) return;
       if (mode === 'firebase') {
         const other = feedback.db.batch();
         const color = feedback.db.collection('participants').doc(code).collection('events');
@@ -211,11 +212,17 @@ export const participantRepository = (function () {
     // Çekilme: yerelde veri hemen silinir (yalnızca demo kipi; gerçek veri Firebase'dedir). Firebase'de HİÇBİR silme yolu yoktur
     // (politika A, soft delete): kayıt "withdrawn:true + withdrawnAt" ile işaretlenir ve analizden/dışa aktarmadan çıkarılır.
     withdraw: async function (code, grp, extra) {
-      if (DEMO_MODE) return;
-      const tomb = { code: code, grp: grp, withdrawn: true, withdrawnAt: new Date().toISOString() };
+      const tomb = {
+        code: code,
+        grp: grp,
+        withdrawn: true,
+        withdrawnAt: new Date().toISOString(),
+      };
       for (const key in extra || {}) tomb[key] = extra[key];
       if (mode === 'firebase')
-        return feedback.db.collection('participants').doc(code).set(tomb, { merge: true });
+        return feedback.db.collection('participants').doc(code).set(tomb, {
+          merge: true,
+        });
       try {
         ['ev:', 'q:', 'evn:'].forEach(function (item) {
           localStorage.removeItem('ilklot:' + item + code);
@@ -228,13 +235,25 @@ export const participantRepository = (function () {
     selfTest: async function () {
       const innerItems = [];
       const isValid = function (items, data) {
-        innerItems.push({ ad: items, ok: true, d: data || '' });
+        innerItems.push({
+          ad: items,
+          ok: true,
+          d: data || '',
+        });
       };
       const no = function (items, data) {
-        innerItems.push({ ad: items, ok: false, d: data || '' });
+        innerItems.push({
+          ad: items,
+          ok: false,
+          d: data || '',
+        });
       };
       const bil = function (items, data) {
-        innerItems.push({ ad: items, ok: null, d: data || '' });
+        innerItems.push({
+          ad: items,
+          ok: null,
+          d: data || '',
+        });
       };
       if (memMode)
         no(
@@ -273,7 +292,9 @@ export const participantRepository = (function () {
         if (adminUser) {
           try {
             const reference = feedback.db.collection('selftest').doc('yazma');
-            await reference.set({ t: Date.now() });
+            await reference.set({
+              t: Date.now(),
+            });
             const reader = await reference.get();
             reader.exists
               ? isValid('Firestore yazma (araştırmacı)', 'yazma ve okuma başarılı')
@@ -288,7 +309,9 @@ export const participantRepository = (function () {
           );
       } else {
         try {
-          list('p:__selftest__', { t: Date.now() });
+          list('p:__selftest__', {
+            t: Date.now(),
+          });
           const quantity = list('p:__selftest__');
           if (memMode) delete innerMap['p:__selftest__'];
           else localStorage.removeItem('ilklot:p:__selftest__');

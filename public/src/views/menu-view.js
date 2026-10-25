@@ -1,6 +1,5 @@
 // Menü, sözlük, yardım ve yazı boyutu görünümleri.
 
-import { DEMO_MODE } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { consentField } from './consent-view.js';
 import { GLOSSARY } from '../constants/glossary.js';
@@ -17,7 +16,6 @@ export function termButtonHtml(termIndex, label) {
     '</button>'
   );
 }
-
 export function termHtml(index) {
   const group = GLOSSARY[index];
   return (
@@ -28,7 +26,6 @@ export function termHtml(index) {
     '</p><button class="button is-primary" data-a="cancelModal">Anladım</button><button class="button" data-a="openHelp">Tüm sözlük</button>'
   );
 }
-
 export function helpHtml() {
   return (
     '<h2>Sözlük</h2><dl class="glossary-list" style="margin:0 0 14px;max-height:55vh;overflow:auto">' +
@@ -38,12 +35,10 @@ export function helpHtml() {
     '</dl><button class="button is-primary" data-a="cancelModal">Anladım</button>'
   );
 }
-
 function fontSizeLevel() {
   const value = document.documentElement.getAttribute('data-fs');
   return value === '1' || value === '2' ? +value : 0;
 }
-
 export function fontSizeHtml() {
   const level = fontSizeLevel();
   return (
@@ -66,42 +61,7 @@ export function fontSizeHtml() {
     '</div>'
   );
 }
-
 export function menuHtml() {
-  if (DEMO_MODE)
-    return (
-      '<h2>Menü</h2><p>Tanıtım modu: hiçbir veri kaydedilmez.</p>' +
-      fontSizeHtml() +
-      (state.stage === 'sim'
-        ? (state.freePlay
-            ? ''
-            : '<div class="font-size-selector"><span class="selector-label">Tanıtım hızı</span>' +
-              [1, 2, 4]
-                .map(function (item) {
-                  const isOn = (state.demoSpeed || 1) === item;
-                  return (
-                    '<button class="chip' +
-                    (isOn ? ' is-active' : '') +
-                    '" aria-pressed="' +
-                    isOn +
-                    '" data-a="setDemoSpeed" data-v="' +
-                    item +
-                    '">' +
-                    item +
-                    '×</button>'
-                  );
-                })
-                .join('') +
-              '</div>') +
-          (state.freePlay
-            ? '<button class="button" data-a="quitFreePlay">Serbest oyunu bitir</button>'
-            : '<button class="button" data-a="skipToNextCrisis">Sonraki krize atla</button>')
-        : '') +
-      (state.freePlay
-        ? ''
-        : '<button class="button" data-a="openFreePlay">Serbest mod</button><button class="button" data-a="startDemoSimulation">Baştan başla</button>') +
-      '<button class="button" data-a="exitDemo">Tanıtımdan çık</button><button class="button" data-a="cancelModal">Kapat</button>'
-    );
   return (
     '<h2>Menü</h2><p>Katılımcı kodun: ' +
     (state.participantCode ? maskCode(state.participantCode) : '-') +
