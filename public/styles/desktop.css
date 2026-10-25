@@ -36,6 +36,12 @@
     margin: 0 auto;
     width: 100%;
   }
+  /* Karar anı grafiği: SVG genişlikle birlikte büyüdüğü için eksen yazıları şişmesin diye genişliği sınırlanır */
+  #tour-chart svg {
+    display: block;
+    max-width: 520px;
+    margin: 0 auto;
+  }
   /* Bildirim ve tur kartı ortalanır */
   #toast,
   #tour-popup {

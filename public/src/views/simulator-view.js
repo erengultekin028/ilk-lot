@@ -603,7 +603,7 @@ export function updateSimulatorLive() {
       marketNewsElement._t = latestNewsAt(simulation.tick)[0];
     }
     STOCK_BASES.forEach(function (item) {
-      const element = byId('mc-' + item[0]);
+      const element = byId('market-card-' + item[0]);
       if (element) element.innerHTML = stockCardHtml(item[0]);
     });
     return;

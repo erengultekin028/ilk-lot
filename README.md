@@ -1,42 +1,193 @@
-# İlk Lot: proje klasörü
+<div align="center">
 
-**Önce `DEVIR_NOTU.md`'yi oku** (proje durumu, kararlar, kurallar, doğrulanmayanlar). Mimari: `docs/MIMARI.md`.
+<img src="public/assets/icon-180.png" alt="İlk Lot simgesi" width="96" height="96">
 
-| Klasör / dosya | İçerik |
+# İlk Lot
+
+**Genç yatırımcıların sert düşüş anındaki panik satışını inceleyen, telefonda çalışan bir davranış araştırması uygulaması.**
+
+[![Testler](https://github.com/erengultekin028/ilk-lot/actions/workflows/test.yml/badge.svg)](https://github.com/erengultekin028/ilk-lot/actions/workflows/test.yml)
+[![Yayın](https://github.com/erengultekin028/ilk-lot/actions/workflows/yayin.yml/badge.svg)](https://github.com/erengultekin028/ilk-lot/actions/workflows/yayin.yml)
+![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-FFCA28?logo=firebase&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES%20modülleri-F7DF1E?logo=javascript&logoColor=black)
+![Paketleyici yok](https://img.shields.io/badge/paketleyici-yok-informational)
+![Durum](https://img.shields.io/badge/durum-pilot%20öncesi-orange)
+
+[**Canlı site**](https://ilk-lot-pilot.web.app) · [Yönetim paneli](https://ilk-lot-pilot.web.app/admin/) · [Mimari](docs/MIMARI.md) · [Kurulum rehberi](firebase/KURULUM.md) · [Devir notu](DEVIR_NOTU.md)
+
+</div>
+
+---
+
+## Bağlantılar
+
+| | Adres | Kim kullanır |
+|---|---|---|
+| **Katılımcı uygulaması** | https://ilk-lot-pilot.web.app | Katılımcılar (anonim giriş, kod gerekmez) |
+| **Araştırmacı paneli** | https://ilk-lot-pilot.web.app/admin/ | Yalnızca araştırmacı (e-posta ve şifre) |
+| **Kaynak kod** | https://github.com/erengultekin028/ilk-lot | Herkes |
+
+> **Not:** Site şu an pilot öncesi aşamadadır. Katılımcı sayfası gerçek veritabanına bağlıdır; onamı kabul eden her ziyaretçi bir katılım yuvası tüketir. Davet edilmediysen onamı kabul etme.
+
+## Ekran görüntüleri
+
+Aşağıdaki ekranlar uygulamanın kendi kodundan, veritabanına bağlanmadan çizilmiştir. Piyasa, fiyatlar ve haberler **kurgusaldır**; gerçek para yoktur.
+
+<table>
+  <tr>
+    <td align="center"><b>Onam</b></td>
+    <td align="center"><b>Karar anı</b></td>
+    <td align="center"><b>Simülatör: portföy</b></td>
+    <td align="center"><b>Simülatör: piyasa</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/ekran_goruntuleri/telefon-onam.png" alt="Telefonda onam ekranı" width="200"></td>
+    <td><img src="docs/ekran_goruntuleri/telefon-karar-ani.png" alt="Telefonda karar anı: Sat, Tut, Daha al" width="200"></td>
+    <td><img src="docs/ekran_goruntuleri/telefon-simulator-portfoy.png" alt="Telefonda piyasa simülatörü, portföy sekmesi" width="200"></td>
+    <td><img src="docs/ekran_goruntuleri/telefon-simulator-piyasa.png" alt="Telefonda piyasa simülatörü, piyasa sekmesi" width="200"></td>
+  </tr>
+</table>
+
+**Geniş ekran:** uygulama pencerenin tamamını kaplar; karar ve simülatör ekranları iki sütuna geçer.
+
+<table>
+  <tr>
+    <td align="center"><b>Karar anı</b></td>
+    <td align="center"><b>Simülatör: piyasa</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/ekran_goruntuleri/masaustu-karar-ani.png" alt="Masaüstünde karar anı, grafik solda seçenekler sağda" width="480"></td>
+    <td><img src="docs/ekran_goruntuleri/masaustu-simulator-piyasa.png" alt="Masaüstünde simülatör piyasa sekmesi" width="480"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Simülatör: portföy</b></td>
+    <td align="center"><b>Araştırmacı paneli</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/ekran_goruntuleri/masaustu-simulator-portfoy.png" alt="Masaüstünde simülatör portföy sekmesi" width="480"></td>
+    <td><img src="docs/ekran_goruntuleri/masaustu-yonetim-paneli.png" alt="Araştırmacı paneli" width="480"></td>
+  </tr>
+</table>
+
+## Araştırma sorusu
+
+> Genç yatırımcılar kayıptaki bir hisseyi sert düşüş sırasında panikle satıyor mu? Zararına satıştan önce konulan **10 saniyelik bir bekleme ekranı** bu davranışı azaltır mı, ve bekleme ekranı kalktıktan sonra etki sürer mi?
+
+18 yaş üstü üniversite öğrencileri tek oturumda (yaklaşık 30 dakika) rastgele iki gruptan birine atanır. İki grupta da her şey aynıdır; tek fark, A grubunun simülatörde zararına satış öncesi bekleme ekranı görmesidir.
+
+| Bölüm | İçerik | A grubu | B grubu |
+|---|---|---|---|
+| 1. bölüm | 6 karar anı (Sat / Tut / Daha al) | aynı | aynı |
+| 2. bölüm | 7,5 dakikalık kurgusal piyasa simülatörü (300 gün, 6 hisse) | **10 sn bekleme ekranı** | bekleme yok |
+| 3. bölüm | Farklı hisselerle 6 karar anı | aynı | aynı |
+
+Ana ölçüt, "sert düşüş + zarar" anlarındaki satış oranının 1. bölümden 3. bölüme değişimi ve bunun iki grupta farklı olup olmadığıdır. Ayrıntı: [bir sayfalık özet](docs/OZET_1_SAYFA.md), [ön kayıt taslağı](docs/ON_KAYIT_TASLAGI.md), [veri sözlüğü](docs/VERI_SOZLUGU.md).
+
+> Proje başvuru ve pilot öncesi aşamasındadır. **Henüz sonuç yoktur**; piyasa kurgusaldır ve çıkacak bulgular gerçek yatırım davranışına doğrudan genellenemez.
+
+## Özellikler
+
+- **Anonim katılım:** Katılımcı kod girmez. Onamdan sonra Firebase anonim girişiyle sıradaki **yuvayı** alır; grup, araştırmacının önceden ürettiği 4'lük bloklu listeden gelir. Katılımcı grubunu seçemez.
+- **Ayrı araştırmacı paneli:** `/admin/` adresi e-posta ve şifre ister; yuva listesi, canlı pano, CSV dışa aktarma ve sistem testi içerir.
+- **Gerçek zamanlı kayıt:** Kararlar ve olaylar Firestore'a yazılır; bağlantı koparsa kuyruklanır, sayfa yenilenince oturum kaldığı yerden sürer.
+- **Kurgusal piyasa simülatörü:** Tohumlu, tekrarlanabilir fiyat yolu; haberler, sektörel krizler, portföy/piyasa/analiz sekmeleri, hisse ayrıntısı.
+- **Duyarlı tasarım:** Telefon öncelikli; geniş ekranda tam pencere düzeni, açık ve koyu tema, üç yazı boyutu.
+- **Silme yok:** Çekilen katılımcının kaydı işaretlenir (`withdrawn: true`), hiçbir yerde silinmez.
+- **Yapı:** Paketleyici ve framework yok; tarayıcının yerel ES modülleri, MVVM katmanları.
+
+## Mimari
+
+```
+public/                 Yayınlanan site (Firebase Hosting)
+  index.html            Katılımcı uygulaması
+  admin/index.html      Araştırmacı paneli (ayrı sayfa, ayrı giriş noktası)
+  src/
+    constants/          Sabitler ve içerikler
+    models/             Saf iş mantığı (DOM yok): uyaran üretimi, simülatör motoru
+    viewmodels/         Durum ve eylemler
+    views/              Ekranlar (HTML dizesi üreten işlevler)
+    widgets/            Yeniden kullanılan arayüz parçaları
+    services/           Firebase, kimlik doğrulama, olay kaydı
+    repositories/       Veri erişimi (katılımcı, yuva)
+    admin/              Yönetim uygulaması
+  styles/               CSS (tokens, bileşenler, ekranlar, geniş ekran, yönetim)
+firebase/               Güvenlik kuralları, kural testleri, yayın aracı, kurulum rehberi
+```
+
+Katmanlar arasındaki kurallar, katılım akışı, veri sözleşmesi ve Firestore koleksiyonları için [`docs/MIMARI.md`](docs/MIMARI.md).
+
+**Teknolojiler:** HTML, CSS, JavaScript (ES modülleri), Firebase Hosting, Firestore, Firebase Authentication (anonim + e-posta/şifre), GitHub Actions. Geliştirme: ESLint, Prettier. Analiz: Python (numpy, pandas, scipy).
+
+## Hızlı başlangıç
+
+Gereksinimler: Node.js 22+, Python 3.12+.
+
+```bash
+git clone https://github.com/erengultekin028/ilk-lot.git
+cd ilk-lot
+npm install
+npm run serve
+```
+
+- Katılımcı uygulaması: http://localhost:8088/
+- Araştırmacı paneli: http://localhost:8088/admin/
+
+Dosyaya çift tıklayarak açılmaz; ES modülleri bir web sunucusu ister. Yerel sunucu da **gerçek Firebase projesine** bağlanır (yerel/örnek veri kipi yoktur). Deneme sırasında veri yazmamak için onamı kabul etme. Kendi Firebase projeni kullanmak için `public/src/constants/app-config.js` içindeki `CONFIG.firebase` değerini değiştir ve [`firebase/KURULUM.md`](firebase/KURULUM.md) adımlarını izle.
+
+## Denetimler ve testler
+
+```bash
+npm run lint             # ESLint
+npm run check:modules    # tüm modüller içe aktarılabiliyor mu
+npm run check:classes    # JS'te kullanılan CSS sınıfları CSS'te tanımlı mı
+python testler/arac_testleri.py      # yayın aracı, takvim, CI tanımı, klasör yapısı
+python analiz/test_betikler.py       # analiz betikleri
+cd firebase/kural_testleri && npm install && npm test   # Firestore güvenlik kuralları (Node + Java)
+```
+
+GitHub Actions her gönderimde bunları çalıştırır (rozetler yukarıda). Tarayıcı tabanlı uçtan uca testler eski tek dosyalı yapı için yazılmıştı ve yeniden yazılmayı bekliyor ([`testler/README.md`](testler/README.md)).
+
+## Yayın
+
+`main` dalına yapılan her gönderim, lint ve modül kontrolü geçerse siteyi **Firebase Hosting**'e otomatik yayınlar ([`.github/workflows/yayin.yml`](.github/workflows/yayin.yml)). Firestore güvenlik kuralları otomatik yayınlanmaz:
+
+```bash
+firebase deploy --only firestore:rules --project ilk-lot-pilot
+```
+
+Yayın öncesi ön kontrol (boş `[DOLDUR]` alanları, örnek e-posta, ölçüt kilidi): `python firebase/dagit.py`.
+
+## Belgeler
+
+| Belge | Konu |
 |---|---|
-| `public/` | **Yayınlanan site** (Firebase Hosting). `index.html` katılımcı uygulaması, `admin/index.html` araştırmacı paneli (ayrı adres), `src/` kod, `styles/` CSS, `assets/` yazı tipi ve simge |
-| `public/src/` | MVVM katmanları: `constants/`, `models/`, `viewmodels/`, `views/`, `widgets/`, `services/`, `repositories/`, `utils/`, `admin/`, `vendor/` (ayrıntı `docs/MIMARI.md`) |
-| `firebase/` | `firestore.rules` (güvenlik kuralları; Hosting ayarı kökteki `firebase.json`'dadır), `dagit.py` (yayın ön kontrolü, ölçüt kilidi, yayınlama), `kural_testleri/` (Emulator testleri), `KURULUM.md` |
-| `tools/` | Geliştirme araçları: `check-modules.mjs` (modül bağlantıları), `check-classes.mjs` (CSS sınıf tutarlılığı), `check-equivalence.mjs` (eski/yeni uyaran ve fiyat yolu karşılaştırması) |
-| `testler/` | Python testleri: `arac_testleri.py` (yayın aracı, takvim, CI, klasör yapısı). `uygulama_testleri.py`, `erisilebilirlik_taramasi.py`, `gorsel_karsilastirma.py` **eski yapı için yazıldı, yeniden yazılmalı** (`testler/README.md`) |
-| `analiz/` | Analiz, güç hesabı, pilot özeti, örnek veri üretici, kendi testleri |
-| `etik/` | Etik kurul başvuru taslağı; onam ve bilgilendirme metinleri; `ONAM_DEGISIKLIK_ONERISI_A.md` (onaylanmamış öneri); `saklama_takvimi.py` |
-| `docs/` | Ön kayıt, TÜBİTAK yöntem bölümü, pilot planı, veri sözlüğü, mimari, **`ESKI_YENI_ADLAR.md`** (yeniden adlandırma tablosu) vb. |
-| `rapor/` | Çalışma raporları (başlangıç testleri, planlar, yazma ölçümü) |
-| `tanitim.html` | Katılımcı tanıtım sayfası (ayrı, bağımsız dosya) |
-| `package.json`, `eslint.config.mjs`, `.prettierrc.json` | Geliştirme araçları (ESLint, Prettier) |
-| `arsiv/` | Projenin ilk tasarımı (güncel değil) |
+| [`DEVIR_NOTU.md`](DEVIR_NOTU.md) | Proje durumu, kararlar, kurallar, doğrulanmayanlar |
+| [`docs/MIMARI.md`](docs/MIMARI.md) | Katmanlar, katılım akışı, veri sözleşmesi |
+| [`firebase/KURULUM.md`](firebase/KURULUM.md) | Firebase kurulumu, yayın, pilot yürütme, kontrol listesi |
+| [`docs/VERI_SOZLUGU.md`](docs/VERI_SOZLUGU.md) | Firestore alanları, olaylar, CSV sütunları |
+| [`docs/ON_KAYIT_TASLAGI.md`](docs/ON_KAYIT_TASLAGI.md) | Ön kayıt taslağı |
+| [`docs/PILOT_PLANI.md`](docs/PILOT_PLANI.md) | Pilot planı |
+| [`docs/ESKI_YENI_ADLAR.md`](docs/ESKI_YENI_ADLAR.md) | Eski ad → yeni ad tablosu |
+| [`analiz/README.md`](analiz/README.md) | Analiz betikleri ve güç hesabı |
+| [`etik/`](etik/) | Etik kurul başvuru taslağı, onam ve bilgilendirme metinleri |
 
-## Çalıştırma (bilgisayarında)
+## Etik ve veri
 
-```bash
-npm install            # ilk seferde (geliştirme araçları)
-npm run serve          # public/ klasörünü http://localhost:8088 adresinde sunar
-```
+Katılım gönüllüdür; çekilme her an mümkündür. Ad, e-posta ya da öğrenci numarası toplanmaz; kayıtlar rastgele bir kodla eşleşir. Piyasa kurgusaldır, gerçek para yoktur ve hiçbir şey yatırım tavsiyesi değildir. Araştırmanın amacı oturum sonunda açıklanır. Onam metni ve etik başvuru taslakları [`etik/`](etik/) klasöründedir; onam metni etik kurul onayı olmadan değiştirilmez.
 
-Katılımcı uygulaması `http://localhost:8088/`, araştırmacı paneli `http://localhost:8088/admin/`. Dosyaya çift tıklayarak açılmaz (ES modülleri bir web sunucusu ister). Firebase ayarları `public/src/constants/app-config.js` içindedir; uygulama gerçek Firebase'e bağlanır (yerel/örnek veri kipi yoktur).
+## Proje durumu
 
-## Denetimler
+- [x] Anonim giriş ve sıralı yuva ataması
+- [x] Ayrı araştırmacı paneli
+- [x] Geniş ekran düzeni, Firebase Hosting, otomatik yayın
+- [x] Güvenlik kuralları ve kural testleri (CI'da yeşil)
+- [ ] Onam alanları (`[DOLDUR]`) ve iletişim adresi
+- [ ] Gerçek cihazlarda deneme ve pilot
+- [ ] Etik kurul onayı ve ön kayıt
+- [ ] Tarayıcı tabanlı uçtan uca testlerin yeni yapıya uyarlanması
 
-```bash
-npm run lint           # ESLint: tanımsız ad, sabit atama, içe aktarma atamaları
-npm run check:modules  # tüm modüller içe aktarılabiliyor mu (sahte tarayıcı ortamıyla)
-npm run check:classes  # JS'te kullanılan CSS sınıfları CSS'te tanımlı mı
-python testler/arac_testleri.py
-python analiz/test_betikler.py
-cd firebase/kural_testleri && npm install && npm test    # güvenlik kuralları (Node + Java gerekir)
-```
+## Lisans ve katkılar
 
-**Başlangıç sırası:** `firebase/KURULUM.md` → sarı `[DOLDUR]` alanları (`CONFIG.consentInfo`) → `python firebase/dagit.py` (ön kontrol) → yayın (`firebase deploy` ya da `dagit.py --yayinla`) → `docs/GERCEK_CIHAZ_TESTI.md` ve `docs/PILOT_PLANI.md` → örneklem kararı → ön kayıt (`docs/ON_KAYIT_TASLAGI.md`) → etik başvuru (`etik/`) → veri toplama → `analiz/README.md`.
+Bu depo için henüz bir lisans seçilmedi; lisans eklenene kadar tüm hakları saklıdır. Üçüncü taraf bileşenler: QR kitaplığı (Kazuhiko Arase, MIT), Bricolage Grotesque yazı tipi (SIL OFL 1.1).
 
-**Simülatör:** 300 gün (7,5 dk), tohum gerekçesi `docs/SIMULATOR_TOHUMU.md`. 150 günlük alternatif plan `docs/BEKLEYEN_150_GUN.md` içinde, uygulanmadı.
+Hata ve öneriler için [Issues](https://github.com/erengultekin028/ilk-lot/issues) kullanılabilir. Kodu değiştirmeden önce [`docs/MIMARI.md`](docs/MIMARI.md) içindeki veri sözleşmesine ve değişiklik kurallarına bak.

@@ -51,7 +51,7 @@ Firestore alan adları, olay adları (`session_start`, `cooldown_shown` …), CS
 
 ## Tasarım ve geniş ekran
 
-Telefon görünümü (`< 768 px`) değişmedi. `styles/desktop.css` yalnızca `min-width` sorguları içerir: 768 px üstünde uygulama ortada yükseltilmiş bir panel olur, ≥1100 px'te simülatör iki sütun kullanır. Yönetim paneli geniş ekran için `styles/admin.css` ile ayrıca düzenlenmiştir. Kabuk, ekran adını `#app[data-stage]` ve `#main-view[data-tab]` özniteliklerine yazar (geniş ekran seçicileri için).
+Telefon görünümü (`< 768 px`) değişmedi. `styles/desktop.css` yalnızca `min-width` sorguları içerir: 768 px üstünde uygulama pencerenin tamamını (genişlik ve yükseklik) kaplar; metin ağırlıklı ekranlar (onam, form, test) okunur genişlikte ortalanır, ≥1000 px'te karar ekranı, ≥1100 px'te simülatör iki sütun kullanır. Yönetim paneli geniş ekran için `styles/admin.css` ile ayrıca düzenlenmiştir. Kabuk, ekran adını `#app[data-stage]` ve `#main-view[data-tab]` özniteliklerine yazar (geniş ekran seçicileri için).
 
 ## Sürümleme ve değişiklik kuralları
 - `APP_VERSION` (`constants/app-config.js`) her olaya ve kayda yazılır. **Pilot ya da veri toplama başladıktan sonra** davranış değişirse artır; ölçüt ayarlarını (`seed`, `simSeed`, `simCrises`, `cooldownSec`, `lossThreshold`) değiştirme. `python firebase/dagit.py --kilitle` bunu makineye yaptırır.
