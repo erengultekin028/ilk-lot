@@ -11,6 +11,9 @@
 
 import { getServices } from '../services/firebase-service.js';
 
+// Sayaç gerideyse (ör. bir yuva atlanmışsa) en çok bu kadar yuva ileriye bakılır
+const MAX_SLOT_SKIP = 48;
+
 export const enrollmentRepository = {
   // Bu kullanıcı daha önce yuva almış mı? Aldıysa { code, slot } döner; yoksa null
   async findEnrollment(uid) {
@@ -18,7 +21,7 @@ export const enrollmentRepository = {
     return snapshot.exists ? snapshot.data() : null;
   },
 
-  // Sıradaki boş yuvayı alır ve { code, slot } döndürür. İşlem tekrar denendiğinde aynı sonucu verir (idempotent).
+  // Sıradaki boş yuvayı alır ve { code, slot } döndürür. Zaten yuvası varsa aynısını döndürür (tekrar çağrılabilir).
   async enroll(uid) {
     const { db } = getServices();
     const counterRef = db.collection('meta').doc('counter');
@@ -27,17 +30,22 @@ export const enrollmentRepository = {
       const existing = await transaction.get(userRef);
       if (existing.exists) return existing.data();
       const counter = await transaction.get(counterRef);
-      if (!counter.exists)
-        throw new Error('Katılım listesi henüz hazır değil. Araştırmacıyla iletişime geç.');
-      const slotNumber = counter.data().next;
-      const slot = await transaction.get(db.collection('slots').doc(String(slotNumber)));
-      if (!slot.exists) throw new Error('Tüm katılım yuvaları dolu. Araştırmacıyla iletişime geç.');
-      const code = slot.data().code;
-      const record = { code: code, slot: slotNumber, at: new Date().toISOString() };
-      transaction.set(db.collection('claims').doc(code), { uid: uid, slot: slotNumber, at: record.at });
-      transaction.set(userRef, record);
-      transaction.update(counterRef, { next: slotNumber + 1 });
-      return record;
+      if (!counter.exists) throw new Error('Katılım listesi henüz hazır değil. Araştırmacıyla iletişime geç.');
+      // Sayaçtan başlayıp ilk alınmamış yuvayı bul
+      for (let skipped = 0; skipped <= MAX_SLOT_SKIP; skipped++) {
+        const slotNumber = counter.data().next + skipped;
+        const slot = await transaction.get(db.collection('slots').doc(String(slotNumber)));
+        if (!slot.exists) throw new Error('Tüm katılım yuvaları dolu. Araştırmacıyla iletişime geç.');
+        const code = slot.data().code;
+        const claimRef = db.collection('claims').doc(code);
+        if ((await transaction.get(claimRef)).exists) continue; // bu yuva alınmış, sıradakine bak
+        const record = { code: code, slot: slotNumber, at: new Date().toISOString() };
+        transaction.set(claimRef, { uid: uid, slot: slotNumber, at: record.at });
+        transaction.set(userRef, record);
+        transaction.update(counterRef, { next: slotNumber + 1 });
+        return record;
+      }
+      throw new Error('Boş katılım yuvası bulunamadı. Araştırmacıyla iletişime geç.');
     });
   },
 

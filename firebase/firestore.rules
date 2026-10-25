@@ -3,64 +3,119 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // GÜVENLİK: Araştırmacı hesapları. Buraya kendi e-postalarını yaz.
-    // Yetki tarayıcıda değil sunucuda kontrol edilir; katılımcı kodu değiştirse bile listeye erişemez.
+    // Yetki tarayıcıda değil sunucuda kontrol edilir; katılımcı kodu ya da arayüzü değiştirse bile bu kurallar geçerlidir.
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email in ['erengltkn1905@gmail.com'];
     }
-    // Randomizasyon listesindeki kaydı getirir (kodun hangi gruba ait olduğunu söyler).
+    function signedIn() {
+      return request.auth != null;
+    }
+    // Bu kullanıcı bir yuva (katılım kodu) almış mı? users/{uid} belgesi bunu gösterir.
+    function hasEnrollment() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    // Bu kullanıcının katılım kodu
+    function myCode() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.code;
+    }
+    // Kod bu kullanıcıya mı ait? (Katılımcı yalnızca KENDİ koduna ait kayıtlara erişir.)
+    function owns(code) {
+      return signedIn() && hasEnrollment() && myCode() == code;
+    }
+    // Randomizasyon listesindeki kayıt (kodun grubunu söyler)
     function alloc(code) {
       return get(/databases/$(database)/documents/allocations/$(code));
-    }
-    // Bu kod, araştırmacının önceden bastığı listede var mı? (Listede olmayan kodla kimse kayıt açamaz.)
-    function codeExists(code) {
-      return exists(/databases/$(database)/documents/allocations/$(code));
     }
 
     // SİLME POLİTİKASI (A, soft delete): hiçbir koleksiyonda "delete" izni yoktur; ne katılımcı ne araştırmacı
     // veri silebilir. Çekilen katılımcı "withdrawn: true" ile işaretlenir ve analizden çıkarılır.
     // Aşağıda "write" yazılmaz, yalnızca "create" ve "update" yazılır; çünkü "write" silmeyi de içerir.
 
-    // Randomizasyon listesi: katılımcı sadece KENDİ kodunu tek tek okuyabilir (get).
-    // Listenin tamamını göremez (list yok), hiçbir şey yazamaz.
+    // ── Katılım (anonim giriş + sıralı yuva) ──
+    // Katılımcı kod girmez. Onamdan sonra tek bir işlemde (transaction) sıradaki yuvayı alır:
+    //   meta/counter'ı artırır + claims/{kod} oluşturur + users/{uid} oluşturur. Üçü aynı işlemde yazılmak zorundadır.
+
+    // Sayaç: sıradaki boş yuva numarası. Katılımcı yalnızca yuva alırken, kendi users belgesini de aynı işlemde
+    // oluşturarak, sayacı artırabilir (her kullanıcı yalnızca bir kez).
+    match /meta/counter {
+      allow get: if signedIn();
+      allow create, update: if isAdmin();
+      allow update: if signedIn()
+        && request.resource.data.keys().hasOnly(['next'])
+        && request.resource.data.next > resource.data.next
+        && request.resource.data.next <= resource.data.next + 50
+        && !hasEnrollment()
+        && existsAfter(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    // Yuvalar: yuva numarası -> kod. Grup bilgisi BURADA YOK (grup allocations/{kod} içindedir ve gizlidir).
+    match /slots/{slot} {
+      allow get: if signedIn();
+      allow create, update: if isAdmin();
+    }
+
+    // Yuva alındı kaydı: bir kod yalnızca bir kez alınabilir (belge zaten varsa create reddedilir); değiştirilemez.
+    // Kod listede olmalı ve aynı işlemde bu kullanıcının users belgesi bu koda işaret etmelidir.
+    match /claims/{code} {
+      // Katılımcı yalnızca "bu yuva alınmış mı" diye bakar (alınmışsa sıradaki yuvaya geçer); listeleyemez.
+      allow get: if signedIn();
+      allow list: if isAdmin();
+      allow create: if signedIn()
+        && exists(/databases/$(database)/documents/allocations/$(code))
+        && request.resource.data.keys().hasOnly(['uid', 'slot', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && existsAfter(/databases/$(database)/documents/users/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.code == code;
+    }
+
+    // Kullanıcı -> kod eşleşmesi: yalnızca kullanıcının kendisi ve araştırmacı okur. Bir kez yazılır, değiştirilemez.
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['code', 'slot', 'at'])
+        && existsAfter(/databases/$(database)/documents/claims/$(request.resource.data.code))
+        && getAfter(/databases/$(database)/documents/claims/$(request.resource.data.code)).data.uid == uid;
+    }
+
+    // Randomizasyon listesi (kodun grubu): katılımcı yalnızca KENDİ kodunun kaydını okuyabilir (yuvayı aldıktan sonra).
+    // Listenin tamamını göremez, hiçbir şey yazamaz. Araştırmacı listeler, ekler ve günceller; silemez.
     match /allocations/{code} {
-      // Giriş yapmış (anonim dahil) herkes tek bir kodu getirebilir; kodun tahmin edilemezliği koruma sağlar.
-      allow get: if request.auth != null;
-      // Yalnızca araştırmacı listeyi görür, kod ekler ya da günceller; silemez.
+      allow get: if isAdmin() || owns(code);
       allow list, create, update: if isAdmin();
     }
 
     match /participants/{code} {
-      // Kendi kaydını kodu bilen (ve kodu listede olan) kişi okuyabilir; araştırmacı hepsini okur.
-      allow get: if (request.auth != null && codeExists(code)) || isAdmin();
+      // Kendi kaydını yalnızca kodun sahibi okur; araştırmacı hepsini okur.
+      allow get: if owns(code) || isAdmin();
       // Katılımcıların tamamını listelemek yalnızca araştırmacıya açık.
       allow list: if isAdmin();
       // Katılımcı kendi grubunu değiştiremez: yazılan grp, listedeki grp ile aynı olmalı.
-      allow create: if request.auth != null
-        && codeExists(code)
+      allow create: if owns(code)
         && request.resource.data.grp == alloc(code).data.grp;
       // Güncellemede de grup aynı kalmalı. Çekilmiş bir kayıt katılımcı tarafından geri açılamaz
       // (yalnızca araştırmacı çekilmiş kaydı güncelleyebilir).
-      allow update: if request.auth != null
-        && codeExists(code)
-        && request.resource.data.grp == alloc(code).data.grp
-        && (resource.data.get('withdrawn', false) == false || isAdmin());
+      allow update: if (owns(code)
+          && request.resource.data.grp == alloc(code).data.grp
+          && resource.data.get('withdrawn', false) == false)
+        || isAdmin();
       // allow delete: YOK (politika A).
 
       // Olay kaydı sadece eklenebilir; sonradan değiştirilemez, silinemez.
       // Aynı olayın tekrar gönderilmesine (bağlantı kopması sonrası) izin verilir.
       match /events/{eventId} {
-        // Yeni olay eklemek: giriş yapmış ve kodu listede olan kişi.
-        allow create: if request.auth != null && codeExists(code);
+        // Yeni olay eklemek: yalnızca kodun sahibi.
+        allow create: if owns(code);
         // "Güncelleme" yalnızca birebir aynı veriyi yeniden yazmaktır (içeriği değiştirmez).
-        allow update: if request.auth != null && request.resource.data == resource.data;
+        allow update: if owns(code) && request.resource.data == resource.data;
         // Olayları yalnızca araştırmacı okur; katılımcı kendi olaylarını bile okuyamaz.
         allow read: if isAdmin();
         // allow delete: YOK (politika A).
       }
     }
 
-    // Sistem testi (panel → "Sistem testini çalıştır"): yalnızca araştırmacı yazıp okur, silemez.
+    // Sistem testi (yönetim paneli → "Sistem testini çalıştır"): yalnızca araştırmacı yazıp okur, silemez.
     // Katılımcı verisinden ayrı bir koleksiyondur ki randomizasyon listesine karışmasın.
     match /selftest/{id} {
       allow get, list, create, update: if isAdmin();
