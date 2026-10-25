@@ -42,6 +42,40 @@
     max-width: 520px;
     margin: 0 auto;
   }
+  /* Hisse grafiği: eksen yazıları şişmesin diye genişlik sınırlı, kartın ortasında */
+  #detail-chart svg {
+    display: block;
+    max-width: 500px;
+    margin: 18px auto 0;
+    overflow: visible;
+  }
+  /* Süre ve karar sayacı: kenarlıklı, rakamları sabit genişlikli, durum noktası halkalı */
+  .timer-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    padding: 8px 16px;
+    border: 1px solid var(--ln);
+    background: var(--sf) !important;
+    color: var(--tx) !important;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-chip .dot {
+    width: 8px;
+    height: 8px;
+    margin-left: 10px;
+    vertical-align: 0;
+  }
+  .timer-chip .dot:not(.is-pending):not(.is-offline) {
+    box-shadow: 0 0 0 3px var(--ups);
+  }
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
   /* Bildirim ve tur kartı ortalanır */
   #toast,
   #tour-popup {
@@ -63,6 +97,7 @@
   #app[data-stage='task'] #main-view > div:not(.stage) {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-auto-rows: max-content;
     column-gap: clamp(24px, 3vw, 56px);
     align-content: start;
     max-width: 1320px;
@@ -82,33 +117,350 @@
   }
 }
 
-/* ≥ 1100 px: simülatör ekranı çok sütunlu; portföy ve piyasa kutuları yan yana dizilir */
+/* ≥ 1100 px: simülatör bir "panel" olur. Portföy: üstte özet çubuğu, solda hisse tablosu, sağda dağılım ve son haber.
+   Piyasa: solda haber akışı (zaman çizelgesi), sağda hisse kartları. Analiz ve hisse ayrıntısı da iki sütundur.
+   Bilgi içeriği telefonla aynıdır; yalnızca yerleşim ve görünüm farklıdır (haber vurgusu eklenmez, mevcut tonlar korunur). */
 @media (min-width: 1100px) {
   #main-view[data-tab='p'],
-  #main-view[data-tab='m'] {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 clamp(24px, 3vw, 48px);
-    align-content: start;
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  #main-view[data-tab='p'] > .hero,
-  #main-view[data-tab='p'] > #crisis-alert,
-  #main-view[data-tab='p'] > #news-banner,
-  #main-view[data-tab='p'] > #free-play-panel,
-  #main-view[data-tab='p'] > #news-section,
-  #main-view[data-tab='p'] > .free-play-limit,
-  #main-view[data-tab='m'] > #crisis-alert,
-  #main-view[data-tab='m'] > #news-banner,
-  #main-view[data-tab='m'] > .footnote {
-    grid-column: 1 / -1;
-  }
+  #main-view[data-tab='m'],
   #main-view[data-tab='a'],
   #main-view[data-tab='detail'] {
-    max-width: 960px;
+    display: grid;
+    /* Satırlar içerik kadar uzar: pencere yüksekliğine sıkışıp kartlar kesilmesin, gerekirse sayfa kayar */
+    grid-auto-rows: max-content;
+    column-gap: clamp(20px, 2.4vw, 36px);
+    align-content: start;
+    max-width: 1440px;
     margin: 0 auto;
     width: 100%;
+  }
+  #main-view[data-tab='p'] {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  }
+  #main-view[data-tab='m'] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  }
+  #main-view[data-tab='a'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-view[data-tab='detail'] {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+  #main-view[data-tab] > #crisis-alert,
+  #main-view[data-tab] > #news-banner {
+    grid-column: 1 / -1;
+  }
+
+  /* Kartlar: tek tip kenar, yumuşak gölge, üstte ince ayrım çizgili başlık */
+  #main-view[data-tab] .card-section {
+    border-radius: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  }
+  #main-view[data-tab] .card-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid var(--ln);
+    align-items: center;
+  }
+  #main-view[data-tab] .card-header h3 {
+    font-size: 16px;
+  }
+  #main-view[data-tab] .card-body {
+    padding: 14px 20px 18px;
+  }
+
+  /* ───── Portföy ───── */
+  #main-view[data-tab='p'] > #crisis-alert {
+    grid-row: 1;
+  }
+  #main-view[data-tab='p'] > #news-banner {
+    grid-row: 2;
+  }
+  #main-view[data-tab='p'] > #free-play-panel {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+  #main-view[data-tab='p'] > .font-size-selector {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+  /* Özet çubuğu: solda toplam para ve değişim, sağda üç gösterge */
+  #main-view[data-tab='p'] > .hero {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    display: grid;
+    grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(0, 1fr));
+    align-items: center;
+    background: var(--sf);
+    border: 1px solid var(--ln);
+    border-radius: 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    padding: 22px 8px 22px 28px !important;
+    margin-bottom: 18px;
+  }
+  #main-view[data-tab='p'] > .hero > .hero-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  #main-view[data-tab='p'] > .hero > .hero-value {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 54px;
+    margin: 6px 0 12px;
+  }
+  #main-view[data-tab='p'] > .hero > #portfolio-change {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+  }
+  #main-view[data-tab='p'] > .hero > .hero-sub {
+    display: contents;
+  }
+  #main-view[data-tab='p'] > .hero .hero-sub > span {
+    grid-row: 1 / span 3;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4px 28px;
+    border-left: 1px solid var(--ln);
+    font-size: 13px;
+  }
+  #main-view[data-tab='p'] > .hero .hero-sub > span > b {
+    font: 700 26px/1.1 var(--fd);
+    letter-spacing: -0.5px;
+    margin-top: 8px;
+  }
+  /* Hisse tablosu: her satır sembol | adet × fiyat = değer | kâr/zarar */
+  #main-view[data-tab='p'] > #stock-list {
+    grid-column: 1;
+    grid-row: 6 / span 3;
+    align-self: start;
+  }
+  #main-view[data-tab='p'] > #stock-list .sheet-hint {
+    padding: 12px 20px 8px;
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row {
+    display: grid;
+    grid-template-columns: minmax(130px, 0.9fr) minmax(0, 2.2fr) minmax(104px, 0.8fr);
+    column-gap: 18px;
+    row-gap: 6px;
+    align-items: center;
+    padding: 14px 20px;
+    transition: background 0.15s;
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row:hover {
+    background: color-mix(in srgb, var(--sf2) 55%, transparent);
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row .stock-row-top {
+    display: contents;
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row .stock-symbol {
+    grid-column: 1;
+    grid-row: 1;
+    font: 700 17px var(--fd);
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row .profit-loss-block {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row .equation {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0;
+  }
+  #main-view[data-tab='p'] > #stock-list .stock-row .average-line {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 0;
+    padding-top: 2px;
+  }
+  /* Sağ sütun: dağılım ve son haber */
+  #main-view[data-tab='p'] > #allocation-section {
+    grid-column: 2;
+    grid-row: 6;
+  }
+  #main-view[data-tab='p'] > #allocation-section .card-body {
+    padding: 18px 20px 20px !important;
+  }
+  #main-view[data-tab='p'] > #allocation-section .allocation-bar {
+    height: 14px;
+    border-radius: 7px;
+    margin: 10px 0 16px;
+  }
+  #main-view[data-tab='p'] > #allocation-section .allocation-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+    font-size: 13px;
+  }
+  #main-view[data-tab='p'] > #news-section {
+    grid-column: 2;
+    grid-row: 7;
+    align-self: start;
+  }
+  #main-view[data-tab='p'] > #news-section .news {
+    border-radius: 18px;
+    padding: 16px 20px 12px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  }
+  #main-view[data-tab='p'] > #news-section .news .news-title {
+    font-size: 17px;
+  }
+  #main-view[data-tab='p'] > .button {
+    grid-column: 1 / -1;
+    grid-row: 10;
+  }
+  #main-view[data-tab='p'] > .footnote {
+    grid-column: 1 / -1;
+    grid-row: 11;
+  }
+
+  /* ───── Piyasa ───── */
+  #main-view[data-tab='m'] > #crisis-alert {
+    grid-row: 1;
+  }
+  #main-view[data-tab='m'] > #news-banner {
+    grid-row: 2;
+  }
+  /* Haber akışı: zaman çizelgesi (sol çizgi ve noktalar), kendi içinde kayar */
+  #main-view[data-tab='m'] > .card-section {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  #main-view[data-tab='m'] #market-news {
+    position: relative;
+    max-height: calc(100vh - 330px);
+    min-height: 260px;
+    overflow-y: auto;
+    padding: 8px 20px 12px 38px;
+  }
+  #main-view[data-tab='m'] #market-news::before {
+    content: '';
+    position: absolute;
+    left: 25px;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    background: var(--ln);
+    border-radius: 1px;
+  }
+  #main-view[data-tab='m'] #market-news .news-item {
+    position: relative;
+    padding: 11px 0;
+    border-top: 1px solid color-mix(in srgb, var(--ln) 55%, transparent);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  #main-view[data-tab='m'] #market-news .news-item:first-child {
+    border-top: 0;
+  }
+  #main-view[data-tab='m'] #market-news .news-item::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 16px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--mu2);
+    border: 2px solid var(--sf);
+    box-sizing: border-box;
+    width: 12px;
+    height: 12px;
+    left: -19px;
+  }
+  #main-view[data-tab='m'] #market-news .news-item.is-negative::before {
+    background: var(--dn);
+  }
+  #main-view[data-tab='m'] #market-news .news-item:first-child::before {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mu2) 22%, transparent);
+  }
+  #main-view[data-tab='m'] #market-news .news-item.is-negative:first-child::before {
+    box-shadow: 0 0 0 4px var(--dns);
+  }
+  #main-view[data-tab='m'] #market-news .news-day {
+    min-width: 58px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Hisse kartları */
+  #main-view[data-tab='m'] > .market-grid {
+    grid-column: 2;
+    grid-row: 3;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  #main-view[data-tab='m'] .market-card {
+    border-radius: 18px;
+    padding: 16px 18px 14px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    transition:
+      border-color 0.15s,
+      transform 0.15s;
+  }
+  #main-view[data-tab='m'] .market-card:hover {
+    border-color: var(--mu2);
+    transform: translateY(-2px);
+  }
+  #main-view[data-tab='m'] .market-card b {
+    font-size: 17px;
+  }
+  #main-view[data-tab='m'] .market-card .muted {
+    font-size: 12.5px;
+  }
+  #main-view[data-tab='m'] > .footnote {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  /* ───── Analiz ───── */
+  #main-view[data-tab='a'] > #crisis-alert {
+    grid-row: 1;
+  }
+  #main-view[data-tab='a'] > #analysis-panel {
+    display: contents;
+  }
+  #main-view[data-tab='a'] #analysis-panel > .card-section {
+    grid-row: 2;
+  }
+  #main-view[data-tab='a'] #analysis-panel .history-list {
+    max-height: calc(100vh - 360px);
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  /* ───── Hisse ayrıntısı ───── */
+  #main-view[data-tab='detail'] > #crisis-alert {
+    grid-row: 1;
+  }
+  #main-view[data-tab='detail'] > #news-banner {
+    grid-row: 2;
+  }
+  #main-view[data-tab='detail'] > .detail-header {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin: 4px 0 16px;
+  }
+  #main-view[data-tab='detail'] > .detail-header + .card-section {
+    grid-column: 1;
+    grid-row: 4 / span 6;
+    align-self: start;
+  }
+  #main-view[data-tab='detail'] > .detail-actions {
+    grid-column: 2;
+    grid-row: 4;
+    margin-bottom: 18px;
+  }
+  #main-view[data-tab='detail'] > .detail-actions ~ .card-section {
+    grid-column: 2;
+  }
+  #main-view[data-tab='detail'] > .detail-actions + .card-section {
+    grid-row: 5;
+  }
+  #main-view[data-tab='detail'] > .detail-actions + .card-section + .card-section {
+    grid-row: 6;
   }
 }

@@ -344,7 +344,7 @@ pre.json-block {
 .dot.is-pending {
   background: var(--pend);
 }
-.dot.is-error {
+.dot.is-offline {
   background: var(--dn);
   animation: blink 1.2s infinite;
 }

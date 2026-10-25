@@ -340,7 +340,9 @@ function newsListHtml(tick) {
   return news
     .map(function (item) {
       return (
-        '<div class="key-value" style="align-items:flex-start;gap:10px"><span class="news-day" style="flex:none;font-size:11px;font-weight:700;background:var(--sf2);border-radius:8px;padding:3px 7px">Gün ' +
+        '<div class="key-value news-item' +
+        (item[2] < 0 ? ' is-negative' : '') +
+        '" style="align-items:flex-start;gap:10px"><span class="news-day" style="flex:none;font-size:11px;font-weight:700;background:var(--sf2);border-radius:8px;padding:3px 7px">Gün ' +
         item[0] +
         '</span><span style="flex:1;color:' +
         (item[2] < 0 ? 'var(--dn)' : 'var(--tx)') +
