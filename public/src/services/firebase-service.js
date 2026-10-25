@@ -27,7 +27,10 @@ export async function connectFirebase() {
   if (!CONFIG.firebase) throw new Error('CONFIG.firebase boş: Firebase ayarı yapılmamış.');
   for (const file of SDK_FILES) await loadScript(SDK_BASE_URL + file);
   firebase.initializeApp(CONFIG.firebase);
-  services = { db: firebase.firestore(), auth: firebase.auth() };
+  const db = firebase.firestore();
+  // Kayıtlarda tanımsız (undefined) alan olursa Firestore tüm yazmayı reddeder; bu ayarla tanımsız alanlar yok sayılır
+  db.settings({ ignoreUndefinedProperties: true });
+  services = { db: db, auth: firebase.auth() };
   return services;
 }
 

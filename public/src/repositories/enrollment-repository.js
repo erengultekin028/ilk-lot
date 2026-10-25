@@ -30,7 +30,8 @@ export const enrollmentRepository = {
       const existing = await transaction.get(userRef);
       if (existing.exists) return existing.data();
       const counter = await transaction.get(counterRef);
-      if (!counter.exists) throw new Error('Katılım listesi henüz hazır değil. Araştırmacıyla iletişime geç.');
+      if (!counter.exists)
+        throw new Error('Katılım listesi henüz hazır değil. Araştırmacıyla iletişime geç.');
       // Sayaçtan başlayıp ilk alınmamış yuvayı bul
       for (let skipped = 0; skipped <= MAX_SLOT_SKIP; skipped++) {
         const slotNumber = counter.data().next + skipped;

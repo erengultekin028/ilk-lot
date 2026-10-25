@@ -126,7 +126,6 @@ export async function startParticipation(code) {
         code: code,
         grp: allocation.grp,
         consentAt: state.consentAt,
-        quick: undefined,
         consentVer: CONSENT_VERSION,
         consentOpened: Object.keys(state.consentOpenSections || {}),
         consentDl: !!state.consentDownloaded,
