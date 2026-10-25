@@ -38,6 +38,10 @@ export function render() {
     mainViewElement.classList.add('is-entering');
   }
   state.renderKey = key;
+  // Geniş ekran stilleri için ekranın adı kabuğa yazılır (telefon görünümünü etkilemez)
+  byId('app').dataset.stage = state.stage;
+  mainViewElement.dataset.tab =
+    state.stage === 'sim' ? (state.detailSymbol ? 'detail' : state.marketTab) : '';
   byId('disclaimer').hidden = !(state.stage === 'task' || state.stage === 'sim');
   const simulatorNavElement = byId('simulator-nav');
   if (state.stage === 'sim') {

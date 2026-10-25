@@ -1,19 +1,19 @@
-"""İlk Lot yayın aracı: ön kontrol, yayın klasörü hazırlama, ölçüt kilidi ve (isteğe bağlı) Firebase'e yayınlama.
+"""İlk Lot yayın aracı: ön kontrol, ölçüt kilidi ve (isteğe bağlı) Firebase'e yayınlama.
 
 Varsayılan çalışma yalnızca KONTROL eder, hiçbir şeyi değiştirmez ve dışarı bağlanmaz.
 
   python firebase/dagit.py                          # ön kontrol (geçmezse çıkış kodu 1)
-  python firebase/dagit.py --hazirla                # firebase/yayin/ klasörünü üretir (kontrol geçmeli)
-  python firebase/dagit.py --pilot                  # pilot yayını ön kontrolü (CFG.pilot true olabilir); --hazirla/--yayinla ile de kullanılır
+  python firebase/dagit.py --pilot                  # pilot yayını ön kontrolü (CONFIG.pilot true olabilir); --yayinla ile de kullanılır
   python firebase/dagit.py --kilitle                # pilot ya da veri toplama BAŞLARKEN: sürüm ve ölçüt ayarlarını kaydeder
-  python firebase/dagit.py --yayinla --proje PROJE  # firebase CLI ile Hosting + güvenlik kuralları (firebase-tools kurulu ve giriş yapılmış olmalı)
+  python firebase/dagit.py --yayinla --proje PROJE  # firebase CLI ile Hosting (public/: katılımcı uygulaması + admin/) + güvenlik kuralları
   python firebase/dagit.py --yayinla --proje PROJE --kuru   # çalıştıracağı komutu yazar, çalıştırmaz
 
-Ön kontrol şunları arar: derlenmiş ilk-lot.html kaynaktan güncel mi; CFG.firebase dolu mu; onam alanlarında [DOLDUR] ya da örnek
-adres kalmış mı; güvenlik kurallarında örnek araştırmacı e-postası kalmış mı. Kilit kaydı (yayin_kaydi.json) varsa ayrıca:
-ölçüt ayarları (tohumlar, krizler, bekleme süresi, eşik) kayıttakinden farklı mı; kod değişmiş ama APP_VERSION aynı mı.
+Yayın klasörü doğrudan public/'dir (derleme ya da kopyalama yok); firebase/firebase.json bu klasörü ve firestore.rules'u yayınlar.
+Ön kontrol şunları arar: CONFIG.firebase dolu mu; onam alanlarında [DOLDUR] ya da örnek adres kalmış mı; güvenlik kurallarında örnek
+araştırmacı e-postası kalmış mı; pilot formu açık mı. Kilit kaydı (yayin_kaydi.json) varsa ayrıca: ölçüt ayarları (tohumlar, krizler,
+bekleme süresi, eşik) kayıttakinden farklı mı; kod değişmiş ama APP_VERSION aynı mı.
 
-SINIR: Firebase'e gerçekten yayınlama bu araçla hiç denenmedi (testler sahte bir `firebase` komutu kullanır). İlk yayında çıktıyı izle."""
+SINIR: Firebase'e gerçekten yayınlama bu araçla denenmedi. İlk yayında çıktıyı izle."""
 import argparse
 import hashlib
 import json
@@ -27,11 +27,10 @@ from datetime import datetime
 
 KLASOR = os.path.dirname(os.path.abspath(__file__))
 KOK = os.path.abspath(os.path.join(KLASOR, '..'))
-HTML = os.path.join(KOK, 'ilk-lot.html')
+PUBLIC = os.path.join(KOK, 'public')
+HTML = os.path.join(PUBLIC, 'src', 'constants', 'app-config.js')  # sürüm, CONFIG ve onam sürümü bu dosyadadır
 KURALLAR = os.path.join(KLASOR, 'firestore.rules')
 KAYIT = os.path.join(KLASOR, 'yayin_kaydi.json')
-YAYIN = os.path.join(KLASOR, 'yayin')
-DERLE = os.path.join(KOK, 'kaynak', 'derle.py')
 
 # Pilot ya da veri toplama başladıktan sonra DEĞİŞMEMESİ gereken ayarlar (devir notu, "Değiştirme kuralları" 2)
 OLCUT_ANAHTARLARI = ['seed', 'simSeed', 'simCrises', 'cooldownSec', 'lossThreshold', 'stake', 'addAmount', 'cash0', 'posValue',
@@ -44,7 +43,7 @@ def oku(yol):
 
 
 def cfg_blogu(html):
-    i = html.find('var CFG={')
+    i = html.find('export const CONFIG = {')
     j = html.find('\n};', i)
     return html[i:j + 3] if i >= 0 and j > i else ''
 
@@ -54,10 +53,8 @@ def olcut_ayarlari(html):
     blok = cfg_blogu(html)
     sonuc = {}
     for k in OLCUT_ANAHTARLARI:
-        if k == 'seed':
-            m = re.search(r"CFG\.seed='([^']*)'", html)
-        elif k == 'simCrises':
-            m = re.search(r'simCrises:(\[.*?\]),\s*\n', blok, re.S)
+        if k == 'simCrises':
+            m = re.search(r'simCrises:\s*(\[.*?\n  \])', blok, re.S)
         else:
             m = re.search(r'\b' + k + r":\s*('[^']*'|[^,\s/]+)", blok)
         sonuc[k] = re.sub(r'\s+', '', m.group(1)) if m else None
@@ -67,11 +64,11 @@ def olcut_ayarlari(html):
 def firebase_ayari(blok):
     m = re.search(r'firebase:\s*(null|\{[^}]*\})', blok)
     if not m:
-        return None, 'CFG içinde firebase alanı bulunamadı'
+        return None, 'CONFIG içinde firebase alanı bulunamadı'
     if m.group(1) == 'null':
-        return None, 'CFG.firebase hâlâ null (gerçek veri toplama için KURULUM.md adım 3)'
+        return None, 'CONFIG.firebase boş (gerçek veri toplama için KURULUM.md adım 3)'
     eksik = [k for k in ('apiKey', 'authDomain', 'projectId', 'appId') if not re.search(k + r'\s*:\s*["\'][^"\']+["\']', m.group(1))]
-    return (m.group(1), None) if not eksik else (None, 'CFG.firebase içinde eksik alan: ' + ', '.join(eksik))
+    return (m.group(1), None) if not eksik else (None, 'CONFIG.firebase içinde eksik alan: ' + ', '.join(eksik))
 
 
 def kurallar_yoneticileri(metin):
@@ -79,14 +76,16 @@ def kurallar_yoneticileri(metin):
     return re.findall(r"['\"]([^'\"]+)['\"]", m.group(1)) if m else []
 
 
-def derleme_guncel_mi():
-    with tempfile.TemporaryDirectory() as d:
-        cikti = os.path.join(d, 'x.html')
-        r = subprocess.run([sys.executable, DERLE, '--cikti', cikti], capture_output=True, text=True)
-        if r.returncode != 0:
-            return False, 'derle.py çalışmadı: ' + (r.stdout + r.stderr).strip()[-200:]
-        with open(cikti, 'rb') as a, open(HTML, 'rb') as b:
-            return a.read() == b.read(), None
+def agac_ozeti():
+    """public/ altındaki tüm dosyaların birleşik SHA-256 özeti (kod değişti mi anlamak için)."""
+    h = hashlib.sha256()
+    for kok, _, dosyalar in sorted(os.walk(PUBLIC)):
+        for ad in sorted(dosyalar):
+            yol = os.path.join(kok, ad)
+            h.update(os.path.relpath(yol, PUBLIC).replace(os.sep, '/').encode('utf-8'))
+            with open(yol, 'rb') as f:
+                h.update(f.read())
+    return h.hexdigest()
 
 
 def kayit_oku():
@@ -96,7 +95,7 @@ def kayit_oku():
         return json.load(f).get('kayitlar', [])
 
 
-def kontrol(html=None, kurallar=None, kayitlar=None, derleme_denetle=True, pilot=False):
+def kontrol(html=None, kurallar=None, kayitlar=None, pilot=False, ozet=None):
     """(sonuçlar, durum) döner. sonuçlar: [(düzey, ad, ayrıntı)]; düzey 'TAMAM' | 'UYARI' | 'HATA'."""
     html = oku(HTML) if html is None else html
     kurallar = oku(KURALLAR) if kurallar is None else kurallar
@@ -104,28 +103,19 @@ def kontrol(html=None, kurallar=None, kayitlar=None, derleme_denetle=True, pilot
     s = []
     ekle = lambda d, a, b='': s.append((d, a, b))
     blok = cfg_blogu(html)
-    surum = (re.search(r"var APP_VERSION='([^']+)'", html) or [None, None])[1]
-    onam = (re.search(r"CONSENT_VER='([^']+)'", html) or [None, None])[1]
+    surum = (re.search(r"APP_VERSION = '([^']+)'", html) or [None, None])[1]
+    onam = (re.search(r"CONSENT_VERSION = '([^']+)'", html) or [None, None])[1]
     ekle('TAMAM', 'Sürüm', f'uygulama {surum}, onam {onam}')
 
-    if derleme_denetle:
-        ok, hata = derleme_guncel_mi()
-        if hata:
-            ekle('HATA', 'Derleme', hata)
-        elif ok:
-            ekle('TAMAM', 'Derleme güncel', 'ilk-lot.html, kaynak/ parçalarından üretilenle birebir aynı')
-        else:
-            ekle('HATA', 'Derleme eski', 'ilk-lot.html kaynak/ ile uyuşmuyor: python kaynak/derle.py çalıştır (dosyayı elle düzenlemiş olabilirsin)')
-
     _, fb_hata = firebase_ayari(blok)
-    ekle('HATA' if fb_hata else 'TAMAM', 'Firebase ayarı', fb_hata or 'CFG.firebase dolu')
+    ekle('HATA' if fb_hata else 'TAMAM', 'Firebase ayarı', fb_hata or 'CONFIG.firebase dolu')
 
     mc = re.search(r'consentInfo:\s*\{(.*?)\}', blok, re.S)
     bos = re.findall(r"'(\[DOLDUR[^']*)'", mc.group(1)) if mc else ['consentInfo bulunamadı']
     ekle('HATA' if bos else 'TAMAM', 'Onam alanları', (f'{len(bos)} alan boş: ' + '; '.join(b[:45] for b in bos)) if bos else 'kurum, etik onay, saklama, barındırma, destek dolu')
     m = re.search(r"\bcontact:\s*'([^']*)'", blok)
     kotu_iletisim = (not m) or (not m.group(1)) or 'ornek.edu.tr' in m.group(1)
-    ekle('HATA' if kotu_iletisim else 'TAMAM', 'İletişim adresi', 'CFG.contact örnek ya da boş' if kotu_iletisim else m.group(1))
+    ekle('HATA' if kotu_iletisim else 'TAMAM', 'İletişim adresi', 'CONFIG.contact örnek ya da boş' if kotu_iletisim else m.group(1))
 
     yon = kurallar_yoneticileri(kurallar)
     if not yon:
@@ -144,20 +134,15 @@ def kontrol(html=None, kurallar=None, kayitlar=None, derleme_denetle=True, pilot
     elif pilot:
         ekle('TAMAM', 'Pilot yayını', 'CFG.pilot true: bilgilendirme ekranının sonunda 3 soruluk geri bildirim formu çıkar. Bu dosya ANA VERİ TOPLAMADA kullanılmaz')
     elif pilot_acik:
-        ekle('HATA', 'Pilot form açık', 'CFG.pilot true: ana veri toplamada geri bildirim formu olmamalı (kaynak/02_core.js içinde pilot:false yap, derle). Pilot yayını yapıyorsan --pilot ile çalıştır')
+        ekle('HATA', 'Pilot form açık', 'CFG.pilot true: ana veri toplamada geri bildirim formu olmamalı (public/src/constants/app-config.js içinde pilot: false yap). Pilot yayını yapıyorsan --pilot ile çalıştır')
     else:
         ekle('TAMAM', 'Pilot form kapalı', 'CFG.pilot false')
-
-    if 'if(CFG.firebase)return false' not in html:
-        ekle('HATA', 'Hızlı test kilidi', 'CFG.firebase doluyken hızlı test modunu kapatan satır bulunamadı')
-    else:
-        ekle('TAMAM', 'Hızlı test kilidi', 'CFG.firebase doluyken kapalı')
 
     olcut = olcut_ayarlari(html)
     bos_olcut = [k for k, v in olcut.items() if v is None]
     if bos_olcut:
         ekle('HATA', 'Ölçüt ayarları', 'okunamadı: ' + ', '.join(bos_olcut) + ' (CFG biçimi değişmiş; bu aracı güncelle)')
-    sha = hashlib.sha256(html.encode('utf-8')).hexdigest()
+    sha = ozet if ozet is not None else agac_ozeti()
     if not kayitlar:
         ekle('UYARI', 'Ölçüt kilidi', 'henüz kilitlenmedi: pilot ya da veri toplama BAŞLARKEN `--kilitle` çalıştır; sonra ayar değişirse bu araç yakalar')
     else:
@@ -169,7 +154,7 @@ def kontrol(html=None, kurallar=None, kayitlar=None, derleme_denetle=True, pilot
             ekle('TAMAM', 'Ölçüt ayarları', f'{son["zaman"][:10]} kaydıyla aynı')
         if son['html_sha256'] != sha:
             if son['surum'] == surum:
-                ekle('HATA', 'Kod değişmiş, sürüm aynı', f'APP_VERSION {surum} kayıtlı sürümle aynı ama dosya farklı: kaynak/02_core.js içinde sürümü artır')
+                ekle('HATA', 'Kod değişmiş, sürüm aynı', f'APP_VERSION {surum} kayıtlı sürümle aynı ama dosya farklı: app-config.js içindeki APP_VERSION değerini artır')
             else:
                 ekle('UYARI', 'Yeni sürüm', f'kayıtlı sürüm {son["surum"]}, şimdi {surum}. Ana veri tek sürümden gelmeli (docs/MIMARI.md); yayınlayıp `--kilitle` ile yeni kayıt ekle')
         else:
@@ -186,30 +171,12 @@ def yazdir(sonuclar):
         print(f'{simge[d]} {a}' + (f': {b}' if b else ''))
 
 
-def hazirla():
-    os.makedirs(os.path.join(YAYIN, 'public'), exist_ok=True)
-    shutil.copyfile(HTML, os.path.join(YAYIN, 'public', 'index.html'))
-    shutil.copyfile(KURALLAR, os.path.join(YAYIN, 'firestore.rules'))
-    cfg = {
-        'hosting': {'public': 'public', 'ignore': ['firebase.json', '**/.*'],
-                    # no-cache: pilot ortasında eski sürüm önbellekten gelmesin (ana veri tek sürümden gelmeli)
-                    'headers': [{'source': '**', 'headers': [{'key': 'Cache-Control', 'value': 'no-cache'},
-                                                             {'key': 'X-Content-Type-Options', 'value': 'nosniff'},
-                                                             {'key': 'Referrer-Policy', 'value': 'no-referrer'}]}]},
-        'firestore': {'rules': 'firestore.rules'},
-    }
-    with open(os.path.join(YAYIN, 'firebase.json'), 'w', encoding='utf-8') as f:
-        json.dump(cfg, f, indent=2)
-        f.write('\n')
-    return YAYIN
-
-
 def kilitle(html):
     kayitlar = kayit_oku()
     kayit = dict(zaman=datetime.now().astimezone().isoformat(timespec='seconds'),
-                 surum=re.search(r"var APP_VERSION='([^']+)'", html).group(1),
-                 onam=(re.search(r"CONSENT_VER='([^']+)'", html) or [None, None])[1],
-                 html_sha256=hashlib.sha256(html.encode('utf-8')).hexdigest(), olcut=olcut_ayarlari(html))
+                 surum=re.search(r"APP_VERSION = '([^']+)'", html).group(1),
+                 onam=(re.search(r"CONSENT_VERSION = '([^']+)'", html) or [None, None])[1],
+                 html_sha256=agac_ozeti(), olcut=olcut_ayarlari(html))
     kayitlar.append(kayit)
     with open(KAYIT, 'w', encoding='utf-8') as f:
         json.dump({'aciklama': 'Pilot/veri toplama başlarken kaydedilen sürüm ve ölçüt ayarları. Elle düzenleme; dagit.py bunlara bakarak değişiklik yakalar.',
@@ -220,18 +187,17 @@ def kilitle(html):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description='İlk Lot yayın aracı')
-    ap.add_argument('--hazirla', action='store_true', help='firebase/yayin/ klasörünü üret (kontrol geçmeli)')
     ap.add_argument('--kilitle', action='store_true', help='sürüm ve ölçüt ayarlarını yayin_kaydi.json\'a ekle (kontrol geçmeli)')
     ap.add_argument('--yayinla', action='store_true', help='firebase deploy çalıştır (kontrol geçmeli; --proje gerekli)')
     ap.add_argument('--proje', help='Firebase proje kimliği')
-    ap.add_argument('--pilot', action='store_true', help='PİLOT yayını: CFG.pilot true olmasına izin verir (ana veri toplamada kullanma)')
+    ap.add_argument('--pilot', action='store_true', help='PİLOT yayını: CONFIG.pilot true olmasına izin verir (ana veri toplamada kullanma)')
     ap.add_argument('--kuru', action='store_true', help='--yayinla ile: komutu yaz, çalıştırma')
     a = ap.parse_args(argv)
     if a.yayinla and not a.proje:
         ap.error('--yayinla için --proje gerekli')
     sonuclar, durum = kontrol(pilot=a.pilot)
     yazdir(sonuclar)
-    if not (a.hazirla or a.kilitle or a.yayinla):
+    if not (a.kilitle or a.yayinla):
         print('\nÖn kontrol ' + ('GEÇTİ.' if durum == 0 else 'GEÇMEDİ: HATA satırlarını düzelt.'))
         return durum
     if durum:
@@ -244,7 +210,7 @@ def main(argv=None):
         print(f'Kilit kaydı eklendi: sürüm {k["surum"]} ({KAYIT})')
     if a.yayinla:
         komut = ['firebase', 'deploy', '--only', 'hosting,firestore:rules', '--project', a.proje]
-        print('Komut (firebase/yayin içinde): ' + ' '.join(komut))
+        print('Komut (firebase/ klasöründe): ' + ' '.join(komut))
         if a.kuru:
             return 0
         yol = shutil.which('firebase')
@@ -252,7 +218,7 @@ def main(argv=None):
             print('HATA: firebase komutu bulunamadı (npm i -g firebase-tools; firebase login).')
             return 1
         # Windows'ta firebase-tools "firebase.cmd" olarak kurulur; bare ad subprocess ile bulunamaz, bu yüzden tam yol verilir
-        return subprocess.run([yol] + komut[1:], cwd=YAYIN).returncode
+        return subprocess.run([yol] + komut[1:], cwd=KLASOR).returncode
     return 0
 
 
