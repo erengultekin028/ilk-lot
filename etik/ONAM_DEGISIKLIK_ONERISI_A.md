@@ -23,3 +23,6 @@ Kurallar ve panel artık hiçbir kaydı silmiyor. Çekilen katılımcının kayd
 - **Süre sonunda silme hâlâ mümkün ama uygulama dışından:** Güvenlik kuralları uygulamadan gelen silmeyi engeller; proje sahibi Firebase konsolundan koleksiyon ya da projeyi silebilir. Saklama süresi bitince ham verinin silinmesi bu yolla yapılmalı.
 - **Demo/yerel mod değişmedi:** Yerel modda (veri yalnızca katılımcının cihazında) çekilme kendi cihazındaki kaydı siler. Bu, araştırma verisi değildir; gerçek çalışmada bulut modu kullanılır.
 - **Bu metnin onaylanması danışmana ve etik kurula aittir.** Hukuki görüş değildir.
+
+## b27 notu: kodla giriş kalktı (25.10.2026)
+Katılımcılar artık kart ve kod kullanmıyor: onamdan sonra anonim girişle sıradaki yuvayı otomatik alıyor. Onam metnindeki "verilerin yalnızca sana verilen rastgele bir kodla eşleşir" cümlesi hâlâ doğru (kodu sistem atıyor). Metinde ya da etik başvuruda **kart**, **QR kartı** ya da **kodunu yaz** anlamına gelen ifadeler varsa (özellikle `etik/ETIK_KURUL_BASVURU_TASLAGI.md`, `docs/KATILIMCI_TOPLAMA_PLANI.md`, `docs/VERI_YONETIM_PLANI.md`, `tanitim.html`, poster) güncellenmeli. Yeni risk: aynı kişi farklı tarayıcıdan tekrar katılırsa yeni yuva alır (pilotta izlenmeli); etik kurula "katılımcı kimliksiz, anonim Firebase oturumu" olarak bildirilebilir.

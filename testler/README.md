@@ -1,4 +1,8 @@
-# Uygulama testleri
+# Testler
+
+> **b27 uyarısı (25.10.2026):** Uygulama köklü yeniden yapılandırıldı (`docs/MIMARI.md`). Bu klasördeki tarayıcı tabanlı testler (`uygulama_testleri.py`, `erisilebilirlik_taramasi.py`, `gorsel_karsilastirma.py`) **eski tek dosya yapısı için yazılmıştı** (`ilk-lot.html`, global `S`/`ACT`/`CFG` adları, kodla giriş, yerel kayıt kipi) ve **olduğu gibi ÇALIŞMAZ**. Yeniden yazılırken: adlar için `docs/ESKI_YENI_ADLAR.md` (`docs/eski_yeni_adlar.json`), uygulama sayfası `http://localhost:8088/` (`npm run serve`), testlerin çevrimdışı çalışması için Firebase'in sahte SDK'sı ya da Emulator kullanılmalı, katılım akışı için anonim giriş + yuva alma (`public/src/repositories/enrollment-repository.js`) kurulmalı, ekran görüntüsü referansları (`gorsel_referans/`) eski yapının görüntüleridir, geniş ekran için yeni referans gerekir. Geçerli otomatik denetimler: `arac_testleri.py` (aşağıdaki listenin dışında), `npm run lint`, `npm run check:modules`, `npm run check:classes`, `firebase/kural_testleri`, `analiz/test_betikler.py`.
+>
+> Aşağıdaki liste ESKİ (b26) uygulama testlerini anlatır ve yeniden yazım için kapsam listesi olarak durur.
 
 `uygulama_testleri.py`: ilk-lot.html'i gerçek bir tarayıcıda (Chromium) uçtan uca sınar. Assert tabanlıdır; hepsi geçerse çıkış kodu 0.
 
