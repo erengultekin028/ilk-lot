@@ -26,7 +26,7 @@ export function renderStage() {
     const innerItem = innerTestQuestionSequence[state.testQuestion.i];
     const quantity = innerItem === 'att' ? ATTENTION_QUESTION : TEST_QUESTIONS[innerItem];
     return (
-      '<div class="row-titlesheet-titleage"><div class="dotour-skip">' +
+      '<div class="stage"><div class="dots">' +
       innerTestQuestionSequence
         .map(function (_, index) {
           return '<i class="' + (index <= state.testQuestion.i ? 'is-active' : '') + '"></i>';
@@ -50,12 +50,12 @@ export function renderStage() {
     );
   }
   if (state.stage === 'boot')
-    return '<div class="row-titlesheet-titleage"><p class="muted" style="text-align:center">Yükleniyor…</p></div>';
+    return '<div class="stage"><p class="muted" style="text-align:center">Yükleniyor…</p></div>';
   if (state.stage === 'welcome') {
     const welcomeBack = state.welcomeBack;
     const next = welcomeBack.next;
     return (
-      '<div class="row-titlesheet-titleage"><h1>Tekrar hoş geldin</h1><p>' +
+      '<div class="stage"><h1>Tekrar hoş geldin</h1><p>' +
       (next ? 'Kaldığın yerden devam edebilirsin.' : 'Çalışmayı tamamladın.') +
       '</p><p class="muted small-text">Kod: ' +
       maskCode(welcomeBack.code) +
@@ -63,12 +63,12 @@ export function renderStage() {
       (state.busy ? ' disabled' : '') +
       '>' +
       (state.busy ? 'Açılıyor…' : next ? 'Devam et' : 'Sonuçlarıma git') +
-      '</button><button class="card-labelirow-subtitlecard-value" style="width:100%;margin-top:6px" data-a="rejectRememberedCode">Ben değilim, başka kodla gir</button></div></div>'
+      '</button><button class="link" style="width:100%;margin-top:6px" data-a="rejectRememberedCode">Ben değilim, başka kodla gir</button></div></div>'
     );
   }
   if (state.stage === 'wait')
     return (
-      '<div class="row-titlesheet-titleage"><h1>Biraz erken geldin</h1><p>Oturum ' +
+      '<div class="stage"><h1>Biraz erken geldin</h1><p>Oturum ' +
       escapeHtml(state.waitSession) +
       ', <b style="color:var(--tx)">' +
       new Date(state.waitUntil).toLocaleString('tr-TR', {
@@ -78,12 +78,12 @@ export function renderStage() {
       }) +
       '</b> itibarıyla açılacak.</p><p class="muted small-text">Oturumlar arasında en az ' +
       CONFIG.minGapHours +
-      ' saat olmalı. Bu pencereyi kapatabilirsin; aynı linkle tekrar gel.</p><button class="card-labelirow-subtitlecard-value" style="width:100%;margin-top:10px" data-a="rejectRememberedCode">Ben değilim, başka kodla gir</button></div>'
+      ' saat olmalı. Bu pencereyi kapatabilirsin; aynı linkle tekrar gel.</p><button class="link" style="width:100%;margin-top:10px" data-a="rejectRememberedCode">Ben değilim, başka kodla gir</button></div>'
     );
   if (state.stage === 'consent') return renderConsent();
   if (state.stage === 'code')
     return (
-      '<div class="row-titlesheet-titleage"><h1>Katılım kodun</h1><p>Kartındaki QR kodu okutursan bu ekranı görmezsin. Okutamıyorsan kartındaki 12 karakterli kodu yaz.</p><input id="code-input" class="fiecard-labeld" maxlength="14" inputmode="text" style="height:56px;font:700 21px ui-monospace,Menlo,Consolas,monospace;text-align:center;letter-spacing:1px;text-transform:uppercase" placeholder="KM7D-P2XR-9TQA" aria-label="Katılımcı kodu" autocomplete="off" autocapitalize="characters" spellcheck="false" value="' +
+      '<div class="stage"><h1>Katılım kodun</h1><p>Kartındaki QR kodu okutursan bu ekranı görmezsin. Okutamıyorsan kartındaki 12 karakterli kodu yaz.</p><input id="code-input" class="field" maxlength="14" inputmode="text" style="height:56px;font:700 21px ui-monospace,Menlo,Consolas,monospace;text-align:center;letter-spacing:1px;text-transform:uppercase" placeholder="KM7D-P2XR-9TQA" aria-label="Katılımcı kodu" autocomplete="off" autocapitalize="characters" spellcheck="false" value="' +
       escapeHtml(state.codeInput || '') +
       '" data-in="code">' +
       (state.codeError
@@ -99,7 +99,7 @@ export function renderStage() {
     );
   if (state.stage === 'withdrawn')
     return (
-      '<div class="row-titlesheet-titleage"><h1>Çalışmadan çekildin</h1><p>' +
+      '<div class="stage"><h1>Çalışmadan çekildin</h1><p>' +
       (participantRepository.mode() === 'local'
         ? 'Bu çalışmaya ait verilerin bu cihazdan silindi.'
         : 'Verilerin analize dahil edilmeyecek ve araştırmacı tarafından kalıcı olarak silinecek.') +
@@ -110,17 +110,17 @@ export function renderStage() {
   if (state.stage === 'demo') return renderDemographics();
   if (state.stage === 'moved')
     return (
-      '<div class="row-titlesheet-titleage" style="text-align:center"><h1 style="margin-top:0">Telefonunla okut</h1><p>Oturumun kaydedildi. Telefonunun kamerasıyla bu kodu okut, kaldığın yerden devam edeceksin.</p><div style="background:#fff;border-radius:22px;padding:14px;align-self:center;margin:8px 0 14px;border:3px solid var(--ac)">' +
+      '<div class="stage" style="text-align:center"><h1 style="margin-top:0">Telefonunla okut</h1><p>Oturumun kaydedildi. Telefonunun kamerasıyla bu kodu okut, kaldığın yerden devam edeceksin.</p><div style="background:#fff;border-radius:22px;padding:14px;align-self:center;margin:8px 0 14px;border:3px solid var(--ac)">' +
       renderQrSvg(participantLinkFor(state.movedCode), 220) +
       '</div><p class="muted small-text">Okutamazsan telefonda bu kodu yaz:</p><p style="font:700 20px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;color:var(--tx);margin:0 0 14px">' +
       escapeHtml(state.movedCode) +
-      '</p><p class="muted small-text">Bu cihazda oturum kapatıldı ve kodun bu cihazdan silindi.</p><button class="card-labelirow-subtitlecard-value" style="width:100%" data-a="cancelMoveDevice">Vazgeç, bu cihazda devam et</button></div>'
+      '</p><p class="muted small-text">Bu cihazda oturum kapatıldı ve kodun bu cihazdan silindi.</p><button class="link" style="width:100%" data-a="cancelMoveDevice">Vazgeç, bu cihazda devam et</button></div>'
     );
   if (state.stage === 'inelig')
-    return '<div class="row-titlesheet-titleage"><h1>Katılım koşulu</h1><p>Bu çalışma 18 yaş ve üzeri katılımcılarla yürütülüyor. İlgin için teşekkürler.</p><p class="muted small-text">Bu koda ait bir veri saklanmadı. Bu pencereyi kapatabilirsin.</p></div>';
+    return '<div class="stage"><h1>Katılım koşulu</h1><p>Bu çalışma 18 yaş ve üzeri katılımcılarla yürütülüyor. İlgin için teşekkürler.</p><p class="muted small-text">Bu koda ait bir veri saklanmadı. Bu pencereyi kapatabilirsin.</p></div>';
   if (state.stage === 'pre')
     return (
-      '<div class="row-titlesheet-titleage"><h1>Önce birkaç finans sorusu</h1><p>' +
+      '<div class="stage"><h1>Önce birkaç finans sorusu</h1><p>' +
       testQuestionSequence('pre').length +
       ' kısa soru, yaklaşık 2 dakika. Bu bir sınav değil; bilmiyorsan "Bilmiyorum"u seçebilirsin.</p><div class="stage-actions"><button class="button is-primary" data-a="startTest" data-v="pre">Teste başla</button></div></div>'
     );
@@ -161,13 +161,13 @@ export function renderStage() {
     ],
   ][state.introStep];
   return (
-    '<div class="row-titlesheet-titleage">' +
+    '<div class="stage">' +
     innerIndex[0] +
     '<h1>' +
     innerIndex[1] +
     '</h1><p>' +
     innerIndex[2] +
-    '</p><div class="dotour-skip" style="margin:8px 0 6px">' +
+    '</p><div class="dots" style="margin:8px 0 6px">' +
     [0, 1, 2]
       .map(function (item) {
         return '<i class="' + (item === state.introStep ? 'is-active' : '') + '"></i>';
@@ -177,7 +177,7 @@ export function renderStage() {
     (state.introStep < 2 ? 'Devam' : 'Alıştırmaya geç') +
     '</button>' +
     (state.introStep < 2
-      ? '<button class="card-labelirow-subtitlecard-value" style="width:100%" data-a="finishIntro">Tanıtımı geç</button>'
+      ? '<button class="link" style="width:100%" data-a="finishIntro">Tanıtımı geç</button>'
       : '') +
     '</div></div>'
   );

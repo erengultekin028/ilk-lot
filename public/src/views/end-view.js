@@ -27,7 +27,7 @@ export function renderEnd() {
     );
   };
   const html =
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><h1 style="margin-top:4px">Üç bölüm tamamlandı</h1><p>Teşekkürler. Verilerin kaydedildi.</p>';
+    '<div class="stage" style="justify-content:flex-start;padding-top:18px"><h1 style="margin-top:4px">Üç bölüm tamamlandı</h1><p>Teşekkürler. Verilerin kaydedildi.</p>';
   const summary =
     filmHtml() +
     '<div class="stat-row" style="margin:4px 0 14px"><div class="stat"><span>1. bölüm, düşüşte satış</span><b>' +
@@ -38,7 +38,7 @@ export function renderEnd() {
   if (state.postTest == null)
     return (
       html +
-      '<div class="is-wrongsheet-titlee is-info"><span>Son adımlar: 2 soruluk test ve iki kısa soru. Sonra çalışmanın amacını anlatacağız.</span></div><button class="button is-primary" data-a="startTest" data-v="post">Devam</button></div>'
+      '<div class="note is-info"><span>Son adımlar: 2 soruluk test ve iki kısa soru. Sonra çalışmanın amacını anlatacağız.</span></div><button class="button is-primary" data-a="startTest" data-v="post">Devam</button></div>'
     );
   // Manipülasyon kontrolü ve amaç tahmini, amaç açıklanmadan ÖNCE sorulur
   if (!state.manipulationCheck)
@@ -67,7 +67,7 @@ export function renderEnd() {
       html +
       section(
         'Son soru',
-        '<p style="margin:0 0 10px">Sence bu araştırma neyi ölçmeye çalışıyordu? <span class="muted">(isteğe bağlı)</span></p><textarea id="purpose-guess" class="fiecard-labeld" rows="3" style="height:auto;padding:10px 12px;resize:vertical" maxlength="400" aria-label="Araştırmanın amacı hakkındaki tahminin" placeholder="Kısaca yazabilirsin"></textarea><button class="button is-primary" style="margin-top:10px" data-a="submitPurposeGuess">Gönder</button><button class="card-labelirow-subtitlecard-value" style="width:100%" data-a="skipPurposeGuess">Atla</button>'
+        '<p style="margin:0 0 10px">Sence bu araştırma neyi ölçmeye çalışıyordu? <span class="muted">(isteğe bağlı)</span></p><textarea id="purpose-guess" class="field" rows="3" style="height:auto;padding:10px 12px;resize:vertical" maxlength="400" aria-label="Araştırmanın amacı hakkındaki tahminin" placeholder="Kısaca yazabilirsin"></textarea><button class="button is-primary" style="margin-top:10px" data-a="submitPurposeGuess">Gönder</button><button class="link" style="width:100%" data-a="skipPurposeGuess">Atla</button>'
       ) +
       '</div>'
     );
@@ -83,7 +83,7 @@ export function renderEnd() {
       'Çalışmanın amacı',
       '<p style="margin:0 0 10px">Bu çalışmada, simülatörde zararına satış yapmadan önce verilen <b>' +
         CONFIG.cooldownSec +
-        ' saniyelik bekleme süresinin</b>, sonrasındaki kararlara da yansıyıp yansımadığını inceledik.</p><p class="muted">Katılımcılar rastgele iki gruba ayrıldı. Bir grupta simülatörde bekleme ekranı çıktı, diğerinde çıkmadı. 1. ve 3. bölümde iki grup için de bekleme yoktu; bu iki bölümü karşılaştırarak bir değişim olup olmadığına bakıyoruz. Bunu baştan söylemedik, çünkü bilmek kararlarını etkileyebilirdi.</p><div class="is-wrongsheet-titlee" style="margin:14px 0 0"><span><b>Sen ' +
+        ' saniyelik bekleme süresinin</b>, sonrasındaki kararlara da yansıyıp yansımadığını inceledik.</p><p class="muted">Katılımcılar rastgele iki gruba ayrıldı. Bir grupta simülatörde bekleme ekranı çıktı, diğerinde çıkmadı. 1. ve 3. bölümde iki grup için de bekleme yoktu; bu iki bölümü karşılaştırarak bir değişim olup olmadığına bakıyoruz. Bunu baştan söylemedik, çünkü bilmek kararlarını etkileyebilirdi.</p><div class="note" style="margin:14px 0 0"><span><b>Sen ' +
         (state.group === 'A' ? 'bekleme süresi olan' : 'bekleme süresi olmayan (kontrol)') +
         ' gruptaydın.</b></span></div>'
     ) +
@@ -339,6 +339,6 @@ function pilotFeedbackHtml() {
           '</div>'
         );
       }).join('') +
-      '<button class="button is-primary" style="margin-top:16px" data-a="sendFeedback">Gönder</button><button class="card-labelirow-subtitlecard-value" style="width:100%" data-a="skipFeedback">Atla</button>'
+      '<button class="button is-primary" style="margin-top:16px" data-a="sendFeedback">Gönder</button><button class="link" style="width:100%" data-a="skipFeedback">Atla</button>'
   );
 }

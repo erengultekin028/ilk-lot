@@ -183,7 +183,7 @@ export function renderFreePlayMenu() {
     ],
   };
   return (
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><div class="muted small-text" style="font-weight:700">Serbest mod</div><h1 style="margin-top:4px">Oyunu kendin kur</h1><p>Aynı simülatör, kurgusal fiyatlar ve haberler. Hiçbir şey kaydedilmez ve çalışmanın parçası değildir. Süre sınırı yok; toplam paran kayıp sınırının altına inince oyun biter, istersen kendin de bitirebilirsin. Oyun sırasında piyasayı durdurabilir ya da hızlandırabilir, her hisseye otomatik sat emri koyabilirsin.</p>' +
+    '<div class="stage" style="justify-content:flex-start;padding-top:18px"><div class="muted small-text" style="font-weight:700">Serbest mod</div><h1 style="margin-top:4px">Oyunu kendin kur</h1><p>Aynı simülatör, kurgusal fiyatlar ve haberler. Hiçbir şey kaydedilmez ve çalışmanın parçası değildir. Süre sınırı yok; toplam paran kayıp sınırının altına inince oyun biter, istersen kendin de bitirebilirsin. Oyun sırasında piyasayı durdurabilir ya da hızlandırabilir, her hisseye otomatik sat emri koyabilirsin.</p>' +
     '<div class="level-list" role="radiogroup" aria-label="Zorluk">' +
     ['k', 'o', 'z']
       .map(function (item) {
@@ -242,7 +242,7 @@ export function renderFreePlayMenu() {
     '<p class="muted small-text" style="margin:-6px 0 14px">' +
     FREE_PLAY_PORTFOLIOS[freePlay.pf || 'd'].tx +
     '</p>' +
-    '<button class="button is-primary" data-a="startFreePlay">Oyunu başlat</button><button class="card-labelirow-subtitlecard-value" style="width:100%" data-a="leaveFreePlay">Geri dön</button><p class="footnote">Şirket adları gerçek; fiyatlar, grafikler ve haberler kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz. Yatırım tavsiyesi değildir.</p></div>'
+    '<button class="button is-primary" data-a="startFreePlay">Oyunu başlat</button><button class="link" style="width:100%" data-a="leaveFreePlay">Geri dön</button><p class="footnote">Şirket adları gerçek; fiyatlar, grafikler ve haberler kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz. Yatırım tavsiyesi değildir.</p></div>'
   );
 }
 
@@ -257,7 +257,7 @@ export function renderFreePlayEnd() {
       }).length
     : 0;
   return (
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:18px"><div class="muted small-text" style="font-weight:700">Serbest mod · ' +
+    '<div class="stage" style="justify-content:flex-start;padding-top:18px"><div class="muted small-text" style="font-weight:700">Serbest mod · ' +
     items.ad +
     '</div><h1 style="margin-top:4px">' +
     (res.kind === 'limit' ? 'Kayıp sınırına ulaştın' : 'Oyunu bitirdin') +
@@ -287,6 +287,6 @@ export function renderFreePlayEnd() {
     '<p class="muted small-text" style="margin:0 0 14px">Ayarların: ' +
     freePlaySettingsText(freePlay) +
     '.</p>' +
-    '<button class="button is-primary" data-a="startFreePlay">Aynı ayarlarla yeniden oyna</button><button class="button" data-a="showFreePlayMenu">Ayarları değiştir</button><button class="card-labelirow-subtitlecard-value" style="width:100%" data-a="leaveFreePlay">Çalışmanın bitiş ekranına dön</button><p class="muted small-text" style="margin:12px 0 0">Bu oyunda hiçbir şey kaydedilmedi. Kurgusal bir simülasyondur, yatırım tavsiyesi değildir.</p></div>'
+    '<button class="button is-primary" data-a="startFreePlay">Aynı ayarlarla yeniden oyna</button><button class="button" data-a="showFreePlayMenu">Ayarları değiştir</button><button class="link" style="width:100%" data-a="leaveFreePlay">Çalışmanın bitiş ekranına dön</button><p class="muted small-text" style="margin:12px 0 0">Bu oyunda hiçbir şey kaydedilmedi. Kurgusal bir simülasyondur, yatırım tavsiyesi değildir.</p></div>'
   );
 }

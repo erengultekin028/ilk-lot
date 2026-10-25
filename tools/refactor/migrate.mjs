@@ -207,7 +207,7 @@ walk.fullAncestor(ast, (n, _s, anc) => {
   litText.set(n, { inner, mapped, parent: par });
 });
 // ── Sınıf adları (CSS class): HTML dizesindeki class="..." değerleri, koşullu parçalar, classList.* ve seçiciler ──
-const classRe = new RegExp(`(?<![\w-])(${classKeys.map(reEsc).join('|')})(?![\w-])`, 'g');
+const classRe = new RegExp(`(?<![\\w-])(${classKeys.map(reEsc).join('|')})(?![\\w-])`, 'g');
 const renameTokens = (str) => str.replace(classRe, (m) => CLASSES[m]);
 const skipClassRanges = ['exportCards', 'exportPoster'].map((n) => itemByOld.get(n)).filter(Boolean).map((i) => [i.start, i.end]);
 const inSkip = (pos) => skipClassRanges.some(([a, b]) => pos >= a && pos < b);

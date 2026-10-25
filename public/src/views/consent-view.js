@@ -140,7 +140,7 @@ export function renderConsent() {
   };
   const nextDay = TRIAL_SETS.X.length + TRIAL_SETS.Y.length;
   return (
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:8px"><h1 style="font-size:28px;margin:4px 0 6px">Katılmadan önce, kısaca</h1><p class="muted" style="margin:0 0 10px">Bu bir üniversite araştırması. Üç şeyi bilmen yeterli:</p><div class="font-size-section">' +
+    '<div class="stage" style="justify-content:flex-start;padding-top:8px"><h1 style="font-size:28px;margin:4px 0 6px">Katılmadan önce, kısaca</h1><p class="muted" style="margin:0 0 10px">Bu bir üniversite araştırması. Üç şeyi bilmen yeterli:</p><div class="font-size-section">' +
     fontSizeHtml() +
     '</div>' +
     sum(
@@ -176,7 +176,7 @@ export function renderConsent() {
         );
       })
       .join('') +
-    '<button class="card-labelirow-subtitlecard-value" style="padding:10px 0;color:var(--act);text-align:left" data-a="downloadConsentText">Onam metnini indir (.txt)</button>' +
+    '<button class="link" style="padding:10px 0;color:var(--act);text-align:left" data-a="downloadConsentText">Onam metnini indir (.txt)</button>' +
     '<label class="consent-check"><input type="checkbox" data-in="consentOk"' +
     (state.consentChecked ? ' checked' : '') +
     '><span>Yukarıdaki bilgileri okudum ve anladım. Bu çalışmaya gönüllü olarak katılmak istiyorum.</span></label>' +

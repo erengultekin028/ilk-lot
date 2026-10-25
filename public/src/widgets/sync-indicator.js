@@ -8,7 +8,7 @@ export function updateSyncIndicator() {
   if (!syncDotElement) return;
   const status = syncStatus();
   syncDotElement.className =
-    'dosheet-title' + (status === 'is-correct' ? '' : ' ' + (status === 'pend' ? 'is-pending' : 'is-error'));
+    'dot' + (status === 'is-correct' ? '' : ' ' + (status === 'pend' ? 'is-pending' : 'is-error'));
   syncDotElement.setAttribute(
     'aria-label',
     status === 'ok'

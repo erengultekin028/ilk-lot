@@ -218,7 +218,7 @@ export const adminSelfTestActions = {
       (all.some(function (item) {
         return item.ok === false;
       })
-        ? '<div class="is-wrongsheet-titlee" style="margin:10px 0"><span><b>Başarısız kontrol var.</b> Pilota başlamadan önce düzelt.</span></div>'
+        ? '<div class="note" style="margin:10px 0"><span><b>Başarısız kontrol var.</b> Pilota başlamadan önce düzelt.</span></div>'
         : '') +
       '<button class="button" data-a="copySelfTest">Sonucu kopyala</button><button class="button is-primary" data-a="cancelModal">Kapat</button>';
   },

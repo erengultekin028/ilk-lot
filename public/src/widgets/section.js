@@ -15,7 +15,7 @@ export function section(title, body, right) {
 
 function progressBar(percent, color) {
   return (
-    '<div class="barrow"><i style="width:' +
+    '<div class="bar"><i style="width:' +
     Math.max(0, Math.min(100, percent)) +
     '%' +
     (color ? ';background:' + color : '') +

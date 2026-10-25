@@ -49,7 +49,7 @@ export function filmHtml() {
   const film = buildFilmData();
   const bw = (FILM_WIDTH - FILM_PADDING.l - FILM_PADDING.r) / (film.n + 1.2);
   let html =
-    '<div class="ficard-labelm"><div class="film-title"><b>Kararlarının filmi</b><button class="card-labelirow-subtitlecard-value" style="padding:0;color:var(--act)" data-a="playFilm">Tekrar oynat</button></div><svg viewBox="0 0 ' +
+    '<div class="film"><div class="film-title"><b>Kararlarının filmi</b><button class="link" style="padding:0;color:var(--act)" data-a="playFilm">Tekrar oynat</button></div><svg viewBox="0 0 ' +
     FILM_WIDTH +
     ' ' +
     FILM_HEIGHT +

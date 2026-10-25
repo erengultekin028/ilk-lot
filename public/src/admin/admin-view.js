@@ -26,13 +26,13 @@ function renderAdminPanel() {
       )
     : null;
   let html =
-    '<div class="is-wrongsheet-titlee"><span><b>Araştırmacı modu.</b> Bu bölüm katılımcıya görünmez. Kapatmak için logoya 5 kez dokun.</span></div>';
+    '<div class="note"><span><b>Araştırmacı modu.</b> Bu bölüm katılımcıya görünmez. Kapatmak için logoya 5 kez dokun.</span></div>';
   if (participantRepository.mode() === 'firebase' && !participantRepository.isAdminAuthed())
     return (
       html +
       section(
         'Araştırmacı girişi',
-        '<input id="admin-email" class="fiecard-labeld" type="email" placeholder="E-posta" aria-label="E-posta" autocomplete="username"><input id="admin-password" class="fiecard-labeld" type="password" placeholder="Şifre" aria-label="Şifre" autocomplete="current-password" style="margin-top:8px"><button class="button is-primary" style="margin-top:10px" data-a="adminLogin">Giriş yap</button>' +
+        '<input id="admin-email" class="field" type="email" placeholder="E-posta" aria-label="E-posta" autocomplete="username"><input id="admin-password" class="field" type="password" placeholder="Şifre" aria-label="Şifre" autocomplete="current-password" style="margin-top:8px"><button class="button is-primary" style="margin-top:10px" data-a="adminLogin">Giriş yap</button>' +
           (state.adminError
             ? '<p class="price-down small-text">' + escapeHtml(state.adminError) + '</p>'
             : '')
@@ -49,7 +49,7 @@ function renderAdminPanel() {
       CONSENT_VERSION +
       '</b></div>' +
       (items.length
-        ? '<div class="is-wrongsheet-titlee" style="margin:10px 0"><span><b>Doldurulmamış alan var:</b> ' +
+        ? '<div class="note" style="margin:10px 0"><span><b>Doldurulmamış alan var:</b> ' +
           items.join(', ') +
           '. Pilottan önce <code>CFG.consentInfo</code> ve <code>CFG.contact</code> alanlarını doldur; aksi halde katılımcıya sarı işaretli yer tutucular görünür.</span></div>'
         : '<p class="price-up small-text" style="margin:8px 0">Tüm onam alanları dolu.</p>') +
@@ -128,7 +128,7 @@ function renderAdminPanel() {
         count.B +
         '</b></div></div>'
       : '<button class="button" data-a="loadAllocations">Listeyi yükle</button>') +
-      '<p class="muted small-text">Kodları katılımcılara tek tek dağıt. Hangi kodun hangi grupta olduğunu katılımcıyla paylaşma.</p><div style="display:flex;gap:8px;margin-top:10px"><input id="allocation-count" class="fiecard-labeld" type="number" inputmode="numeric" value="80" min="4" step="4" aria-label="Kişi sayısı"><button class="button small-text" style="white-space:nowrap" data-a="generateAllocations">Yeni liste</button></div><label class="field-label" for="poster-base-url">Kartlardaki link adresi</label><input id="poster-base-url" class="fiecard-labeld" data-in="baseIn" placeholder="https://…/ilk-lot.html" value="' +
+      '<p class="muted small-text">Kodları katılımcılara tek tek dağıt. Hangi kodun hangi grupta olduğunu katılımcıyla paylaşma.</p><div style="display:flex;gap:8px;margin-top:10px"><input id="allocation-count" class="field" type="number" inputmode="numeric" value="80" min="4" step="4" aria-label="Kişi sayısı"><button class="button small-text" style="white-space:nowrap" data-a="generateAllocations">Yeni liste</button></div><label class="field-label" for="poster-base-url">Kartlardaki link adresi</label><input id="poster-base-url" class="field" data-in="baseIn" placeholder="https://…/ilk-lot.html" value="' +
       escapeHtml(state.baseUrlInput || CONFIG.baseUrl || location.origin + location.pathname) +
       '"><p class="muted small-text">Kendi yayın adresini yaz. claude.ai önizlemesinin adresi katılımcılar için çalışmaz.</p><button class="button is-primary" style="margin-top:10px" data-a="downloadCards">QR kartlarını indir (yazdırılabilir)</button><button class="button" data-a="downloadAllocations">Gizli liste: no, kod, grup, link (CSV)</button>' +
       (participantRepository.mode() === 'local' && count
@@ -151,11 +151,11 @@ function renderAdminPanel() {
   );
   html += section(
     'Poster',
-    '<p class="muted small-text" style="margin:0 0 8px">Tanıtım sayfasının yayın adresini yaz. Posterdeki QR oraya gider.</p><input class="fiecard-labeld" data-in="landIn" placeholder="https://…/tanitim.html" value="' +
+    '<p class="muted small-text" style="margin:0 0 8px">Tanıtım sayfasının yayın adresini yaz. Posterdeki QR oraya gider.</p><input class="field" data-in="landIn" placeholder="https://…/tanitim.html" value="' +
       escapeHtml(state.landingUrlInput || '') +
-      '" aria-label="Tanıtım sayfası adresi"><input class="fiecard-labeld" style="margin-top:8px" data-in="posterMail" placeholder="İletişim e-postası (isteğe bağlı)" value="' +
+      '" aria-label="Tanıtım sayfası adresi"><input class="field" style="margin-top:8px" data-in="posterMail" placeholder="İletişim e-postası (isteğe bağlı)" value="' +
       escapeHtml(state.posterEmail || '') +
-      '" aria-label="İletişim e-postası"><input class="fiecard-labeld" style="margin-top:8px" data-in="posterFoot" placeholder="Alt bilgi, örn. Üniversite adı (isteğe bağlı)" value="' +
+      '" aria-label="İletişim e-postası"><input class="field" style="margin-top:8px" data-in="posterFoot" placeholder="Alt bilgi, örn. Üniversite adı (isteğe bağlı)" value="' +
       escapeHtml(state.posterFooter || '') +
       '" aria-label="Alt bilgi"><div style="display:flex;gap:8px;margin-top:10px"><button class="button is-primary" style="flex:1" data-a="downloadPoster" data-v="A4">Poster A4</button><button class="button is-primary" style="flex:1;margin:0" data-a="downloadPoster" data-v="A3">Poster A3</button></div><button class="button" data-a="downloadPosterQr">Sadece QR (SVG)</button><p class="muted small-text" style="margin-top:10px">Posterde hipotez ve müdahale geçmez; katılımcıyı etkilememek için bilinçli olarak genel tutuldu.</p>'
   );

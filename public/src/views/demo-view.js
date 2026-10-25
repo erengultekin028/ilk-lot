@@ -10,11 +10,11 @@ import { participantRepository } from '../repositories/participant-repository.js
 // Tanıtım modu (?demo=1) ekranları. Bekleme ekranı hiç çıkmaz ve hiçbir veri kaydedilmez; bunlar ekranda da söylenir.
 export function renderDemoLanding() {
   return (
-    '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">Tanıtım</div><h1>Piyasa simülatörünü dene</h1><p>Elinde 6 hisseden oluşan bir portföy ve ₺' +
+    '<div class="stage"><div class="muted small-text" style="font-weight:700">Tanıtım</div><h1>Piyasa simülatörünü dene</h1><p>Elinde 6 hisseden oluşan bir portföy ve ₺' +
     formatNumber(CONFIG.cash0, 0) +
     ' nakit var. Fiyatlar her ' +
     tickSecondsText() +
-    ' saniyede bir gün ilerler; hisse alıp satabilirsin. Bu bir tanıtım: <b style="color:var(--tx)">hiçbir veri kaydedilmez</b> ve çalışmaya katılmış sayılmazsın.</p><div class="is-wrongsheet-titlee is-info" style="margin:4px 0 12px"><span><b style="color:var(--tx)">Önemli:</b> Hisse adları gerçek BIST şirketleridir, ama fiyatlar, grafikler ve haberler araştırma için kurgulanmıştır. Bu şirketlerin gerçek durumunu yansıtmaz.</span></div>' +
+    ' saniyede bir gün ilerler; hisse alıp satabilirsin. Bu bir tanıtım: <b style="color:var(--tx)">hiçbir veri kaydedilmez</b> ve çalışmaya katılmış sayılmazsın.</p><div class="note is-info" style="margin:4px 0 12px"><span><b style="color:var(--tx)">Önemli:</b> Hisse adları gerçek BIST şirketleridir, ama fiyatlar, grafikler ve haberler araştırma için kurgulanmıştır. Bu şirketlerin gerçek durumunu yansıtmaz.</span></div>' +
     '<div class="stage-actions"><button class="button is-primary" data-a="startDemoSimulation">Simülatörü başlat</button><button class="button" data-a="openFreePlay">Serbest mod: kendi kurallarınla oyna</button></div></div>'
   );
 }
@@ -24,7 +24,7 @@ export function renderDemoEnd() {
   const portfolioTotal = portfolioValue();
   const change = (portfolioTotal / simulation.v0 - 1) * 100;
   return (
-    '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">Tanıtım bitti</div><h1>Simülatör bitti</h1><p>Portföyünün değeri ₺' +
+    '<div class="stage"><div class="muted small-text" style="font-weight:700">Tanıtım bitti</div><h1>Simülatör bitti</h1><p>Portföyünün değeri ₺' +
     formatNumber(portfolioTotal, 0) +
     ' (' +
     formatPercentChange(change) +
@@ -63,7 +63,7 @@ export function demoHintHtml() {
     return allocationCache[item].grp === 'B' && isValid(item);
   })[0];
   return (
-    '<div class="is-wrongsheet-titlee is-info" style="margin-top:16px;display:block"><div>' +
+    '<div class="note is-info" style="margin-top:16px;display:block"><div>' +
     (participantRepository.memMode()
       ? 'Demo modu: bu görünüm kayıt tutmaya izin vermiyor, veriler sayfa kapanınca silinir.'
       : 'Demo modu: kayıtlar sadece bu cihazda tutulur ve kodlar her cihazda farklıdır.') +
@@ -78,6 +78,6 @@ export function demoHintHtml() {
     (bounds
       ? '<button class="chip" data-a="useDemoCode" data-v="' + bounds + '">' + bounds + ' · kontrol</button>'
       : '') +
-    '</div><button class="card-labelirow-subtitlecard-value" style="padding:10px 0 0;color:var(--act)" data-a="resetDemoData">Demo verisini sıfırla</button></div>'
+    '</div><button class="link" style="padding:10px 0 0;color:var(--act)" data-a="resetDemoData">Demo verisini sıfırla</button></div>'
   );
 }

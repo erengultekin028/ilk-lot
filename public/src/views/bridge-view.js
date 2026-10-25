@@ -12,7 +12,7 @@ import { currentBlockTrials } from '../models/trial-generator.js';
 export function renderBridge() {
   if (state.bridge === 'simready')
     return (
-      '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">2. bölüm</div><h1>Alıştırma bitti</h1><p>Şimdi gerçek simülatör başlıyor. Süre ' +
+      '<div class="stage"><div class="muted small-text" style="font-weight:700">2. bölüm</div><h1>Alıştırma bitti</h1><p>Şimdi gerçek simülatör başlıyor. Süre ' +
       simulationMinutesText() +
       ' dakika. Alıştırmadaki işlemler sayılmaz; buradan sonrası sayılır.</p><button class="button is-primary" data-a="startSimulation">Simülatörü başlat</button></div>'
     );
@@ -50,7 +50,7 @@ export function renderBridge() {
       ['Analiz', 'bu bölümdeki işlemlerinin özeti'],
     ];
     return (
-      '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">2. bölüm</div><h1>Piyasa simülatörü</h1><p>Şimdi ' +
+      '<div class="stage"><div class="muted small-text" style="font-weight:700">2. bölüm</div><h1>Piyasa simülatörü</h1><p>Şimdi ' +
       simulationMinutesText() +
       ' dakikalık bir simülatöre geçiyoruz. Önce 30 saniyelik bir alıştırma yapacaksın, sonra gerçek simülatör başlayacak.</p>' +
       '<div class="info-facts">' +
@@ -77,7 +77,7 @@ export function renderBridge() {
         })
         .join('') +
       '</div>' +
-      '<div class="is-wrongsheet-titlee is-info" style="margin:14px 0 12px"><span><b style="color:var(--tx)">Önemli:</b> Hisse adları gerçek BIST şirketleridir, ama fiyatlar, grafikler ve haberler araştırma için kurgulanmıştır. Bu şirketlerin gerçek durumunu yansıtmaz. Hiçbir kararın doğru ya da yanlış değildir; içerik yatırım tavsiyesi değildir.</span></div>' +
+      '<div class="note is-info" style="margin:14px 0 12px"><span><b style="color:var(--tx)">Önemli:</b> Hisse adları gerçek BIST şirketleridir, ama fiyatlar, grafikler ve haberler araştırma için kurgulanmıştır. Bu şirketlerin gerçek durumunu yansıtmaz. Hiçbir kararın doğru ya da yanlış değildir; içerik yatırım tavsiyesi değildir.</span></div>' +
       '<div class="muted small-text" style="font-weight:700;margin:6px 0 8px">Başlamadan önce kısa bir okuma</div>' +
       READING_CARDS.map(function (item) {
         return '<div class="rounded-box"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
@@ -86,7 +86,7 @@ export function renderBridge() {
     );
   }
   return (
-    '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">3. bölüm</div><h1>Son ' +
+    '<div class="stage"><div class="muted small-text" style="font-weight:700">3. bölüm</div><h1>Son ' +
     currentBlockTrials().length +
     ' karar</h1><p>Simülatör bitti. Şimdi ilk bölümdekine benzer, ama farklı hisselerle ' +
     currentBlockTrials().length +

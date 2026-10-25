@@ -87,7 +87,7 @@ function chooseHtml(trial) {
     '</div>';
   if (trial.news)
     html +=
-      '<div class="is-wrongsheet-titlee is-info" id="tour-news" style="color:var(--tx)"><span><b>Haber:</b> ' +
+      '<div class="note is-info" id="tour-news" style="color:var(--tx)"><span><b>Haber:</b> ' +
       escapeHtml(trial.news) +
       '</span></div>';
   if (trial.crowd != null)
@@ -124,7 +124,7 @@ function chooseHtml(trial) {
 
 function cooldownHtml(trial) {
   return (
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:28px;text-align:center"><h1 style="font-size:28px;margin-top:0">Bir dakika dur</h1><p>Zararına satmak üzeresin (' +
+    '<div class="stage" style="justify-content:flex-start;padding-top:28px;text-align:center"><h1 style="font-size:28px;margin-top:0">Bir dakika dur</h1><p>Zararına satmak üzeresin (' +
     formatPercentChange(trial.pl * 100) +
     '). Satış nedenin plan mı, haber mi, yoksa korku mu?</p><div class="countdown" id="cooldown-number">' +
     Math.max(0, state.trial.cdLeft) +
@@ -146,7 +146,7 @@ function outcomeHtml(trial, decision) {
         ? '₺' + formatNumber(CONFIG.stake, 0) + ' × ' + html
         : '₺' + formatNumber(CONFIG.stake + CONFIG.addAmount, 0) + ' × ' + html;
   return (
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:22px">' +
+    '<div class="stage" style="justify-content:flex-start;padding-top:22px">' +
     trialProgressHtml() +
     '<p class="muted" style="margin:10px 0 0">Bir hafta sonra</p><div class="giant-number" style="color:var(--' +
     (isUp ? 'up' : 'dn') +
@@ -154,7 +154,7 @@ function outcomeHtml(trial, decision) {
     (isUp ? '▲' : '▼') +
     '</span> ' +
     formatNumber(Math.abs(trial.out * 100)) +
-    '%<span class="row-titler-onews-labely">' +
+    '%<span class="sr-only">' +
     (isUp ? ' yükseliş' : ' düşüş') +
     '</span></div><p style="margin-top:8px">' +
     escapeHtml(trial.sym) +
@@ -187,13 +187,13 @@ function outcomeHtml(trial, decision) {
 
 function stressHtml() {
   return (
-    '<div class="row-titlesheet-titleage"><h1 style="font-size:26px">Kısa bir soru</h1><p>Şu an ne kadar gergin hissediyorsun?</p><div class="scale">' +
+    '<div class="stage"><h1 style="font-size:26px">Kısa bir soru</h1><p>Şu an ne kadar gergin hissediyorsun?</p><div class="scale">' +
     [1, 2, 3, 4, 5]
       .map(function (item) {
         return '<button data-a="answerStress" data-v="' + item + '">' + item + '</button>';
       })
       .join('') +
-    '</div><div class="scale-labels"><span>Hiç gergin değilim</span><span>Çok gerginim</span></div><button class="card-labelirow-subtitlecard-value" style="width:100%;margin-top:12px" data-a="answerStress" data-v="0">Cevaplamak istemiyorum</button></div>'
+    '</div><div class="scale-labels"><span>Hiç gergin değilim</span><span>Çok gerginim</span></div><button class="link" style="width:100%;margin-top:12px" data-a="answerStress" data-v="0">Cevaplamak istemiyorum</button></div>'
   );
 }
 
@@ -202,7 +202,7 @@ function quizHtml() {
   const comprehension = state.comprehension;
   const question = comprehensionQuestionAt(comprehension.i);
   let html =
-    '<div class="row-titlesheet-titleage" style="justify-content:flex-start;padding-top:24px"><div class="muted small-text" style="font-weight:700">Kısa kontrol · ' +
+    '<div class="stage" style="justify-content:flex-start;padding-top:24px"><div class="muted small-text" style="font-weight:700">Kısa kontrol · ' +
     (comprehension.i + 1) +
     ' / ' +
     COMPREHENSION_POOLS.length +
@@ -243,9 +243,9 @@ export function renderTrial() {
   const trial = currentTrial();
   if (trialState.phase === 'ready')
     return (
-      '<div class="row-titlesheet-titleage"><div class="muted small-text" style="font-weight:700">1. bölüm</div><h1>Hazırsın</h1><p>Şimdi ' +
+      '<div class="stage"><div class="muted small-text" style="font-weight:700">1. bölüm</div><h1>Hazırsın</h1><p>Şimdi ' +
       currentBlockTrials().length +
-      ' karar başlıyor. Bundan sonraki kararların kaydedilir.</p><div class="is-wrongsheet-titlee is-info"><span>Her karar ayrı bir hisseyle ilgilidir; bir öncekinin sonucu sonrakini etkilemez. Kendi bildiğin gibi karar ver.</span></div><button class="button is-primary" data-a="startMainStudy">Başla</button></div>'
+      ' karar başlıyor. Bundan sonraki kararların kaydedilir.</p><div class="note is-info"><span>Her karar ayrı bir hisseyle ilgilidir; bir öncekinin sonucu sonrakini etkilemez. Kendi bildiğin gibi karar ver.</span></div><button class="button is-primary" data-a="startMainStudy">Başla</button></div>'
     );
   if (trialState.phase === 'quiz') return quizHtml();
   if (trialState.phase === 'outcome')
@@ -262,12 +262,12 @@ export function renderTrial() {
 // ───────────────── Bölüm geçişleri ve gerginlik sorusu ─────────────────
 export function renderStress() {
   return (
-    '<div class="row-titlesheet-titleage"><h1 style="font-size:26px">Kısa bir soru</h1><p>Şu an ne kadar gergin hissediyorsun?</p><div class="scale">' +
+    '<div class="stage"><h1 style="font-size:26px">Kısa bir soru</h1><p>Şu an ne kadar gergin hissediyorsun?</p><div class="scale">' +
     [1, 2, 3, 4, 5]
       .map(function (item) {
         return '<button data-a="answerStress" data-v="' + item + '">' + item + '</button>';
       })
       .join('') +
-    '</div><div class="scale-labels"><span>Hiç gergin değilim</span><span>Çok gerginim</span></div><button class="card-labelirow-subtitlecard-value" style="width:100%;margin-top:12px" data-a="answerStress" data-v="0">Cevaplamak istemiyorum</button></div>'
+    '</div><div class="scale-labels"><span>Hiç gergin değilim</span><span>Çok gerginim</span></div><button class="link" style="width:100%;margin-top:12px" data-a="answerStress" data-v="0">Cevaplamak istemiyorum</button></div>'
   );
 }

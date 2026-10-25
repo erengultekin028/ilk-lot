@@ -110,8 +110,8 @@ export function renderSimulator() {
         (state.freePlay ? '<span class="news-flag" hidden>Haber</span>' : '') +
         '<small>' +
         item[1] +
-        '</small></span><span class="profit-loss-block"><b class="row-secondary"></b><span class="percent-chip"></span><small>kâr / zarar</small></span></span><span class="equation"><span class="equation-cell"><i>Adet</i><b class="row-titlecard-label"></b></span><span class="operator" aria-hidden="true">×</span><span class="equation-cell"><i>1 lot fiyatı</i><b class="span-item"></b></span><span class="operator" aria-hidden="true">=</span><span class="equation-cell is-total"><i>Değer</i><b class="row-primary"></b></span></span><span class="average-line">Ortalama alış fiyatın: <b class="row-titlea"></b></span>' +
-        (state.freePlay ? '<span class="average-line orounded-boxcard-label" hidden></span>' : '') +
+        '</small></span><span class="profit-loss-block"><b class="row-secondary"></b><span class="percent-chip"></span><small>kâr / zarar</small></span></span><span class="equation"><span class="equation-cell"><i>Adet</i><b class="sl"></b></span><span class="operator" aria-hidden="true">×</span><span class="equation-cell"><i>1 lot fiyatı</i><b class="span-item"></b></span><span class="operator" aria-hidden="true">=</span><span class="equation-cell is-total"><i>Değer</i><b class="row-primary"></b></span></span><span class="average-line">Ortalama alış fiyatın: <b class="sa"></b></span>' +
+        (state.freePlay ? '<span class="average-line ordl" hidden></span>' : '') +
         '</button>'
       );
     }).join('') +
@@ -479,7 +479,7 @@ function newsHtml(tick) {
   const news = latestNewsAt(tick);
   if (!news) return '';
   return (
-    '<div class="row-subtitleews' +
+    '<div class="news' +
     (news[2] < 0 ? ' is-negative' : '') +
     (tick - news[0] < 3 && news[0] > 0 ? ' is-fresh' : '') +
     '"><div class="news-meta"><span class="news-label">Son haber</span>' +
@@ -488,7 +488,7 @@ function newsHtml(tick) {
     news[0] +
     '</span></div><p class="news-title">' +
     escapeHtml(news[1]) +
-    '</p><button class="card-labelirow-subtitlecard-value news-all" data-a="switchMarketTab" data-v="m">Tüm haberler</button></div>'
+    '</p><button class="link news-all" data-a="switchMarketTab" data-v="m">Tüm haberler</button></div>'
   );
 }
 

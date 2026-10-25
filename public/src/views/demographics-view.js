@@ -36,7 +36,7 @@ export function renderDemographics() {
     '<div style="padding:8px 2px 20px"><h1 style="font:750 28px/1.1 var(--fd);letter-spacing:-.7px;margin:4px 0 8px">Seni biraz tanıyalım</h1><p class="muted" style="margin:0">Adını ya da kimliğini belirleyecek bir şey sormuyoruz. İlk soru dışındakiler isteğe bağlı.</p>' +
     question('adult', '18 yaşını doldurdun mu?') +
     (demographics.adult === 'Hayır'
-      ? '<div class="is-wrongsheet-titlee" style="margin:12px 0 0"><span>Bu çalışma 18 yaş ve üzeri katılımcılarla yürütülüyor.</span></div>'
+      ? '<div class="note" style="margin:12px 0 0"><span>Bu çalışma 18 yaş ve üzeri katılımcılarla yürütülüyor.</span></div>'
       : '') +
     (demographics.adult === 'Hayır'
       ? ''

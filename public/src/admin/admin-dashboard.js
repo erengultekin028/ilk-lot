@@ -241,13 +241,13 @@ export function renderDashboard() {
       ' katılımcı</div><div class="muted" style="font-size:11px;margin-top:4px">Son güncelleme ' +
       new Date(dashboard.at).toLocaleTimeString('tr-TR').slice(0, 5) +
       '</div></div></div>' +
-      '<div class="kpi-grid"><div class="card-valuepi"><span>Dağıtılan kod</span><b>' +
+      '<div class="kpi-grid"><div class="kpi"><span>Dağıtılan kod</span><b>' +
       dashboard.codes +
-      '</b></div><div class="card-valuepi"><span>Onam veren</span><b>' +
+      '</b></div><div class="kpi"><span>Onam veren</span><b>' +
       dashboard.cons +
-      '</b></div><div class="card-valuepi"><span>Şu an aktif</span><b style="color:var(--up)">' +
+      '</b></div><div class="kpi"><span>Şu an aktif</span><b style="color:var(--up)">' +
       dashboard.act +
-      '</b></div><div class="card-valuepi"><span>Çekilen / 18 altı</span><b>' +
+      '</b></div><div class="kpi"><span>Çekilen / 18 altı</span><b>' +
       dashboard.wd +
       ' <i>/ ' +
       dashboard.inel +
@@ -292,7 +292,7 @@ export function renderDashboard() {
       (dashboard.bal.A / tabBar) * 100 +
       '%;background:var(--mu2)"></i><i style="width:' +
       (dashboard.bal.B / tabBar) * 100 +
-      '%;background:var(--ln)"></i></div><div class="card-labelegenews-day" style="margin-top:6px"><span>A: ' +
+      '%;background:var(--ln)"></i></div><div class="legend" style="margin-top:6px"><span>A: ' +
       dashboard.bal.A +
       '</span><span>B: ' +
       dashboard.bal.B +
@@ -319,7 +319,7 @@ export function renderDashboard() {
             : '') +
           '</div>'
         : '<p class="muted small-text" style="margin:0">Uyarı yok.</p>') +
-      '<div class="is-wrongsheet-titlee is-info" style="margin:16px 0 10px"><span>Sonuç değişkenleri (panik satış, elden çıkarma etkisi vb.) veri toplama bitene kadar bilerek gösterilmez. Ara sonuçlara bakmak analiz yanlılığı yaratır.</span></div><button class="button" data-a="refreshDashboard"' +
+      '<div class="note is-info" style="margin:16px 0 10px"><span>Sonuç değişkenleri (panik satış, elden çıkarma etkisi vb.) veri toplama bitene kadar bilerek gösterilmez. Ara sonuçlara bakmak analiz yanlılığı yaratır.</span></div><button class="button" data-a="refreshDashboard"' +
       (state.dashboardBusy ? ' disabled' : '') +
       '>' +
       (state.dashboardBusy ? 'Yükleniyor…' : 'Yenile') +
