@@ -32,6 +32,13 @@ document.addEventListener('input', function (event) {
   else if (key === 'posterFooter') adminState.posterFooter = value;
 });
 
+// Onay kutuları: test kayıtlarının seçimi (yeniden çizim yapmadan, liste kaydırma konumu bozulmasın)
+document.addEventListener('change', function (event) {
+  const target = event.target;
+  if (target.dataset && target.dataset.in === 'recordCheck')
+    adminActions.toggleRecord(target.dataset.code, target.checked);
+});
+
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape' && byId('modal').classList.contains('is-open')) adminActions.cancelModal();
 });

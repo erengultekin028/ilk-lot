@@ -3,6 +3,7 @@
 import { adminState } from './admin-state.js';
 import { escapeHtml } from '../utils/format.js';
 import { adminRepository } from './admin-repository.js';
+import { isAnalyzable } from './test-records.js';
 import { renderQrSvg } from '../widgets/qr-code.js';
 import { summarizeSnapshot } from '../services/session-persistence.js';
 import { showToast } from '../widgets/toast.js';
@@ -89,9 +90,7 @@ export async function exportParticipants() {
       'pilot_unease',
     ],
   ];
-  participants = participants.filter(function (item) {
-    return !item.withdrawn;
-  });
+  participants = participants.filter(isAnalyzable);
   participants.forEach(function (item) {
     const snapshot = item['sess_1'];
     if (!snapshot) return;
@@ -131,9 +130,7 @@ export async function exportParticipants() {
 }
 
 export async function exportEvents() {
-  const participants = (await adminRepository.listParticipants()).filter(function (item) {
-    return !item.withdrawn;
-  });
+  const participants = (await adminRepository.listParticipants()).filter(isAnalyzable);
   const rows = [['app_version', 'code', 'grp', 'session', 'n', 'ts', 'trial_index', 'type', 'data']];
   for (let i = 0; i < participants.length; i++) {
     const events = await adminRepository.listEvents(participants[i].code);

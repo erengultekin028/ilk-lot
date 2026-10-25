@@ -6,11 +6,11 @@
 - Kaynak doğrudan `public/` içindedir (derleme yok): katılımcı uygulaması `public/index.html` + `public/src/`, yönetim paneli `public/admin/`. Adlar İngilizce ve standart, **yorumlar ve arayüz metinleri Türkçe**. Eski → yeni ad tablosu: `docs/ESKI_YENI_ADLAR.md`.
 - Mimari MVVM'dir (`models` DOM'a dokunmaz; Firebase'e yalnızca `services/firebase-service.js` ve `repositories/`). Katılımcı kodu `src/admin/` içe aktarmaz.
 - Kayıt veri sözleşmesi DEĞİŞMEZ: Firestore alanları, olay adları, CSV sütunları, `CONFIG` anahtarları, kayıtlı anlık görüntü anahtarları (`docs/VERI_SOZLUGU.md`).
-- Değişiklik sonrası: `npm run lint`, `npm run check:modules`, `npm run check:classes`, `python testler/arac_testleri.py`, `python analiz/test_betikler.py`; kurallar değiştiyse `firebase/kural_testleri` (`npm test`). Davranışa dokunduysan `node tools/check-equivalence.mjs <eski ilk-lot.html>` (git geçmişinden alınır) ile uyaran/fiyat yolu özetinin değişmediğini göster.
+- Değişiklik sonrası: `npm run lint`, `npm run check:modules`, `npm run check:classes`, `npm run check:records`, `python testler/arac_testleri.py`, `python analiz/test_betikler.py`; kurallar değiştiyse `firebase/kural_testleri` (`npm test`). Davranışa dokunduysan `node tools/check-equivalence.mjs <eski ilk-lot.html>` (git geçmişinden alınır) ile uyaran/fiyat yolu özetinin değişmediğini göster.
 - Tarayıcı tabanlı Python testleri (`uygulama_testleri.py`, `erisilebilirlik_taramasi.py`, `gorsel_karsilastirma.py`) eski tek dosya yapısı içindi; yeni yapı için yeniden yazılması gerekir (`testler/README.md`).
 - Yeni test eklersen koda bilerek hata sokarak (mutasyon) yakaladığını doğrula.
 - Çalışma simülatörünün fiyat yolu özeti sabittir (`3171573551 18600`, 300 gün × 6 hisse); değişmemeli.
-- Sürüm: `public/src/constants/app-config.js` içinde `APP_VERSION` (şu an `2026.10.25-b31`). Her yayında artır, `DEVIR_NOTU.md`'ye kayıt yaz.
+- Sürüm: `public/src/constants/app-config.js` içinde `APP_VERSION` (şu an `2026.10.25-b32`). Her yayında artır, `DEVIR_NOTU.md`'ye kayıt yaz.
 - Pilot başladıktan sonra çalışma ayarlarını (`CONFIG`) değiştirme (`python firebase/dagit.py --kilitle`).
 - Kullanıcı testleri kendisi koşar (25.10.2026 kararı): koşmadığın testi "geçti" diye yazma; ne denendi, ne denenmedi açıkça belirt.
 

@@ -12,6 +12,8 @@ import { state } from '../viewmodels/app-state.js';
 import { signInWithEmail, signOutUser } from '../services/auth-service.js';
 import { stimulusFingerprint } from '../models/trial-generator.js';
 import { buildAllocationList } from './allocation-builder.js';
+import { currentBuildNumber, selectedRecordCount } from './admin-records-view.js';
+import { describeRecord, filterRecords, planMark, planUnmark } from './test-records.js';
 import { byId } from '../utils/dom.js';
 import { escapeHtml } from '../utils/format.js';
 import { saveFile } from '../utils/file-download.js';
@@ -40,6 +42,9 @@ export const adminActions = {
       enrollmentProgress: null,
       dashboard: null,
       withdrawnCount: null,
+      recordSource: null,
+      recordRows: null,
+      selectedRecords: {},
     });
     render();
   },
@@ -97,9 +102,122 @@ export const adminActions = {
   countWithdrawn: async function () {
     const participants = await adminRepository.listParticipants();
     adminState.withdrawnCount = participants.filter(function (item) {
-      return item.withdrawn;
+      return item.withdrawn && !item.testRecord;
     }).length;
     render();
+  },
+
+  // ── Test kayıtları: denemelerden kalan kayıtları analizden ayırma (silme yok, işaret geri alınabilir) ──
+  loadTestRecords: async function () {
+    adminState.recordBusy = true;
+    render();
+    try {
+      const [participants, allocations] = await Promise.all([
+        adminRepository.listParticipants(),
+        adminRepository.listAllocations(),
+      ]);
+      const source = {};
+      participants.forEach(function (item) {
+        if (item.code) source[item.code] = item;
+      });
+      adminState.recordSource = source;
+      adminState.recordRows = Object.keys(source)
+        .map(function (code) {
+          return describeRecord(source[code], allocations[code] ? allocations[code].no : null);
+        })
+        .sort(function (left, right) {
+          return (left.slot == null ? 1e9 : left.slot) - (right.slot == null ? 1e9 : right.slot);
+        });
+      adminState.selectedRecords = {};
+    } catch (error) {
+      showToast('Kayıtlar okunamadı: ' + errorText(error));
+    }
+    adminState.recordBusy = false;
+    render();
+  },
+  setRecordFilter: function (value) {
+    adminState.recordFilter = value;
+    adminState.selectedRecords = {};
+    render();
+  },
+  toggleRecord: function (code, checked) {
+    if (checked) adminState.selectedRecords[code] = true;
+    else delete adminState.selectedRecords[code];
+    const counter = byId('record-selected-count');
+    if (counter) counter.textContent = String(selectedRecordCount());
+  },
+  selectFilteredRecords: function () {
+    filterRecords(adminState.recordRows || [], adminState.recordFilter, currentBuildNumber()).forEach(
+      function (row) {
+        adminState.selectedRecords[row.code] = true;
+      }
+    );
+    render();
+  },
+  clearRecordSelection: function () {
+    adminState.selectedRecords = {};
+    render();
+  },
+  markSelectedRecords: function () {
+    const plan = planMark(
+      adminState.recordSource || {},
+      Object.keys(adminState.selectedRecords),
+      adminState.user && adminState.user.email,
+      new Date().toISOString()
+    );
+    if (!plan.length) {
+      showToast('İşaretlenecek seçili kayıt yok.');
+      return;
+    }
+    askConfirm(
+      'Test kaydı olarak işaretle',
+      plan.length +
+        ' kayıt analizden ve dışa aktarmadan çıkarılacak (örnek: ' +
+        plan
+          .slice(0, 6)
+          .map(function (item) {
+            return item.code;
+          })
+          .join(', ') +
+        '). Kayıtlar silinmez; işaret geri alınabilir.',
+      'İşaretle',
+      true,
+      function () {
+        adminActions.applyRecordUpdates(plan, 'işaretlendi');
+      }
+    );
+  },
+  unmarkSelectedRecords: function () {
+    const plan = planUnmark(
+      adminState.recordSource || {},
+      Object.keys(adminState.selectedRecords),
+      new Date().toISOString()
+    );
+    if (!plan.length) {
+      showToast('Geri alınacak seçili kayıt yok.');
+      return;
+    }
+    askConfirm(
+      'İşareti geri al',
+      plan.length + ' kaydın test işareti kaldırılacak; kayıtlar yeniden analize girebilir.',
+      'Geri al',
+      false,
+      function () {
+        adminActions.applyRecordUpdates(plan, 'geri alındı');
+      }
+    );
+  },
+  applyRecordUpdates: async function (plan, resultText) {
+    try {
+      await adminRepository.updateParticipants(plan);
+      showToast(plan.length + ' kayıt ' + resultText + '.');
+    } catch (error) {
+      showToast('Kaydedilemedi: ' + errorText(error));
+      return;
+    }
+    adminState.withdrawnCount = null;
+    adminState.dashboard = null;
+    await adminActions.loadTestRecords();
   },
 
   // ── Dışa aktarma ──

@@ -45,6 +45,7 @@ Uygulama yalnızca Firebase ile çalışır: yerel (tarayıcıda) kayıt kipi, t
 2. **"Yeni liste"** ile yuvaları oluştur (4'erli bloklar; her yuva bir katılım kodu ve grup taşır). İlk listede `meta/counter` otomatik oluşur.
 3. **"Katılım bağlantısı"**: tek ortak adres (ya da QR) katılımcılara verilir. Katılımcılar kod girmez; onamdan sonra sıradaki yuvayı otomatik alır.
 4. **"Gizli liste"** CSV'sini sakla: yuva–kod–grup eşleşmesi yalnızca burada ve Firebase'dedir. Katılımcıyla paylaşma.
+   - **Pilottan önce test kayıtlarını ayır:** panelde **Test kayıtları → Kayıtları yükle**; süzgeçlerle (eski sürüm, bekleme ekranı görenler, tamamlanmayan) deneme kayıtlarını seç, **Test kaydı olarak işaretle**. Kayıt silinmez, analizden ve dışa aktarmadan çıkar; işaret geri alınabilir. Test sırasında alınan yuvalar geri verilemez, bu yüzden pilot için yine **Yeni liste** oluştur.
 5. Tek oturum (yaklaşık 30 dk): 6 karar → 7,5 dk simülatör → 6 karar. Yarıda bırakan katılımcı aynı tarayıcıdan tekrar açınca kaldığı yerden devam eder.
 6. Veri toplama bitince: "Katılımcı özeti" ve "Tüm olaylar" CSV'lerini indir (sütunlar: `docs/VERI_SOZLUGU.md`).
 

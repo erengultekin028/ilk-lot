@@ -110,7 +110,10 @@ export async function loadDashboard() {
       }),
       tmode: tmode,
       wd: participants.filter(function (item) {
-        return item.withdrawn && !item.ineligible;
+        return item.withdrawn && !item.ineligible && !item.testRecord;
+      }).length,
+      testRecords: participants.filter(function (item) {
+        return item.testRecord === true;
       }).length,
       inel: participants.filter(function (item) {
         return item.ineligible;
@@ -251,7 +254,11 @@ export function renderDashboard() {
       dashboard.wd +
       ' <i>/ ' +
       dashboard.inel +
-      '</i></b></div></div>' +
+      '</i></b></div>' +
+      (dashboard.testRecords
+        ? '<div class="kpi"><span>Test kaydı (dışarıda)</span><b>' + dashboard.testRecords + '</b></div>'
+        : '') +
+      '</div>' +
       '<div style="font-weight:700;margin:6px 0 4px">Şu an ekranda ya da yeni durmuş</div>' +
       (dashboard.live.length
         ? '<div>' +

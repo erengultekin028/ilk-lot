@@ -1,6 +1,7 @@
 // Yönetim paneli görünümleri: giriş formu ve araştırmacı paneli.
 
 import { renderDashboard } from './admin-dashboard.js';
+import { renderTestRecordsSection } from './admin-records-view.js';
 import { adminState } from './admin-state.js';
 import { APP_VERSION, CONFIG, CONSENT_VERSION } from '../constants/app-config.js';
 import { escapeHtml } from '../utils/format.js';
@@ -206,6 +207,7 @@ export function renderAdminPage() {
     renderParticipationLinkSection() +
     renderExportSection() +
     renderWithdrawnSection() +
+    renderTestRecordsSection() +
     renderConsentSection() +
     renderSelfTestSection() +
     renderSettingsSection() +

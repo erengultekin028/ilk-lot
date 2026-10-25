@@ -67,3 +67,16 @@ Bu sözlükteki sütunları okuyan hazır analiz betikleri `analiz/` klasöründ
 - Doz analizi: A grubunda `cooldown_shown` ile `panic_rate_change` ilişkisi.
 - Duyarlılık: amacı doğru tahmin edenler (`purpose_guess`), dikkat kontrolünü geçemeyenler ve anlama kontrolünde ilk denemede 2'den az doğru yapanlar (`comprehension_first_try`) çıkarılarak tekrar.
 - Sınır: müdahale (simülatör) 7,5 dakika; sonuçlar "kısa süreli aktarım" olarak raporlanmalı.
+
+## Test kaydı işareti (b32, isteğe bağlı alanlar)
+Denemelerden kalan kayıtları analizden ayırmak için yönetim panelindeki "Test kayıtları" bölümü `participants/{kod}` belgesine şu **isteğe bağlı** alanları yazar. Hiçbir kayıt silinmez (politika A); CSV sütunları değişmez.
+
+| Alan | Anlamı |
+|---|---|
+| `testRecord` | `true`: araştırmacı bu kaydı test olarak işaretledi; `false`: işaret geri alındı |
+| `withdrawn` | İşaretlenince `true` olur (pano ve dışa aktarma çekilmiş kaydı zaten dışarıda bırakır) |
+| `testPrevWithdrawn` | İşaretlemeden önceki çekilme durumu; geri alırken `withdrawn` buna döner (gerçek çekilme korunur) |
+| `testMarkedAt`, `testMarkedBy` | İşaretleme zamanı (ISO) ve araştırmacının e-postası |
+| `testUnmarkedAt` | Geri alma zamanı |
+
+Özet ve olay CSV'lerine `testRecord: true` ya da `withdrawn: true` olan katılımcılar girmez. Bu alanları yalnızca araştırmacı yazabilir (`firebase/firestore.rules`).

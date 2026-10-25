@@ -1,6 +1,6 @@
 {
   "name": "ilk-lot",
-  "version": "2026.10.25-b31",
+  "version": "2026.10.25-b32",
   "private": true,
   "description": "İlk Lot: genç yatırımcılarda panik satışını inceleyen araştırma uygulaması (katılımcı uygulaması + yönetim paneli, Firebase Hosting)",
   "type": "module",
@@ -9,6 +9,7 @@
     "format": "prettier --write \"public/src/**/*.js\" \"public/styles/*.css\"",
     "check:modules": "node tools/check-modules.mjs public/src/main.js && node tools/check-modules.mjs public/src/admin/admin-main.js",
     "check:classes": "node tools/check-classes.mjs",
+    "check:records": "node tools/check-test-records.mjs",
     "serve": "python -m http.server 8088 --directory public"
   },
   "devDependencies": {

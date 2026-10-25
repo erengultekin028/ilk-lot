@@ -194,6 +194,29 @@ test('çekilme: katılımcı kendi kaydını çekildi olarak işaretleyebilir (s
   await assertSucceeds(setDoc(doc(anonim('uA'), 'participants', 'AAAA'), { code: 'AAAA', grp: 'A', withdrawn: true, withdrawnAt: '2026-10-22' }, { merge: true }));
 });
 
+// ── 6b. Test kaydı işareti: yalnızca araştırmacı yazar, geri alınabilir, katılımcı değiştiremez ──
+test('test kaydı işareti: katılımcı kendi kaydını işaretleyemez (oluştururken de, güncellerken de)', async () => {
+  const db = anonim('uA');
+  await assertFails(updateDoc(doc(db, 'participants', 'AAAA'), { testRecord: true }));
+  await assertFails(updateDoc(doc(db, 'participants', 'AAAA'), { testMarkedAt: 't' }));
+  await assertFails(setDoc(doc(db, 'participants', 'AAAA'), { code: 'AAAA', grp: 'A', testRecord: true }, { merge: true }));
+  // Yeni kayıt açarken de işaret koyamaz
+  await assertSucceeds(yuvaAl(anonim('uNew'), 'uNew', 'EEEE', 3));
+  await assertFails(setDoc(doc(anonim('uNew'), 'participants', 'EEEE'), { code: 'EEEE', grp: 'A', testRecord: true }));
+  // Normal yazma etkilenmez
+  await assertSucceeds(updateDoc(doc(db, 'participants', 'AAAA'), { pre: 3 }));
+});
+
+test('test kaydı işareti: araştırmacı işaretler (kayıt çekilmiş gibi kapanır) ve geri alır; geri alınca katılımcı yeniden yazabilir', async () => {
+  const kayit = doc(admin(), 'participants', 'AAAA');
+  await assertSucceeds(updateDoc(kayit, { withdrawn: true, testRecord: true, testMarkedAt: 't', testMarkedBy: 'a@b', testPrevWithdrawn: false }));
+  await assertFails(updateDoc(doc(anonim('uA'), 'participants', 'AAAA'), { pre: 9 })); // işaretliyken katılımcı yazamaz
+  await assertSucceeds(updateDoc(kayit, { withdrawn: false, testRecord: false, testUnmarkedAt: 't2' }));
+  await assertSucceeds(updateDoc(doc(anonim('uA'), 'participants', 'AAAA'), { pre: 9 })); // geri alınca yazabilir (işaret alanları değişmedi)
+  await assertFails(updateDoc(doc(anonim('uA'), 'participants', 'AAAA'), { testRecord: true })); // ama işareti kendisi koyamaz
+  await assertFails(updateDoc(doc(anonim('uA'), 'participants', 'AAAA'), { testUnmarkedAt: 'x' }));
+});
+
 // ── 7. Yalnızca araştırmacı listeler / olayları okur / liste üretir ──
 test('araştırmacı: katılımcıları, listeyi, yuvaları, claims/users kayıtlarını ve olayları okur; diğer e-postalar okuyamaz', async () => {
   await assertSucceeds(getDocs(collection(admin(), 'participants')));

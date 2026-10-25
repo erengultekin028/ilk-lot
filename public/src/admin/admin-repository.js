@@ -61,6 +61,18 @@ export const adminRepository = {
     });
   },
 
+  // Katılımcı kayıtlarını alan güncellemeleriyle yazar (silme yok): updates = [{ code, fields }]
+  async updateParticipants(updates) {
+    const { db } = getServices();
+    for (let start = 0; start < updates.length; start += BATCH_LIMIT) {
+      const batch = db.batch();
+      updates.slice(start, start + BATCH_LIMIT).forEach(function (item) {
+        batch.update(db.collection('participants').doc(item.code), item.fields);
+      });
+      await batch.commit();
+    }
+  },
+
   // Bir katılımcının olay kayıtları
   async listEvents(code) {
     const collection = getServices().db.collection('participants').doc(code).collection('events');

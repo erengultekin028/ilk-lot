@@ -15,4 +15,10 @@ export const adminState = {
   posterEmail: '',
   posterFooter: '',
   selfTestResults: [],
+  // Test kayıtlarını işaretleme bölümü
+  recordSource: null, // { kod: katılımcı belgesi } (yüklenince dolar)
+  recordRows: null, // tablo satırları (describeRecord)
+  recordFilter: 'unmarked',
+  selectedRecords: {}, // { kod: true }
+  recordBusy: false,
 };
