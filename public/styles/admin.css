@@ -1,30 +1,40 @@
-/* Yönetim paneli: masaüstü öncelikli yerleşim. Katılımcı uygulamasının 460 px'lik sütunu burada geniş bir panoya dönüşür. */
+/* Yönetim paneli: masaüstü öncelikli, pencerenin tamamını kaplayan yerleşim. Katılımcı uygulamasının 460 px'lik sütunu burada tam ekran panoya dönüşür. */
 #app {
-  max-width: 1180px;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+header {
+  padding: 16px clamp(16px, 3vw, 48px) 10px;
 }
 #main-view {
-  padding: 8px 24px 40px;
+  padding: 8px clamp(16px, 3vw, 48px) 48px;
 }
 .admin-title {
   font: 700 26px var(--fd);
   margin: 8px 0 18px;
 }
-/* Kutular geniş ekranda yan yana dizilir; dar ekranda tek sütun */
+/* Kutular geniş ekranda otomatik sütunlara dizilir; dar ekranda tek sütun */
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
   align-items: start;
 }
 .admin-grid > .card-section {
   margin-bottom: 0;
 }
-/* Pano ve çok satırlı bölümler tüm genişliği kullanır */
+/* Pano en üstte tüm genişliği kullanır */
 .admin-grid > .card-section:first-child {
   grid-column: 1 / -1;
 }
+/* Giriş formu geniş ekranda gerilmez; ortada, okunur genişlikte durur (pano ise tam genişlik) */
+#main-view:has(#admin-email) .card-section {
+  max-width: 440px;
+  margin: 24px auto;
+}
 @media (max-width: 600px) {
-  #main-view {
-    padding: 8px 16px 32px;
+  .admin-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -1,48 +1,92 @@
-/* Geniş ekran (tablet ve bilgisayar) düzeni.
+/* Geniş ekran (tablet ve bilgisayar) düzeni: uygulama pencerenin tamamını (genişlik ve yükseklik) kaplar.
    ÖNEMLİ: Bu dosyadaki her kural bir min-width sorgusunun içindedir; 768 px altında (telefon) hiçbir şey değişmez.
-   Telefon tasarımı olduğu gibi kalır; geniş ekranda yalnızca kabuk büyür, içerik okunur genişlikte ortalanır ve
-   simülatörde iki sütun kullanılır. */
+   Telefon tasarımı olduğu gibi kalır. Geniş ekranda: kabuk tam ekran olur, kenar boşlukları ekranla birlikte büyür,
+   metin ağırlıklı ekranlar okunur genişlikte ortalanır, karar ve simülatör ekranları çok sütunlu olur. */
 
-/* ≥ 768 px: sayfa arka planı ayrışır, uygulama ortada yükseltilmiş bir panel olur */
 @media (min-width: 768px) {
-  body {
-    background: var(--sf2);
-  }
   #app {
-    max-width: 760px;
-    height: calc(100% - 32px);
-    margin: 16px auto;
-    border-radius: 22px;
-    box-shadow:
-      0 0 0 1px var(--ln),
-      0 18px 50px rgba(0, 0, 0, 0.1);
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
+  /* Kenar boşluğu ekranla büyür (24 px ile 72 px arasında); üst çubuk, ilerleme çubuğu ve içerik aynı hizada kalır */
   header {
-    padding: 16px 28px 10px;
+    padding: 16px clamp(24px, 4.5vw, 72px) 10px;
+  }
+  #study-progress {
+    padding: 0 clamp(24px, 4.5vw, 72px) 12px;
   }
   main {
-    padding: 4px 32px 36px;
+    padding: 8px clamp(24px, 4.5vw, 72px) 48px;
   }
-  /* Okunabilirlik: karşılama, test ve bilgi ekranlarında satır uzunluğu sınırlı kalır */
+  /* Simülatör alt gezinmesi: düğmeler ortada, makul genişlikte */
+  nav {
+    justify-content: center;
+    padding: 8px clamp(24px, 4.5vw, 72px) 12px;
+  }
+  nav button {
+    max-width: 240px;
+  }
+  /* Metin ağırlıklı ekranlar (onam, form, test, bilgi): okunur genişlikte, ortada */
   .stage {
-    max-width: 560px;
+    max-width: 760px;
     margin: 0 auto;
     width: 100%;
   }
+  /* Bildirim ve tur kartı ortalanır */
+  #toast,
+  #tour-popup {
+    left: 50%;
+    right: auto;
+    width: min(560px, calc(100% - 48px));
+    transform: translateX(-50%);
+  }
+  #toast.is-visible {
+    transform: translateX(-50%);
+  }
+  #modal .box {
+    max-width: 460px;
+  }
 }
 
-/* ≥ 1100 px: simülatör ekranı geniş panel olur; portföy, haber ve hisse listesi iki sütuna dizilir */
-@media (min-width: 1100px) {
-  #app[data-stage='sim'] {
-    max-width: 1080px;
+/* ≥ 1000 px: karar anı ekranı iki sütun (solda grafik, sağda pozisyon ve seçenekler) */
+@media (min-width: 1000px) {
+  #app[data-stage='task'] #main-view > div:not(.stage) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    column-gap: clamp(24px, 3vw, 56px);
+    align-content: start;
+    max-width: 1320px;
+    margin: 0 auto;
   }
-  /* Portföy ve piyasa sekmeleri: kutular iki sütunlu ızgarada yan yana; başlık ve uyarılar tam genişlik */
+  #app[data-stage='task'] #main-view > div:not(.stage) > * {
+    grid-column: 2;
+  }
+  #app[data-stage='task'] #main-view > div:not(.stage) > :first-child,
+  #app[data-stage='task'] #main-view > div:not(.stage) > .footnote {
+    grid-column: 1 / -1;
+  }
+  #app[data-stage='task'] #main-view > div:not(.stage) > #tour-chart {
+    grid-column: 1;
+    grid-row: 2 / span 6;
+    align-self: start;
+  }
+}
+
+/* ≥ 1100 px: simülatör ekranı çok sütunlu; portföy ve piyasa kutuları yan yana dizilir */
+@media (min-width: 1100px) {
   #main-view[data-tab='p'],
   #main-view[data-tab='m'] {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 clamp(24px, 3vw, 48px);
     align-content: start;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
   }
   #main-view[data-tab='p'] > .hero,
   #main-view[data-tab='p'] > #crisis-alert,
@@ -51,7 +95,14 @@
   #main-view[data-tab='p'] > #news-section,
   #main-view[data-tab='p'] > .free-play-limit,
   #main-view[data-tab='m'] > #crisis-alert,
-  #main-view[data-tab='m'] > #news-banner {
+  #main-view[data-tab='m'] > #news-banner,
+  #main-view[data-tab='m'] > .footnote {
     grid-column: 1 / -1;
+  }
+  #main-view[data-tab='a'],
+  #main-view[data-tab='detail'] {
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
   }
 }

@@ -29,7 +29,7 @@ export async function connectFirebase() {
   firebase.initializeApp(CONFIG.firebase);
   const db = firebase.firestore();
   // Kayıtlarda tanımsız (undefined) alan olursa Firestore tüm yazmayı reddeder; bu ayarla tanımsız alanlar yok sayılır
-  db.settings({ ignoreUndefinedProperties: true });
+  db.settings({ ignoreUndefinedProperties: true, merge: true });
   services = { db: db, auth: firebase.auth() };
   return services;
 }
