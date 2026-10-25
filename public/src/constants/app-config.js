@@ -1,14 +1,14 @@
 // Uygulama sürümü ve çalışma ayarları (CONFIG). Tüm modüller buradan okur; pilot başladıktan sonra ölçüt ayarları DEĞİŞTİRİLMEZ.
 
 // Her olay ve anlık görüntü bu sürümle etiketlenir. Pilot ortasında kodu değiştirirsen MUTLAKA artır.
-export const APP_VERSION = '2026.10.22-b26';
+export const APP_VERSION = '2026.10.25-b27';
 
 // ═════════════════ ÇALIŞMA AYARLARI ═════════════════
 export const CONFIG = {
   session: '1',
   totalSessions: 1, // Tek oturum, ~30 dk: 1. bölüm (6 karar) → simülatör (7,5 dk) → 3. bölüm (6 karar)
   minGapHours: 0,
-  baseUrl: '', // Kartlardaki link adresi. Boşsa sayfanın kendi adresi
+  baseUrl: '', // Katılım bağlantısı (yönetim panelinde gösterilir). Boşsa katılımcı sitesinin kök adresi kullanılır
   contact: 'arastirmaci@ornek.edu.tr', // DEĞİŞTİR: bilgilendirme ve onam ekranındaki iletişim adresi
   // Onam metnindeki doldurulacak alanlar. "[DOLDUR…" ile başlayanlar ekranda sarı işaretli görünür ve
   // araştırmacı panelinde "doldurulmamış" olarak listelenir. Pilottan ÖNCE hepsini doldur.

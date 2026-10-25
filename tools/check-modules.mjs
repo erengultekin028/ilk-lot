@@ -18,7 +18,7 @@ Object.defineProperty(globalThis, 'navigator', { value: { onLine: true, userAgen
 globalThis.location = { search: '', hash: '', origin: 'http://localhost', pathname: '/', href: 'http://localhost/' };
 globalThis.window = globalThis;
 
-const root = path.resolve(import.meta.dirname, '..', '..', 'public', 'src');
+const root = path.resolve(import.meta.dirname, '..', 'public', 'src');
 const files = [];
 (function walk(d) { for (const f of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, f.name); if (f.isDirectory()) walk(p); else if (p.endsWith('.js')) files.push(p); } })(root);
 let bad = 0;

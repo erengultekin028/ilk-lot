@@ -1,4 +1,4 @@
-"""Yayın aracı (firebase/dagit.py), saklama takvimi (etik/saklama_takvimi.py) ve CI tanımının testleri. Tarayıcı gerekmez.
+"""Yayın aracı (firebase/dagit.py), saklama takvimi (etik/saklama_takvimi.py), klasör yapısı ve CI tanımının testleri. Tarayıcı gerekmez.
   python testler/arac_testleri.py
 Gerçek Firebase'e DOKUNMAZ: `firebase` komutu, geçici bir sahte betikle değiştirilir (çağrı biçimini sınar, sunucuyu sınamaz)."""
 import contextlib
@@ -8,9 +8,7 @@ import io
 import json
 import os
 import re
-import shutil
 import stat
-import subprocess
 import sys
 import tempfile
 import time
@@ -30,10 +28,10 @@ def yukle(ad, yol):
 
 dagit = yukle('dagit', os.path.join(KOK, 'firebase', 'dagit.py'))
 takvim = yukle('saklama_takvimi', os.path.join(KOK, 'etik', 'saklama_takvimi.py'))
-# Gerçek dosyada CFG.firebase doluysa testler için "henüz doldurulmamış" haline çevrilir (testler dolu/boş durumları kendileri kurar)
-GERCEK_HTML = re.sub(r'(\n\s*)firebase:\{[^}]*\}', r'\1firebase:null', open(os.path.join(KOK, 'ilk-lot.html'), encoding='utf-8').read(), count=1)
+# Gerçek ayar dosyası (sürüm, CONFIG, onam sürümü): testler "doldurulmuş" ve "boş" durumları bu metinden kendileri kurar
+GERCEK_HTML = open(os.path.join(KOK, 'public', 'src', 'constants', 'app-config.js'), encoding='utf-8').read()
 GERCEK_KURAL = open(os.path.join(KOK, 'firebase', 'firestore.rules'), encoding='utf-8').read()
-FB = 'firebase:{apiKey:"AIzaX",authDomain:"x.firebaseapp.com",projectId:"x",appId:"1:2:web:3"}'
+FB = re.search(r'firebase:\s*\{[^}]*\}', GERCEK_HTML).group(0)
 sonuclar = []
 
 
@@ -50,11 +48,9 @@ def test(ad):
 
 
 def hazir_html():
-    """Gerçek dosyadan, tüm yayın ön koşulları sağlanmış bir kopya."""
-    h = GERCEK_HTML.replace('firebase:null', FB, 1)
-    h = re.sub(r"'\[DOLDUR[^']*'", "'dolu'", h)
-    h = h.replace("contact:'arastirmaci@ornek.edu.tr'", "contact:'a@uni.edu.tr'", 1)
-    return h
+    """Gerçek ayar dosyasından, tüm yayın ön koşulları sağlanmış bir kopya."""
+    h = re.sub(r"'\[DOLDUR[^']*'", "'dolu'", GERCEK_HTML)
+    return h.replace("contact: 'arastirmaci@ornek.edu.tr'", "contact: 'a@uni.edu.tr'", 1)
 
 
 ORNEK_EPOSTA = 'arastirmaci@ornek.edu.tr'
@@ -70,6 +66,15 @@ def hazir_kural():
     return kural_eposta('ben@uni.edu.tr')
 
 
+def ozet(metin):
+    return hashlib.sha256(metin.encode('utf-8')).hexdigest()
+
+
+def kontrol(h, k, **kw):
+    """Ayar metni ve kural metniyle ön kontrol (dosya ağacı özeti ayrıca verilir: kod değişikliği ayar metninden bağımsız denenir)."""
+    return dagit.kontrol(html=h, kurallar=k, kayitlar=kw.pop('kayitlar', []), ozet=kw.pop('ozet', ozet(h)), **kw)
+
+
 def seviye(s, ad):
     return [d for d, a, _ in s if a == ad]
 
@@ -78,13 +83,12 @@ def hatalar(s):
     return sorted(a for d, a, _ in s if d == 'HATA')
 
 
-@test('Ön kontrol: gerçek proje, doldurulmamış ayarlarda HATA verir (Firebase, onam, iletişim; kurallardaki e-posta hâlâ örnekse o da); hazır kopya hiç HATA vermez')
+@test('Ön kontrol: gerçek proje doldurulmamış ayarlarda HATA verir (onam, iletişim; kurallardaki e-posta hâlâ örnekse o da); hazır kopya hiç HATA vermez')
 def _():
-    s, durum = dagit.kontrol(derleme_denetle=False, kayitlar=[])
-    beklenen = ['Firebase ayarı', 'Onam alanları', 'İletişim adresi'] + (['Güvenlik kuralları'] if ORNEK_EPOSTA in GERCEK_KURAL else [])
-    # CFG.firebase doldurulunca "Firebase ayarı" da kalkar; bu test yalnızca hâlâ boş olanların HATA verdiğini ve başka hata çıkmadığını doğrular
-    assert durum == 1 and set(hatalar(s)) <= set(beklenen) and 'Onam alanları' in hatalar(s), hatalar(s)
-    s, durum = dagit.kontrol(html=hazir_html(), kurallar=hazir_kural(), kayitlar=[], derleme_denetle=False)
+    s, durum = dagit.kontrol(kayitlar=[])
+    izinli = {'Firebase ayarı', 'Onam alanları', 'İletişim adresi'} | ({'Güvenlik kuralları'} if ORNEK_EPOSTA in GERCEK_KURAL else set())
+    assert durum == 1 and set(hatalar(s)) <= izinli and 'Onam alanları' in hatalar(s), hatalar(s)
+    s, durum = kontrol(hazir_html(), hazir_kural())
     assert durum == 0 and not hatalar(s), s
     assert seviye(s, 'Ölçüt kilidi') == ['UYARI']
 
@@ -93,126 +97,118 @@ def _():
 def _():
     h, k = hazir_html(), hazir_kural()
     bozuk = {
-        'Firebase ayarı': (h.replace(FB, 'firebase:null'), k),
-        'Firebase ayarı ': (h.replace('appId:"1:2:web:3"', 'appId:""'), k),
-        'Onam alanları': (h.replace("controller:'dolu'", "controller:'[DOLDUR: x]'"), k),
-        'İletişim adresi': (h.replace("contact:'a@uni.edu.tr'", "contact:'arastirmaci@ornek.edu.tr'"), k),
+        'Firebase ayarı': (h.replace(FB, 'firebase: null'), k),
+        'Firebase ayarı ': (re.sub(r"appId:\s*'[^']*'", "appId: ''", h), k),
+        'Onam alanları': (h.replace("controller: 'dolu'", "controller: '[DOLDUR: x]'"), k),
+        'İletişim adresi': (h.replace("contact: 'a@uni.edu.tr'", "contact: 'arastirmaci@ornek.edu.tr'"), k),
         'Güvenlik kuralları': (h, kural_eposta(ORNEK_EPOSTA)),
     }
     for ad, (hh, kk) in bozuk.items():
-        s, durum = dagit.kontrol(html=hh, kurallar=kk, kayitlar=[], derleme_denetle=False)
+        s, durum = kontrol(hh, kk)
         assert durum == 1 and hatalar(s) == [ad.strip()], (ad, hatalar(s))
-    # hızlı test kilidi satırı kaybolursa
-    s, durum = dagit.kontrol(html=h.replace('if(CFG.firebase)return false', 'if(0)return false'), kurallar=k, kayitlar=[], derleme_denetle=False)
-    assert hatalar(s) == ['Hızlı test kilidi']
 
 
 def kayit_yap(html):
-    return dict(zaman='2026-11-02T10:00:00+03:00', surum=re.search(r"var APP_VERSION='([^']+)'", html).group(1), onam='v1',
-                html_sha256=hashlib.sha256(html.encode('utf-8')).hexdigest(), olcut=dagit.olcut_ayarlari(html))
+    return dict(zaman='2026-11-02T10:00:00+03:00', surum=re.search(r"APP_VERSION = '([^']+)'", html).group(1), onam='v1',
+                html_sha256=ozet(html), olcut=dagit.olcut_ayarlari(html))
 
 
-@test('Dış yazı tipi sunucusu yok: uygulama ve tanıtım sayfası Google Fonts\'a bağlanmaz; derleyici yazı tipi dosyası eksikse durur')
+@test("Dış sunucu yok: uygulama kabuğu ve stiller Google Fonts'a bağlanmaz; yazı tipi ve simge dosyaları yerelde var; tanıtım sayfası yazıyı gömülü taşır")
 def _():
-    for ad in ('ilk-lot.html', 'tanitim.html'):
-        h = open(os.path.join(KOK, ad), encoding='utf-8').read()
+    pub = os.path.join(KOK, 'public')
+    for ad in ('index.html', 'admin/index.html'):
+        h = open(os.path.join(pub, ad), encoding='utf-8').read()
         assert not re.search(r'fonts\.(googleapis|gstatic)\.com', h), f'{ad} dış yazı tipi sunucusuna bağlanıyor'
-        assert h.count('@font-face') == 2 and 'data:font/woff;base64,' in h, ad
-    assert '{{YAZI:' not in GERCEK_HTML, 'derlemede yer tutucu kalmamalı'
-    gecici = tempfile.mkdtemp()
-    kopya = os.path.join(gecici, 'kaynak')
-    shutil.copytree(os.path.join(KOK, 'kaynak'), kopya)
-    os.remove(os.path.join(kopya, 'yazi', 'BricolageGrotesque-Bold.woff'))
-    r = subprocess.run([sys.executable, os.path.join(kopya, 'derle.py'), '--cikti', os.path.join(gecici, 'x.html')], capture_output=True, text=True)
-    assert r.returncode != 0 and 'yazı tipi dosyası yok' in (r.stdout + r.stderr), (r.stdout, r.stderr)
+    stiller = ''.join(open(os.path.join(pub, 'styles', f), encoding='utf-8').read() for f in os.listdir(os.path.join(pub, 'styles')))
+    assert not re.search(r'fonts\.(googleapis|gstatic)\.com', stiller)
+    yazilar = re.findall(r'url\(\.\./assets/fonts/([^)]+)\)', stiller)
+    assert len(yazilar) == 2, yazilar
+    for y in yazilar:
+        assert os.path.exists(os.path.join(pub, 'assets', 'fonts', y)), y
+    assert os.path.exists(os.path.join(pub, 'assets', 'icon-180.png'))
+    t = open(os.path.join(KOK, 'tanitim.html'), encoding='utf-8').read()
+    assert not re.search(r'fonts\.(googleapis|gstatic)\.com', t) and t.count('@font-face') == 2 and 'data:font/woff;base64,' in t
+
+
+@test('Yapı: katılımcı uygulaması yönetim kodunu (admin/) içe aktarmaz; yönetim uygulaması ayrı giriş noktasına sahip')
+def _():
+    kaynak = os.path.join(KOK, 'public', 'src')
+    for kok, _dizinler, dosyalar in os.walk(kaynak):
+        if os.path.relpath(kok, kaynak).split(os.sep)[0] == 'admin':
+            continue
+        for d in dosyalar:
+            if d.endswith('.js'):
+                t = open(os.path.join(kok, d), encoding='utf-8').read()
+                assert not re.search(r"from\s+'[^']*/admin/", t), f'{os.path.join(kok, d)} yönetim kodunu içe aktarıyor'
+    assert os.path.exists(os.path.join(KOK, 'public', 'admin', 'index.html')) and os.path.exists(os.path.join(kaynak, 'admin', 'admin-main.js'))
+    assert 'admin' not in open(os.path.join(KOK, 'public', 'index.html'), encoding='utf-8').read().lower()
 
 
 @test('Ön kontrol: pilot formu açık kalırsa ana veri toplamada HATA; --pilot ile TAMAM; kapalıyken --pilot UYARI; alan silinirse HATA')
 def _():
     h, k = hazir_html(), hazir_kural()
-    assert 'pilot:false' in h
-    ac = h.replace('pilot:false', 'pilot:true', 1)
-    s, durum = dagit.kontrol(html=ac, kurallar=k, kayitlar=[], derleme_denetle=False)
+    assert 'pilot: false' in h
+    ac = h.replace('pilot: false', 'pilot: true', 1)
+    s, durum = kontrol(ac, k)
     assert durum == 1 and hatalar(s) == ['Pilot form açık'], hatalar(s)
-    s, durum = dagit.kontrol(html=ac, kurallar=k, kayitlar=[], derleme_denetle=False, pilot=True)
+    s, durum = kontrol(ac, k, pilot=True)
     assert durum == 0 and seviye(s, 'Pilot yayını') == ['TAMAM'], s
-    s, durum = dagit.kontrol(html=h, kurallar=k, kayitlar=[], derleme_denetle=False, pilot=True)
+    s, durum = kontrol(h, k, pilot=True)
     assert durum == 0 and seviye(s, 'Pilot form ayarı') == ['UYARI'], s
-    s, durum = dagit.kontrol(html=h.replace('pilot:false,', '', 1), kurallar=k, kayitlar=[], derleme_denetle=False)
+    s, durum = kontrol(h.replace('pilot: false,', '', 1), k)
     assert hatalar(s) == ['Pilot form ayarı'], hatalar(s)
     # Pilot ile ana yayın aynı sürüm numarasını taşırsa kilit kaydı farkı yakalar (ana veri tek sürümden gelmeli)
-    kayit = kayit_yap(ac)
-    s, durum = dagit.kontrol(html=h, kurallar=k, kayitlar=[kayit], derleme_denetle=False)
+    s, durum = kontrol(h, k, kayitlar=[kayit_yap(ac)])
     assert 'Kod değişmiş, sürüm aynı' in hatalar(s), hatalar(s)
-
 
 
 @test('Ölçüt kilidi: aynıysa TAMAM; her ölçüt değişikliği HATA; sürümsüz kod değişikliği HATA; yeni sürüm UYARI')
 def _():
     h, k = hazir_html(), hazir_kural()
     kayit = kayit_yap(h)
-    s, durum = dagit.kontrol(html=h, kurallar=k, kayitlar=[kayit], derleme_denetle=False)
-    assert durum == 0 and 'Ölçüt ayarları' in [a for d, a, _ in s if d == 'TAMAM']
+    s, durum = kontrol(h, k, kayitlar=[kayit])
+    assert durum == 0 and 'Ölçüt ayarları' in [a for d, a, _ in s if d == 'TAMAM'], s
     degisiklikler = {
-        "CFG.seed='ilklot-gorev-v1'": "CFG.seed='baska'",
-        "simSeed:'ilklot-sim4-v2669'": "simSeed:'baska'",
-        'cooldownSec:10': 'cooldownSec:5',
-        'lossThreshold:-0.02': 'lossThreshold:-0.05',
-        'drop:0.20': 'drop:0.25',
-        'simTicks:300': 'simTicks:150',
-        'stake:10000': 'stake:20000',
+        "seed: 'ilklot-gorev-v1'": "seed: 'baska'",
+        "simSeed: 'ilklot-sim4-v2669'": "simSeed: 'baska'",
+        'cooldownSec: 10': 'cooldownSec: 5',
+        'lossThreshold: -0.02': 'lossThreshold: -0.05',
+        'drop: 0.2,': 'drop: 0.25,',
+        'simTicks: 300': 'simTicks: 150',
+        'stake: 10000': 'stake: 20000',
     }
     for eski, yeni in degisiklikler.items():
         assert eski in h, eski
         hh = h.replace(eski, yeni, 1)
-        s, durum = dagit.kontrol(html=hh, kurallar=k, kayitlar=[kayit], derleme_denetle=False)
+        s, durum = kontrol(hh, k, kayitlar=[kayit])
         assert 'Ölçüt ayarları değişmiş' in hatalar(s) and durum == 1, (eski, hatalar(s))
     # ölçüt dışı davranış değişikliği, sürüm aynı
-    hh = h + '\n<!-- degisti -->'
-    s, durum = dagit.kontrol(html=hh, kurallar=k, kayitlar=[kayit], derleme_denetle=False)
-    assert hatalar(s) == ['Kod değişmiş, sürüm aynı'] and durum == 1
+    hh = h + '\n// degisti'
+    s, durum = kontrol(hh, k, kayitlar=[kayit])
+    assert hatalar(s) == ['Kod değişmiş, sürüm aynı'] and durum == 1, hatalar(s)
     # sürüm artınca yalnızca uyarı
-    hh = re.sub(r"APP_VERSION='[^']+'", "APP_VERSION='2099.01.01-x'", h)
+    hh = re.sub(r"APP_VERSION = '[^']+'", "APP_VERSION = '2099.01.01-x'", h)
     assert hh != h
-    s, durum = dagit.kontrol(html=hh, kurallar=k, kayitlar=[kayit], derleme_denetle=False)
-    assert durum == 0 and seviye(s, 'Yeni sürüm') == ['UYARI']
-    # boşluk ve satır biçimi farkı ölçüt değişikliği sayılmaz
-    hh = h.replace('cooldownSec:10,', 'cooldownSec: 10 ,', 1)
-    s, _ = dagit.kontrol(html=hh, kurallar=k, kayitlar=[kayit], derleme_denetle=False)
+    s, durum = kontrol(hh, k, kayitlar=[kayit])
+    assert durum == 0 and seviye(s, 'Yeni sürüm') == ['UYARI'], s
+    # boşluk farkı ölçüt değişikliği sayılmaz
+    hh = h.replace('cooldownSec: 10,', 'cooldownSec:   10 ,', 1)
+    s, _ = kontrol(hh, k, kayitlar=[kayit], ozet=kayit['html_sha256'])
     assert 'Ölçüt ayarları değişmiş' not in hatalar(s)
 
 
-@test('Derleme denetimi: gerçek dosya güncel; elle değiştirilmiş dosya HATA')
-def _():
-    ok, hata = dagit.derleme_guncel_mi()
-    assert ok and hata is None
-    with tempfile.TemporaryDirectory() as d:
-        yol = os.path.join(d, 'x.html')
-        with open(yol, 'w', encoding='utf-8', newline='') as f:
-            f.write(GERCEK_HTML + ' ')
-        eski = dagit.HTML
-        dagit.HTML = yol
-        try:
-            ok, _ = dagit.derleme_guncel_mi()
-            s, durum = dagit.kontrol(kayitlar=[])
-        finally:
-            dagit.HTML = eski
-        assert not ok and 'Derleme eski' in hatalar(s)
-
-
 def bayraklar():
-    """dagit'in dosya yollarını geçici klasöre yönlendirir."""
+    """dagit'in dosya yollarını geçici klasöre yönlendirir (ayar dosyası ve kural dosyası geçici kopyalardır)."""
     d = tempfile.mkdtemp()
     kopya = {}
-    for ad in ('HTML', 'KURALLAR', 'KAYIT', 'YAYIN', 'derleme_guncel_mi'):
+    for ad in ('HTML', 'KURALLAR', 'KAYIT'):
         kopya[ad] = getattr(dagit, ad)
-    with open(os.path.join(d, 'ilk-lot.html'), 'w', encoding='utf-8', newline='') as f:
+    with open(os.path.join(d, 'app-config.js'), 'w', encoding='utf-8', newline='') as f:
         f.write(hazir_html())
     with open(os.path.join(d, 'firestore.rules'), 'w', encoding='utf-8') as f:
         f.write(hazir_kural())
-    dagit.HTML, dagit.KURALLAR = os.path.join(d, 'ilk-lot.html'), os.path.join(d, 'firestore.rules')
-    dagit.KAYIT, dagit.YAYIN = os.path.join(d, 'yayin_kaydi.json'), os.path.join(d, 'yayin')
-    dagit.derleme_guncel_mi = lambda: (True, None)
+    dagit.HTML, dagit.KURALLAR = os.path.join(d, 'app-config.js'), os.path.join(d, 'firestore.rules')
+    dagit.KAYIT = os.path.join(d, 'yayin_kaydi.json')
     return d, kopya
 
 
@@ -231,44 +227,32 @@ def sus(f, *a):
     return r, g.getvalue()
 
 
-@test('Betik: --hazirla yayın klasörünü üretir (önbellek kapalı); --kilitle kayıt yazar ve sonraki kontrol onu kullanır')
+@test('Betik: --kilitle kayıt yazar ve sonraki kontrol onu kullanır; varsayılan çalışma hiçbir şey yazmaz')
 def _():
     d, kopya = bayraklar()
     try:
         r, cikti = sus(dagit.main, [])
-        assert r == 0 and 'GEÇTİ' in cikti and not os.path.exists(dagit.YAYIN), 'varsayılan çalışma hiçbir şey yazmamalı'
-        r, cikti = sus(dagit.main, ['--hazirla'])
-        assert r == 0
-        cfg = json.load(open(os.path.join(dagit.YAYIN, 'firebase.json'), encoding='utf-8'))
-        basliklar = {h['key']: h['value'] for h in cfg['hosting']['headers'][0]['headers']}
-        assert basliklar['Cache-Control'] == 'no-cache' and cfg['firestore']['rules'] == 'firestore.rules'
-        assert open(os.path.join(dagit.YAYIN, 'public', 'index.html'), encoding='utf-8').read() == hazir_html()
-        assert open(os.path.join(dagit.YAYIN, 'firestore.rules'), encoding='utf-8').read() == hazir_kural()
+        assert r == 0 and 'GEÇTİ' in cikti and not os.path.exists(dagit.KAYIT), 'varsayılan çalışma hiçbir şey yazmamalı'
         r, cikti = sus(dagit.main, ['--kilitle'])
+        assert r == 0 and os.path.exists(dagit.KAYIT), cikti
         kayitlar = json.load(open(dagit.KAYIT, encoding='utf-8'))['kayitlar']
-        assert r == 0 and len(kayitlar) == 1 and kayitlar[0]['olcut']['simSeed'] == "'ilklot-sim4-v2669'" and kayitlar[0]['onam'] == 'v1'
+        assert len(kayitlar) == 1 and kayitlar[0]['surum'] and set(kayitlar[0]['olcut']) == set(dagit.OLCUT_ANAHTARLARI)
         r, cikti = sus(dagit.main, [])
-        assert r == 0 and 'Ölçüt ayarları' in cikti and 'UYARI Ölçüt kilidi' not in cikti
-        # kilitten sonra ölçüt değişirse hiçbir komut çalışmaz
-        with open(dagit.HTML, 'w', encoding='utf-8', newline='') as f:
-            f.write(hazir_html().replace('cooldownSec:10', 'cooldownSec:3'))
-        shutil.rmtree(dagit.YAYIN)
-        r, cikti = sus(dagit.main, ['--hazirla'])
-        assert r == 1 and 'Ölçüt ayarları değişmiş' in cikti and not os.path.exists(dagit.YAYIN)
+        assert r == 0 and 'Dosya kayıtlı sürümle aynı' in cikti, cikti
     finally:
         geri(kopya)
 
 
-@test('Betik: kontrol geçmezse --hazirla, --kilitle ve --yayinla hiçbir şey yapmaz')
+@test('Betik: kontrol geçmezse --kilitle ve --yayinla hiçbir şey yapmaz')
 def _():
     d, kopya = bayraklar()
     try:
         with open(dagit.KURALLAR, 'w', encoding='utf-8') as f:
             f.write(kural_eposta(ORNEK_EPOSTA))  # kural dosyasında örnek e-posta kalırsa ön kontrol geçmemeli
-        for arg in (['--hazirla'], ['--kilitle'], ['--yayinla', '--proje', 'x']):
+        for arg in (['--kilitle'], ['--yayinla', '--proje', 'x']):
             r, cikti = sus(dagit.main, arg)
             assert r == 1 and 'hiçbir şey yapılmadı' in cikti, (arg, cikti)
-        assert not os.path.exists(dagit.YAYIN) and not os.path.exists(dagit.KAYIT)
+        assert not os.path.exists(dagit.KAYIT)
         r, cikti = sus(dagit.main, ['--yayinla'])
         assert r == 2, '--proje olmadan yayınlanamaz'
     finally:
@@ -299,7 +283,7 @@ def _():
         r, cikti = sus(dagit.main, ['--yayinla', '--proje', 'ilklot-demo'])
         assert r == 0
         cwd, args = open(iz, encoding='utf-8').read().strip().split('|', 1)
-        assert os.path.realpath(cwd) == os.path.realpath(dagit.YAYIN) and args == 'deploy --only hosting,firestore:rules --project ilklot-demo', (cwd, args)
+        assert os.path.realpath(cwd) == os.path.realpath(dagit.KLASOR) and args == 'deploy --only hosting,firestore:rules --project ilklot-demo', (cwd, args)
         sahte_yaz('#!/bin/sh\nexit 7\n', '@echo off\r\nexit /b 7\r\n')
         r, _ = sus(dagit.main, ['--yayinla', '--proje', 'x'])
         assert r == 7, 'firebase hata kodu yukarı aktarılmalı'
@@ -420,7 +404,7 @@ def _():
     assert max(o['DTSTART'] for o in ol) == '20290301'
 
 
-@test('CI tanımı: geçerli YAML; çağırdığı betikler ve klasörler gerçekten var; Python sürümü ve eylemler sabit')
+@test('CI tanımı: geçerli YAML; çağırdığı betikler ve npm komutları gerçekten var; Python sürümü ve eylemler sabit')
 def _():
     try:
         import yaml
@@ -431,9 +415,12 @@ def _():
     adimlar = y['jobs']['test']['steps']
     komutlar = [a['run'] for a in adimlar if 'run' in a]
     betikler = re.findall(r'python\s+(?!-)(\S+\.py)', '\n'.join(komutlar))
-    assert len(betikler) >= 4, betikler
+    assert len(betikler) >= 3, betikler
     for b in betikler:
         assert os.path.exists(os.path.join(KOK, b)), f'CI olmayan betiği çağırıyor: {b}'
+    npm = set(re.findall(r'npm run ([\w:]+)', '\n'.join(komutlar)))
+    scripts = json.load(open(os.path.join(KOK, 'package.json'), encoding='utf-8'))['scripts']
+    assert npm and npm <= set(scripts), (npm, set(scripts))
     kullan = [a['uses'] for a in adimlar if 'uses' in a]
     assert all('@v' in u for u in kullan), kullan
     assert any(a.get('with', {}).get('python-version') == '3.12' for a in adimlar)

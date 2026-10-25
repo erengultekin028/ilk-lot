@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import postcss from 'postcss';
 import selectorParser from 'postcss-selector-parser';
-const pub = path.resolve(import.meta.dirname, '..', '..', 'public');
+const pub = path.resolve(import.meta.dirname, '..', 'public');
 const defined = new Set();
 for (const f of fs.readdirSync(path.join(pub, 'styles'))) {
   const root = postcss.parse(fs.readFileSync(path.join(pub, 'styles', f), 'utf8'));
