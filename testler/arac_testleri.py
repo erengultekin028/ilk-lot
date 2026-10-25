@@ -283,7 +283,7 @@ def _():
         r, cikti = sus(dagit.main, ['--yayinla', '--proje', 'ilklot-demo'])
         assert r == 0
         cwd, args = open(iz, encoding='utf-8').read().strip().split('|', 1)
-        assert os.path.realpath(cwd) == os.path.realpath(dagit.KLASOR) and args == 'deploy --only hosting,firestore:rules --project ilklot-demo', (cwd, args)
+        assert os.path.realpath(cwd) == os.path.realpath(dagit.KOK) and args == 'deploy --only hosting,firestore:rules --project ilklot-demo', (cwd, args)
         sahte_yaz('#!/bin/sh\nexit 7\n', '@echo off\r\nexit /b 7\r\n')
         r, _ = sus(dagit.main, ['--yayinla', '--proje', 'x'])
         assert r == 7, 'firebase hata kodu yukarı aktarılmalı'
