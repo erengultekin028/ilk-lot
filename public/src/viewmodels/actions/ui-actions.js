@@ -47,7 +47,16 @@ export const uiActions = {
       'Bu koda ait tüm verilerin analizden çıkarılacak ve silinecek. Bu kodla tekrar giriş yapamayacaksın.',
       'Çekil ve sil',
       true,
-      withdrawParticipant
+      function () {
+        // İkinci onay: çalışmayı "bitirmek" isteyen biri yanlışlıkla çekilmesin (çekilme geri alınamaz)
+        askConfirm(
+          'Emin misin?',
+          'Çalışmayı bitirmek istiyorsan bunu yapma: son ekrana kadar devam etmen yeterli. Çekilirsen bu işlem geri alınamaz.',
+          'Evet, çekil',
+          true,
+          withdrawParticipant
+        );
+      }
     );
   },
   confirmModal: function () {
