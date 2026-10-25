@@ -1,0 +1,120 @@
+/* Katmanlı onam ekranı. */
+
+/* Katmanlı onam */
+.consent-summary {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 13px 14px;
+  margin-bottom: 10px;
+}
+.consent-summary svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: var(--act);
+  margin-top: 1px;
+}
+.consent-summary b {
+  display: block;
+  font: 700 15px var(--fd);
+  margin-bottom: 2px;
+}
+.consent-summary span {
+  color: var(--mu);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.consent-details {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 14px;
+  padding: 0 14px;
+  margin-bottom: 8px;
+}
+.consent-details summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 0;
+  font-weight: 700;
+  font-size: 14.5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+.consent-details summary::-webkit-details-marker {
+  display: none;
+}
+.consent-details summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--mu);
+  border-bottom: 2px solid var(--mu);
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+  margin-right: 4px;
+  flex: none;
+}
+.consent-details[open] summary::after {
+  transform: rotate(-135deg);
+}
+.consent-details p {
+  margin: 0 0 10px;
+  color: var(--mu);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.consent-details p:last-child {
+  margin-bottom: 14px;
+}
+.consent-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 14px 0 4px;
+  cursor: pointer;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+.consent-check input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  accent-color: var(--ac);
+}
+.placeholder-highlight {
+  background: #ffe58a;
+  color: #3a2a00;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+  #study-progress .progress-track i {
+    transition: none;
+  }
+}
+#quick-test-banner,
+#mode-banner {
+  flex: none;
+  margin: 0 16px 8px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: var(--wr);
+  color: var(--wt);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

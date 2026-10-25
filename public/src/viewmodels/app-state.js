@@ -1,0 +1,36 @@
+// Uygulamanın tek durum nesnesi (ViewModel durumu).
+
+import { DEMO_MODE, HASH_PARAMS } from '../constants/app-config.js';
+
+export const state = {
+  stage: 'boot',
+  introStep: 0,
+  group: null,
+  participantCode: null,
+  preTest: null,
+  postTest: null,
+  testQuestion: null,
+  ended: false,
+  adminRequested: HASH_PARAMS.has('admin') && !DEMO_MODE,
+  setOrder: 0,
+  phase: 'pre',
+  block: 'pre',
+  trialIndex: 0,
+  decisions: [],
+  totalDecisions: 0,
+  pulses: {},
+  trial: null,
+  cooldownStats: null,
+  practiceDone: false,
+  simulation: null,
+  purposeGuess: null,
+  seenTourSteps: {},
+  tour: null,
+  comprehension: null,
+  helpOpenCount: 0,
+  marketTab: 'p',
+  tabTimes: { p: 0, m: 0, a: 0 },
+  readingMs: null,
+  detailSymbol: null,
+  detailRangeDays: 30,
+};

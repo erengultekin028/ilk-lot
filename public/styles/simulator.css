@@ -1,0 +1,770 @@
+/* Simülatör: anlama kontrolü, sözlük, haber şeridi, sekmeler, hisse listesi, detay, işlem penceresi, ilerleme çubuğu. */
+
+/* Anlama kontrolü */
+.question-card {
+  background: var(--sf2);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 6px 0 4px;
+  font-size: 14px;
+}
+.success-message {
+  display: flex;
+  gap: 10px;
+  color: var(--up);
+  background: var(--ups);
+  border-radius: 14px;
+  padding: 11px 13px;
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+/* Sözlük */
+.glossary-list dt {
+  font-weight: 700;
+  margin-top: 12px;
+}
+.glossary-list dd {
+  margin: 2px 0 0;
+  color: var(--mu);
+  font-size: 14px;
+}
+/* Simülatör haber şeridi */
+.news {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.news .news-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.news .news-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+.news .news-badge {
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--tx);
+  color: var(--sf);
+  border-radius: 8px;
+  padding: 2px 7px;
+}
+.news .news-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--tx);
+}
+.news .news-all {
+  margin: 6px 0 0;
+  padding: 6px 0;
+  min-height: 32px;
+  font-size: 13.5px;
+}
+.news .news-day {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  background: var(--sf2);
+  border-radius: 8px;
+  padding: 3px 7px;
+  margin-left: auto;
+}
+.news.is-negative {
+  border-color: color-mix(in srgb, var(--dn) 35%, var(--ln));
+  background: var(--dns);
+}
+.news.is-fresh {
+  animation: newsIn 0.5s ease-out;
+}
+@keyframes newsIn {
+  from {
+    transform: translateY(-6px);
+    opacity: 0.3;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .news.is-fresh {
+    animation: none;
+  }
+}
+/* Simülatör sekmeleri: Piyasa grafikleri ve kriz çağrısı */
+.market-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.market-card {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--tx);
+}
+.market-card b {
+  font: 700 15px var(--fd);
+}
+.market-card .muted {
+  font-size: 12px;
+}
+.crisis-alert-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: var(--dns);
+  color: var(--dn);
+  border: 1px solid color-mix(in srgb, var(--dn) 40%, transparent);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.crisis-alert-box button {
+  flex: none;
+  border: 0;
+  border-radius: 10px;
+  background: var(--dn);
+  color: var(--ink);
+  font-weight: 700;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+/* b25: serbest mod haber şeridi + hisse satırı işareti */
+#news-banner {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+}
+.news-banner-box {
+  display: flex;
+  align-items: stretch;
+  background: var(--sf);
+  color: var(--tx);
+  border: 1px solid var(--ln);
+  border-radius: 14px;
+  margin: 0 0 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  animation: newsIn 0.35s ease-out;
+}
+.news-banner-box.is-negative {
+  border-color: color-mix(in srgb, var(--dn) 45%, var(--ln));
+  background: linear-gradient(var(--dns), var(--dns)), var(--sf);
+}
+.news-banner-box .news-banner-button {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 9px 6px 9px 12px;
+  cursor: pointer;
+  display: block;
+}
+.news-banner-box .news-banner-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+.news-banner-box .news-banner-text {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+.news-banner-box .news-banner-close {
+  flex: none;
+  width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--mu);
+  cursor: pointer;
+}
+.stock-row .news-flag {
+  display: inline-block;
+  vertical-align: 2px;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--tx);
+  color: var(--sf);
+  border-radius: 8px;
+  padding: 3px 7px;
+}
+.stock-row .news-flag[hidden] {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .news-banner-box {
+    animation: none;
+  }
+}
+.info-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 8px;
+}
+.info-facts div {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 14px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.info-facts b {
+  display: block;
+  font: 700 18px var(--fd);
+}
+.info-facts span {
+  display: block;
+  color: var(--mu);
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+.how-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: hw;
+}
+.how-list li {
+  counter-increment: hw;
+  position: relative;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 12px 14px 12px 46px;
+  margin-bottom: 8px;
+}
+.how-list li:before {
+  content: counter(hw);
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ln);
+  color: var(--tx);
+  font: 700 13px var(--fd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.how-list li > b {
+  display: block;
+  font: 700 15.5px var(--fd);
+}
+.how-list li > span {
+  display: block;
+  color: var(--mu);
+  font-size: 14px;
+  margin-top: 2px;
+}
+.info-tabs {
+  display: grid;
+  gap: 6px;
+}
+.info-tabs div {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 2px 2px;
+}
+.info-tabs b {
+  flex: none;
+  min-width: 64px;
+  font: 700 15px var(--fd);
+}
+.info-tabs span {
+  color: var(--mu);
+  font-size: 14px;
+}
+.rounded-box {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.rounded-box b {
+  font: 700 16px var(--fd);
+}
+.rounded-box p {
+  margin: 4px 0 0;
+  color: var(--mu);
+  font-size: 14.5px;
+}
+/* Simülatör hisse listesi: her hisse bir satır kartı. Üstte ad ve 1 lotun fiyatı; altta etiketli dört kutu (Lot, Ort. alış, Değer, Kâr/zarar).
+   Hisse detayındaki pozisyon özeti de aynı kutuları kullanır. Bilgi içeriği eskisiyle aynı; yalnızca etiket ve düzen eklendi */
+.sheet-hint {
+  margin: 0;
+  padding: 0 16px 10px;
+  font-size: 12.5px;
+  color: var(--mu);
+}
+.stock-row {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--ln);
+  background: none;
+  color: var(--tx);
+  text-align: left;
+  cursor: pointer;
+  padding: 14px 16px;
+  font: inherit;
+}
+.sheet-hint + .stock-row {
+  border-top: 0;
+}
+.stock-row .stock-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.stock-row .stock-symbol {
+  display: block;
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 0;
+}
+.stock-row .stock-symbol small {
+  display: block;
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--mu);
+  margin: 1px 0 0;
+}
+.stock-row .profit-loss-block {
+  text-align: right;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.stock-row .profit-loss-block b {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.stock-row .profit-loss-block .percent-chip {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+.stock-row .profit-loss-block small {
+  display: block;
+  font-size: 11.5px;
+  color: var(--mu);
+  margin-top: 1px;
+}
+.stock-row .profit-loss-block .price-up {
+  color: var(--up);
+}
+.stock-row .profit-loss-block .price-down {
+  color: var(--dn);
+}
+/* Adet × fiyat = değer: üç sütun, aralarında işlem işareti */
+.stock-row .equation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 6px;
+  background: var(--sf2);
+  border-radius: 12px;
+  padding: 9px 10px;
+  margin-top: 10px;
+}
+.stock-row .equation-cell {
+  min-width: 0;
+}
+.stock-row .equation-cell i {
+  display: block;
+  font-style: normal;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mu);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stock-row .equation-cell b {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.stock-row .equation-cell.is-total b {
+  font-weight: 800;
+}
+.stock-row .equation-cell.is-total {
+  text-align: right;
+}
+.stock-row .operator {
+  color: var(--mu);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+  margin-bottom: 0;
+}
+.stock-row .average-line {
+  display: block;
+  font-size: 12.5px;
+  color: var(--mu);
+  margin-top: 8px;
+}
+.stock-row .average-line b {
+  color: var(--tx);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cell-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.cell-grid.three-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 6px;
+}
+.cell {
+  background: var(--sf2);
+  border-radius: 10px;
+  padding: 7px 8px;
+  min-width: 0;
+}
+.term-button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 3px;
+  margin: -3px;
+  min-width: 24px;
+  text-align: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.cell .term-button {
+  padding: 6px 3px;
+  margin: -6px -3px;
+}
+.term-button:focus-visible {
+  outline: 2px solid var(--act);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.cell i {
+  display: block;
+  font-style: normal;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mu);
+  white-space: nowrap;
+}
+.cell b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cell .percent-chip {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-top: 1px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.cell b.price-up,
+.cell .percent-chip.price-up {
+  color: var(--up);
+}
+.cell b.price-down,
+.cell .percent-chip.price-down {
+  color: var(--dn);
+}
+@media (max-width: 379px) {
+  .cell-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cell-grid.three-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cell-grid.three-columns .cell b {
+    font-size: 12.5px;
+  }
+}
+.position-box {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ln);
+}
+.position-box .position-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+.unit-text {
+  display: block;
+  font-size: 12px;
+  color: var(--mu);
+  margin-top: 2px;
+}
+.key-value .fx-note {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mu);
+  margin-top: 1px;
+}
+/* Portföy dağılımı */
+.allocation-bar {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  gap: 2px;
+  margin: 4px 0 8px;
+}
+.allocation-bar i {
+  display: block;
+  height: 100%;
+  transition: width 0.4s;
+}
+.allocation-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--mu);
+}
+.allocation-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.allocation-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  display: inline-block;
+}
+/* Hisse detay sayfası */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 12px;
+}
+.range-selector {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+.range-selector button {
+  flex: 1;
+  border: 1px solid var(--ln);
+  background: var(--sf);
+  border-radius: 10px;
+  padding: 7px 0;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: var(--mu);
+}
+.range-selector button.is-active {
+  background: var(--acs);
+  border-color: var(--ac);
+  color: var(--act);
+}
+.detail-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 4px 0 14px;
+}
+.history-list .key-value {
+  align-items: flex-start;
+  gap: 8px;
+}
+/* İşlem penceresi: Sat/Al seçimi, lot kutusu, hızlı oranlar, özet. İki yön de aynı görünümde (biri "öne çıkarılmaz") */
+#modal .box {
+  max-height: calc(100% - 8px);
+  overflow-y: auto;
+}
+#modal-box:focus {
+  outline: none;
+}
+.trade-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  background: var(--sf2);
+  border-radius: 12px;
+  padding: 4px;
+  margin: 12px 0 10px;
+}
+.trade-side button {
+  border: 0;
+  background: none;
+  border-radius: 9px;
+  padding: 10px 0;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--mu);
+}
+.trade-side button.is-active {
+  background: var(--sf);
+  color: var(--tx);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+.quantity-label {
+  display: block;
+  font-size: 13px;
+  color: var(--mu);
+  margin: 0 0 6px;
+}
+.quantity-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.quantity-row .quantity-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--ln);
+  background: var(--sf2);
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--tx);
+  flex: none;
+}
+.quantity-row input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--ln);
+  background: var(--bg);
+  color: var(--tx);
+  text-align: center;
+  font: 700 22px var(--fd);
+}
+.quantity-row input::placeholder {
+  color: var(--mu2);
+  font-weight: 600;
+}
+.quantity-chips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+}
+.quantity-chips button {
+  border: 1px solid var(--ln);
+  background: var(--sf);
+  border-radius: 10px;
+  padding: 9px 0;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--mu);
+}
+.quantity-chips button:disabled,
+.quantity-row .quantity-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.trade-summary-box {
+  background: var(--sf2);
+  border-radius: 12px;
+  padding: 6px 12px;
+  margin: 6px 0 12px;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* Genel ilerleme çubuğu: 5 adım, geçerli adım kısmen dolu */
+#study-progress {
+  flex: none;
+  padding: 0 16px 8px;
+}
+#study-progress .progress-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+#study-progress .progress-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ln);
+  overflow: hidden;
+}
+#study-progress .progress-track i {
+  display: block;
+  height: 100%;
+  background: var(--ac);
+  border-radius: 2px;
+  transition: width 0.5s;
+}
+#study-progress .glossary-list {
+  font-size: 10.5px;
+  color: var(--mu2);
+  margin-top: 4px;
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#study-progress .glossary-list.is-current {
+  color: var(--tx);
+  font-weight: 800;
+}
+#study-progress .glossary-list.is-done {
+  color: var(--mu);
+}

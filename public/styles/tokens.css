@@ -1,0 +1,78 @@
+/* Tasarım değişkenleri: yazı tipi, renk paleti (açık ve koyu tema). */
+
+/* Yazı tipi dosyanın içinde (Bricolage Grotesque, SIL OFL 1.1; kaynak/yazi/). Türkçe karakterli alt küme; dış sunucuya bağlanılmaz */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 400 599;
+  font-display: swap;
+  src: url(../assets/fonts/BricolageGrotesque-Regular.woff) format("woff");
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 600 900;
+  font-display: swap;
+  src: url(../assets/fonts/BricolageGrotesque-Bold.woff) format("woff");
+}
+/* Üniversite paleti: soğuk gri zemin, çivit mavisi eylem.
+   Anlam ayrımı korunur: --pr = eylem (çivit), --wr/--wt = uyarı (amber), --up/--dn = fiyat yönü (yeşil/kırmızı).
+   Çivit, yeşil ve kırmızıyla karışmadığı için hiçbir seçenek "doğru" ya da "tehlikeli" gibi kodlanmaz. */
+:root {
+  --bg: #f4f4f4;
+  --sf: #ffffff;
+  --sf2: #eaeaea;
+  --ln: #d8d8d8;
+  --tx: #111111;
+  --mu: #595959;
+  --mu2: #5c5c5c;
+  --ac: #111827;
+  --acs: rgba(17, 24, 39, 0.1);
+  --act: #000000;
+  --ink: #ffffff;
+  --pr: #111827;
+  --onpr: #ffffff;
+  --fl: #111827;
+  --cfx: inset 0 0 34px 2px rgba(194, 65, 45, 0.3), inset 0 0 0 2px rgba(194, 65, 45, 0.55);
+  --pend: #c98a1b;
+  --up: #1b7b54;
+  --ups: rgba(27, 123, 84, 0.1);
+  --dn: #c2412d;
+  --dns: rgba(194, 65, 45, 0.09);
+  --wr: #fcefd6;
+  --wt: #7a4b00;
+  --shadow: 0 -14px 44px rgba(0, 0, 0, 0.16);
+  --fd: "Bricolage Grotesque", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fb: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* Koyu tema: tema düğmesiyle (ya da görüntüleyici data-theme="dark" verirse). Aynı anlam ayrımı korunur */
+:root[data-theme="dark"] {
+  --bg: #0b0b0c;
+  --sf: #141416;
+  --sf2: #1d1d20;
+  --ln: #2e2e33;
+  --tx: #f0f0f2;
+  --mu: #a5a5ad;
+  --mu2: #92929a;
+  --ac: #f2a93b;
+  --acs: rgba(242, 169, 59, 0.14);
+  --act: #f6c979;
+  --ink: #1a1200;
+  --pr: #f2a93b;
+  --onpr: #1a1200;
+  --fl: #f2a93b;
+  --cfx: inset 0 0 70px 12px rgba(255, 70, 55, 0.5), inset 0 0 0 2px rgba(255, 90, 70, 0.5);
+  --pend: #f2a93b;
+  --up: #3fd08f;
+  --ups: rgba(63, 208, 143, 0.13);
+  --dn: #ff6b5b;
+  --dns: rgba(255, 107, 91, 0.13);
+  --wr: rgba(242, 169, 59, 0.13);
+  --wt: #f6c979;
+  --shadow: 0 -14px 44px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}

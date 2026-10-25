@@ -1,0 +1,359 @@
+/* Alt pencere, karşılama/test ekranları, modal ve kayıt durumu noktası. */
+
+/* Alt pencere (hisse ekranı) */
+#scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(3, 6, 14, 0.58);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+#scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+#sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 21;
+  max-height: 94%;
+  overflow-y: auto;
+  background: var(--sf);
+  border-top: 1px solid var(--ln);
+  border-radius: 26px 26px 0 0;
+  padding: 8px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(105%);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: var(--shadow);
+}
+#sheet.is-open {
+  transform: none;
+}
+.sheet-grabber {
+  width: 42px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ln);
+  margin: 0 auto 12px;
+}
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.sheet-header .sheet-title {
+  font: 700 20px/1.1 var(--fd);
+}
+.span-item {
+  font: 750 36px/1.05 var(--fd);
+  letter-spacing: -1.2px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 12px;
+}
+.field-label {
+  display: block;
+  color: var(--mu);
+  font-size: 13px;
+  margin: 14px 0 6px;
+}
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stepper > button {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--ln);
+  background: var(--sf2);
+  font-size: 22px;
+  cursor: pointer;
+  flex: none;
+}
+.stepper input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--ln);
+  background: var(--bg);
+  color: var(--tx);
+  text-align: center;
+  font: 700 20px var(--fd);
+}
+.stepper .button.small-text {
+  height: 48px;
+}
+.key-value {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13.5px;
+  color: var(--mu);
+}
+.key-value b {
+  color: var(--tx);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.key-value b.price-up,
+.stat b.price-up {
+  color: var(--up);
+}
+.key-value b.price-down,
+.stat b.price-down {
+  color: var(--dn);
+}
+.key-value-list {
+  margin: 12px 0;
+}
+details.more-details {
+  border-top: 1px solid var(--ln);
+  margin-top: 14px;
+}
+details.more-details + details.more-details {
+  margin-top: 0;
+}
+details.more-details summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 15px 2px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+details.more-details summary::-webkit-details-marker {
+  display: none;
+}
+details.more-details summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--mu);
+  border-bottom: 2px solid var(--mu);
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+  margin-right: 4px;
+}
+details.more-details[open] summary::after {
+  transform: rotate(-135deg);
+}
+details.more-details > div {
+  padding: 0 2px 14px;
+}
+.question {
+  font-weight: 700;
+  margin: 18px 0 10px;
+}
+.big-summary {
+  font: 700 24px/1.2 var(--fd);
+  letter-spacing: -0.4px;
+  margin: 14px 0 4px;
+}
+.countdown {
+  font: 800 64px/1 var(--fd);
+  text-align: center;
+  margin: 18px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Karşılama, test ve tanıtım ekranları */
+.stage {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 4px 8px;
+}
+.stage h1 {
+  font: 750 32px/1.08 var(--fd);
+  letter-spacing: -0.9px;
+  margin: 20px 0 12px;
+}
+.stage p {
+  color: var(--mu);
+  margin: 0 0 12px;
+}
+.stage .stage-actions {
+  margin-top: 18px;
+}
+.dots {
+  display: flex;
+  gap: 6px;
+}
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ln);
+  transition: width 0.2s;
+}
+.dots i.is-active {
+  width: 24px;
+  background: var(--ac);
+}
+.option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--ln);
+  background: var(--sf);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.option.is-correct {
+  border-color: var(--up);
+  background: var(--ups);
+}
+.option.is-wrong {
+  border-color: var(--dn);
+  background: var(--dns);
+}
+.giant-number {
+  font: 800 52px/1 var(--fd);
+  letter-spacing: -2px;
+  color: var(--ac);
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-card {
+  background: linear-gradient(160deg, #1c2a4a, #101827);
+  color: #f1eee6;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid #2a3a60;
+}
+.summary-card .card-value {
+  font: 800 34px/1.05 var(--fd);
+  color: #f2a93b;
+  margin: 8px 0 6px;
+  letter-spacing: -0.8px;
+}
+.summary-card .card-label {
+  margin-top: 7px;
+  font-size: 14px;
+  color: #d8dce6;
+}
+.gauge-text {
+  text-align: center;
+  color: var(--mu);
+  font-size: 13.5px;
+  margin: 4px 0 0;
+}
+pre.json-block {
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 10px 0 0;
+  color: var(--mu);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 10px;
+}
+/* Modal: kriz sonrası soru ve onay pencereleri. Hisse ekranının da üstünde durur */
+#modal {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(3, 6, 14, 0.66);
+}
+#modal.is-open {
+  display: flex;
+}
+#modal .box {
+  width: 100%;
+  max-width: 400px;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 24px;
+  padding: 22px 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+#modal h2 {
+  font: 750 24px/1.15 var(--fd);
+  letter-spacing: -0.5px;
+  margin: 0 0 8px;
+}
+#modal p {
+  color: var(--mu);
+  margin: 0 0 14px;
+}
+.scale {
+  display: flex;
+  gap: 6px;
+}
+.scale button {
+  flex: 1;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid var(--ln);
+  background: var(--sf2);
+  font: 700 18px var(--fd);
+  cursor: pointer;
+}
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--mu);
+  font-size: 12px;
+  margin: 6px 2px 0;
+}
+.button.ghost-danger {
+  background: none;
+  border-color: var(--dn);
+  color: var(--dn);
+}
+.steps {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 14px;
+}
+.steps i {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ln);
+}
+.steps i.is-active {
+  background: var(--ac);
+}
+/* Kayıt durumu noktası: yeşil = kaydedildi, sarı = gönderiliyor, kırmızı = bağlantı yok */
+.dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: 1px;
+  background: var(--up);
+}
+.dot.is-pending {
+  background: var(--pend);
+}
+.dot.is-error {
+  background: var(--dn);
+  animation: blink 1.2s infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.3;
+  }
+}
+.question-spaced {
+  font-weight: 700;
+  margin: 20px 0 8px;
+}

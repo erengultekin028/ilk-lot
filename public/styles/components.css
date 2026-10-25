@@ -1,0 +1,347 @@
+/* Ortak bileşenler: portföy özeti, satırlar, düğmeler, kartlar, notlar, çubuklar, alanlar. */
+
+/* Portföy değeri sayfanın tek "büyük" öğesi: dikkat önce buraya gitsin */
+.hero {
+  padding: 10px 2px 18px;
+}
+.hero .hero-label {
+  color: var(--mu);
+  font-size: 13px;
+}
+.hero .hero-value {
+  font: 750 46px/1.02 var(--fd);
+  letter-spacing: -1.8px;
+  margin: 6px 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.pill.price-up {
+  background: var(--ups);
+  color: var(--up);
+}
+.pill.price-down {
+  background: var(--dns);
+  color: var(--dn);
+}
+.hero-sub {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--mu);
+}
+.hero-sub b {
+  display: block;
+  color: var(--tx);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.segmented-control {
+  display: flex;
+  gap: 4px;
+  background: var(--sf2);
+  border-radius: 14px;
+  padding: 4px;
+  margin: 0 0 14px;
+}
+.segmented-control button {
+  flex: 1;
+  border: 0;
+  background: none;
+  color: var(--mu);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.segmented-control button.is-active {
+  background: var(--sf);
+  color: var(--tx);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+}
+.segmented-control.small-text button {
+  font-size: 12px;
+  padding: 8px 4px;
+}
+
+.card-section {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 20px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 16px 16px 6px;
+}
+.card-header h3 {
+  margin: 0;
+  font: 700 17px/1.2 var(--fd);
+  letter-spacing: -0.2px;
+}
+.card-body {
+  padding: 6px 16px 16px;
+}
+.card-body p {
+  margin: 6px 0 0;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 16px;
+  border: 0;
+  border-top: 1px solid var(--ln);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.list-row:first-child {
+  border-top: 0;
+}
+.card-header + .list-row,
+.card-header + .row-list .list-row:first-child {
+  border-top: 0;
+}
+.nav-available {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: var(--sf2);
+  display: grid;
+  place-items: center;
+  font: 700 12px var(--fd);
+  color: var(--mu);
+  flex: none;
+  letter-spacing: 0.2px;
+}
+.row-main {
+  flex: 1;
+  min-width: 0;
+  display: block;
+}
+.row-main .row-title {
+  display: block;
+  font-weight: 700;
+}
+.row-main .row-subtitle {
+  display: block;
+  color: var(--mu);
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row-right {
+  display: block;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+.row-right .row-primary {
+  display: block;
+  font-weight: 600;
+}
+.row-right .row-secondary {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.row-side {
+  flex: none;
+  display: block;
+  line-height: 0;
+}
+.chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--mu2);
+  border-top: 2px solid var(--mu2);
+  transform: rotate(45deg);
+  flex: none;
+  margin-right: 4px;
+}
+.tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+.tag-up {
+  background: var(--ups);
+  color: var(--up);
+}
+.tag-down {
+  background: var(--dns);
+  color: var(--dn);
+}
+.tag-hold {
+  background: var(--wr);
+  color: var(--wt);
+}
+
+.button {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--ln);
+  background: var(--sf2);
+  color: var(--tx);
+  border-radius: 14px;
+  padding: 15px 16px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+.button.is-primary {
+  background: var(--pr);
+  border-color: var(--pr);
+  color: var(--onpr);
+}
+.button.is-danger {
+  background: var(--dn);
+  border-color: var(--dn);
+  color: var(--ink);
+}
+.button.small-text {
+  display: inline-block;
+  width: auto;
+  padding: 10px 14px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+.button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.button + .button {
+  margin-top: 10px;
+}
+.link {
+  background: none;
+  border: 0;
+  color: var(--mu);
+  font-weight: 600;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  border: 1px solid var(--ln);
+  background: var(--sf2);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.chip.is-active {
+  background: var(--acs);
+  border-color: var(--ac);
+  color: var(--act);
+}
+
+.note {
+  display: flex;
+  gap: 10px;
+  background: var(--wr);
+  color: var(--wt);
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  margin-bottom: 14px;
+}
+.note b {
+  color: inherit;
+}
+.note.is-info {
+  background: var(--sf2);
+  color: var(--mu);
+}
+.footnote {
+  text-align: center;
+  color: var(--mu2);
+  font-size: 12px;
+  margin: 10px 0 0;
+}
+
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--sf2);
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--ac);
+  transition: width 0.4s;
+}
+.metric {
+  margin-top: 14px;
+}
+.metric .metric-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  margin-bottom: 6px;
+}
+.stack-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  gap: 2px;
+  margin: 6px 0 10px;
+}
+.stack-bar i {
+  display: block;
+  height: 100%;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: 12px;
+  color: var(--mu);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}

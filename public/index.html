@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>İlk Lot: karar araştırması</title>
+    <!-- Ana ekrana ekle: kısayol eklenir (iOS: tam ekran açılır). Çevrimdışı çalışmaz. -->
+    <meta name="theme-color" content="#F4F4F4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0B0C" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="İlk Lot" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="apple-touch-icon" href="assets/icon-180.png" />
+    <link rel="icon" type="image/png" href="assets/icon-180.png" />
+    <link rel="stylesheet" href="styles/tokens.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/components.css" />
+    <link rel="stylesheet" href="styles/free-play.css" />
+    <link rel="stylesheet" href="styles/sheet-and-screens.css" />
+    <link rel="stylesheet" href="styles/effects.css" />
+    <link rel="stylesheet" href="styles/film-and-tour.css" />
+    <link rel="stylesheet" href="styles/simulator.css" />
+    <link rel="stylesheet" href="styles/consent.css" />
+    <link rel="stylesheet" href="styles/motion-and-responsive.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <button class="brand" data-a="tapLogo" aria-label="İlk Lot">
+          <svg width="30" height="30" viewBox="0 0 120 120" aria-hidden="true">
+            <rect width="120" height="120" rx="28" fill="#10263F" />
+            <rect x="48" y="54" width="24" height="46" rx="12" fill="#F4F1EA" />
+            <circle cx="60" cy="31" r="15" fill="#E8A92B" />
+            <circle cx="60" cy="31" r="9" fill="none" stroke="#B87A0E" stroke-width="2.5" />
+          </svg>
+          <b>İlk Lot</b>
+        </button>
+        <div class="header-actions">
+          <button class="icon-button" id="back-button" data-a="back" aria-label="Geri" hidden>‹</button>
+          <span class="timer-chip tabular-number" id="timer-chip" hidden style="color: var(--mu); background: var(--sf2)">
+            <span id="timer-text"></span>
+            <i id="sync-dot" class="dot" role="img"></i>
+          </span>
+          <button
+            class="icon-button"
+            id="help-button"
+            data-a="openHelp"
+            aria-label="Sözlük ve yardım"
+            hidden
+            style="font-weight: 800; color: var(--act)"
+          >
+            ?
+          </button>
+          <button class="icon-button" id="menu-button" data-a="openMenu" aria-label="Menü" hidden>⋯</button>
+          <button class="icon-button" data-a="toggleTheme" aria-label="Temayı değiştir">◐</button>
+        </div>
+      </header>
+      <div id="quick-test-banner" role="status" hidden>HIZLI TEST MODU · bu oturumun verisi analizde kullanılmamalı</div>
+      <div id="mode-banner" role="status" hidden>TANITIM MODU · hiçbir veri kaydedilmez</div>
+      <div id="study-progress" role="progressbar" aria-label="Çalışma ilerlemesi" aria-valuemin="0" aria-valuemax="100" hidden></div>
+      <div id="toast" role="status" aria-live="polite"></div>
+      <div id="tour-popup" role="dialog" aria-live="polite" hidden></div>
+      <main id="main-view"></main>
+      <p id="disclaimer" hidden>Kurgusal piyasa · yatırım tavsiyesi değildir</p>
+      <nav id="simulator-nav" hidden></nav>
+      <div id="modal" role="dialog" aria-modal="true"><div class="box" id="modal-box"></div></div>
+    </div>
+
+    <noscript>Bu araştırma uygulaması JavaScript gerektirir.</noscript>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
