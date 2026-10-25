@@ -8,7 +8,7 @@ Varsayılan çalışma yalnızca KONTROL eder, hiçbir şeyi değiştirmez ve d�
   python firebase/dagit.py --yayinla --proje PROJE  # firebase CLI ile Hosting (public/: katılımcı uygulaması + admin/) + güvenlik kuralları
   python firebase/dagit.py --yayinla --proje PROJE --kuru   # çalıştıracağı komutu yazar, çalıştırmaz
 
-Yayın klasörü doğrudan public/'dir (derleme ya da kopyalama yok); firebase/firebase.json bu klasörü ve firestore.rules'u yayınlar.
+Yayın klasörü doğrudan public/'dir (derleme ya da kopyalama yok); kökteki firebase.json bu klasörü ve firestore.rules'u yayınlar.
 Ön kontrol şunları arar: CONFIG.firebase dolu mu; onam alanlarında [DOLDUR] ya da örnek adres kalmış mı; güvenlik kurallarında örnek
 araştırmacı e-postası kalmış mı; pilot formu açık mı. Kilit kaydı (yayin_kaydi.json) varsa ayrıca: ölçüt ayarları (tohumlar, krizler,
 bekleme süresi, eşik) kayıttakinden farklı mı; kod değişmiş ama APP_VERSION aynı mı.
@@ -203,14 +203,12 @@ def main(argv=None):
     if durum:
         print('\nÖn kontrol geçmedi; hiçbir şey yapılmadı.')
         return 1
-    if a.hazirla or a.yayinla:
-        print(f'\nHazırlandı: {hazirla()}')
     if a.kilitle:
         k = kilitle(oku(HTML))
         print(f'Kilit kaydı eklendi: sürüm {k["surum"]} ({KAYIT})')
     if a.yayinla:
         komut = ['firebase', 'deploy', '--only', 'hosting,firestore:rules', '--project', a.proje]
-        print('Komut (firebase/ klasöründe): ' + ' '.join(komut))
+        print('Komut (proje kökünde): ' + ' '.join(komut))
         if a.kuru:
             return 0
         yol = shutil.which('firebase')
@@ -218,7 +216,7 @@ def main(argv=None):
             print('HATA: firebase komutu bulunamadı (npm i -g firebase-tools; firebase login).')
             return 1
         # Windows'ta firebase-tools "firebase.cmd" olarak kurulur; bare ad subprocess ile bulunamaz, bu yüzden tam yol verilir
-        return subprocess.run([yol] + komut[1:], cwd=KLASOR).returncode
+        return subprocess.run([yol] + komut[1:], cwd=KOK).returncode
     return 0
 
 

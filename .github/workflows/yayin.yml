@@ -1,0 +1,33 @@
+# main dalına her gönderimde: kod denetimi geçerse siteyi Firebase Hosting'e (canlı kanal) yayınlar.
+# Gerekli sır (secret): FIREBASE_SERVICE_ACCOUNT_ILK_LOT_PILOT (hizmet hesabı anahtarı; `firebase init hosting:github` oluşturur).
+# Yalnızca Hosting yayınlanır; Firestore güvenlik kuralları elle yayınlanır (firebase/KURULUM.md, bölüm 4).
+name: yayin
+on:
+  push:
+    branches: [main]
+concurrency:
+  group: yayin
+  cancel-in-progress: false
+jobs:
+  yayinla:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Kod denetimi (yayından önce)
+        run: |
+          npm ci
+          npm run lint
+          npm run check:modules
+          npm run check:classes
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ILK_LOT_PILOT }}
+          projectId: ilk-lot-pilot
+          channelId: live

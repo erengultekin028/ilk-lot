@@ -6,7 +6,7 @@
 |---|---|
 | `public/` | **Yayınlanan site** (Firebase Hosting). `index.html` katılımcı uygulaması, `admin/index.html` araştırmacı paneli (ayrı adres), `src/` kod, `styles/` CSS, `assets/` yazı tipi ve simge |
 | `public/src/` | MVVM katmanları: `constants/`, `models/`, `viewmodels/`, `views/`, `widgets/`, `services/`, `repositories/`, `utils/`, `admin/`, `vendor/` (ayrıntı `docs/MIMARI.md`) |
-| `firebase/` | `firestore.rules` (güvenlik kuralları), `firebase.json` (Hosting + kurallar), `dagit.py` (yayın ön kontrolü, ölçüt kilidi, yayınlama), `kural_testleri/` (Emulator testleri), `KURULUM.md` |
+| `firebase/` | `firestore.rules` (güvenlik kuralları; Hosting ayarı kökteki `firebase.json`'dadır), `dagit.py` (yayın ön kontrolü, ölçüt kilidi, yayınlama), `kural_testleri/` (Emulator testleri), `KURULUM.md` |
 | `tools/` | Geliştirme araçları: `check-modules.mjs` (modül bağlantıları), `check-classes.mjs` (CSS sınıf tutarlılığı), `check-equivalence.mjs` (eski/yeni uyaran ve fiyat yolu karşılaştırması) |
 | `testler/` | Python testleri: `arac_testleri.py` (yayın aracı, takvim, CI, klasör yapısı). `uygulama_testleri.py`, `erisilebilirlik_taramasi.py`, `gorsel_karsilastirma.py` **eski yapı için yazıldı, yeniden yazılmalı** (`testler/README.md`) |
 | `analiz/` | Analiz, güç hesabı, pilot özeti, örnek veri üretici, kendi testleri |

@@ -6,3 +6,5 @@ firebase/kural_testleri/node_modules/
 firebase/kural_testleri/*.log
 tools/refactor/node_modules/
 node_modules/
+
+.firebase/

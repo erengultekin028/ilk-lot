@@ -33,8 +33,8 @@ Uygulama yalnızca Firebase ile çalışır: yerel (tarayıcıda) kayıt kipi, t
 
 ## 4. Yayınla (Firebase Hosting)
 - Ön kontrol: `python firebase/dagit.py`. HATA varsa yayınlama.
-- Yayın klasörü doğrudan `public/`'dir (derleme yok). `firebase/firebase.json` Hosting'i (`../public`) ve kuralları yayınlar:
-  `python firebase/dagit.py --yayinla --proje PROJE_KIMLIGI` (firebase-tools kurulu ve `firebase login` yapılmış olmalı; `--kuru` yalnızca komutu yazar). Elle: `cd firebase && firebase deploy --only hosting,firestore:rules --project PROJE`.
+- Yayın klasörü doğrudan `public/`'dir (derleme yok). Kökteki `firebase.json` Hosting'i (`public`) ve kuralları yayınlar (`.firebaserc` varsayılan projeyi `ilk-lot-pilot` yapar). **Otomatik yayın:** `main` dalına her gönderimde `.github/workflows/yayin.yml` lint ve modül kontrolünden sonra Hosting'i canlıya yayınlar (sır: `FIREBASE_SERVICE_ACCOUNT_ILK_LOT_PILOT`). Güvenlik kuralları otomatik yayınlanmaz, elle:
+  `python firebase/dagit.py --yayinla --proje PROJE_KIMLIGI` (firebase-tools kurulu ve `firebase login` yapılmış olmalı; `--kuru` yalnızca komutu yazar). Elle (proje kökünden): `firebase deploy --only hosting,firestore:rules --project PROJE`.
 - Adresler: katılımcı `https://<proje>.web.app/`, yönetim `https://<proje>.web.app/admin/`. İstersen yönetim paneli için Firebase'de **ikinci bir Hosting sitesi** açıp yalnızca `admin/` klasörünü ona yayınlayabilirsin (adres tamamen ayrılır; panelde "Katılım bağlantısı" alanına katılımcı sitesinin adresini yaz).
 - **Dikkat:** aynı adreste (`/` ve `/admin/`) Firebase oturumu paylaşılır. Panelde oturum açıkken aynı tarayıcıda katılımcı olarak deneme yapma; önce panelden çık.
 - **Pilot başlarken** `python firebase/dagit.py --kilitle`: sürüm ve ölçüt ayarları `firebase/yayin_kaydi.json`'a yazılır; sonra biri değişirse ön kontrol HATA verir.
