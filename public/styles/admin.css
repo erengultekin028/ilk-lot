@@ -28,11 +28,6 @@ header {
 .admin-grid > .card-section:first-child {
   grid-column: 1 / -1;
 }
-/* Giriş formu geniş ekranda gerilmez; ortada, okunur genişlikte durur (pano ise tam genişlik) */
-#main-view:has(#admin-email) .card-section {
-  max-width: 440px;
-  margin: 24px auto;
-}
 @media (max-width: 600px) {
   .admin-grid {
     grid-template-columns: minmax(0, 1fr);
