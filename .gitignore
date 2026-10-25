@@ -4,3 +4,6 @@ testler/gorsel_anlik*/
 __pycache__/
 firebase/kural_testleri/node_modules/
 firebase/kural_testleri/*.log
+tools/refactor/node_modules/
+node_modules/
+.prettierignore
