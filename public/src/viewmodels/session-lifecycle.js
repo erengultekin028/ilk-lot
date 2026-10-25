@@ -1,13 +1,16 @@
-// Oturumun açılışı, kod girişi ve bitişi.
+// Oturumun açılışı, katılım (anonim giriş + yuva ataması) ve bitişi.
+// Akış: sayfa açılır → Firebase'e bağlanılır, anonim giriş yapılır → bu kullanıcının kodu var mı bakılır
+// (varsa kaldığı yerden devam, yoksa onam ekranı) → onamdan sonra sıradaki yuva alınır → çalışma başlar.
 
 import { APP_VERSION, CONFIG, CONSENT_VERSION } from '../constants/app-config.js';
 import { render } from '../views/app-shell.js';
 import { state } from './app-state.js';
-import { byId } from '../utils/dom.js';
 import { errorState } from '../services/error-capture.js';
 import { eventLog, flushEvents, logEvent } from '../services/event-log.js';
-import { normalizeCode, rememberCode, rememberedCode } from '../utils/participant-code.js';
 import { participantRepository } from '../repositories/participant-repository.js';
+import { enrollmentRepository } from '../repositories/enrollment-repository.js';
+import { connectFirebase } from '../services/firebase-service.js';
+import { signInAnonymouslyIfNeeded } from '../services/auth-service.js';
 import { hashSeed } from '../utils/random.js';
 import {
   findNextSession,
@@ -17,93 +20,77 @@ import {
 } from '../services/session-persistence.js';
 import { showToast } from '../widgets/toast.js';
 import { stimulusFingerprint } from '../models/trial-generator.js';
-function showCodeError(message) {
+
+// Katılım sırasında oluşan hatayı onam ekranında gösterir (kod ekranı kalktı)
+function showEnrollmentError(message) {
   state.busy = false;
-  state.codeError = message;
-  state.stage = 'code';
+  state.enrollError = message;
+  state.stage = 'consent';
   render();
-  const codeErrorElement = byId('code-error');
-  if (codeErrorElement) {
-    codeErrorElement.classList.remove('is-shaking');
-    void codeErrorElement.offsetWidth;
-    codeErrorElement.classList.add('is-shaking');
-  }
 }
 
-// Açılış: linkte kod varsa ya da bu cihaz bir katılımcıyı hatırlıyorsa onu karşıla
+// Bağlantı kurulamadığında tekrar dene ekranı: veri yerel kayda DÜŞMEZ, çalışma başlamaz
+function showConnectionError(error) {
+  state.busy = false;
+  state.stage = 'connection-error';
+  state.connectionError = (error && error.message) || String(error);
+  render();
+}
+
+// Açılış: Firebase'e bağlan, anonim giriş yap; bu kullanıcı daha önce katıldıysa onu karşıla
 export async function bootstrap() {
-  await storeReady;
-  const fromLink = normalizeCode(HASH_PARAMS.get('k'));
-  const code = fromLink || rememberedCode();
-  // Kodu adres çubuğundan ve geçmişten kaldır (ekran görüntüsünde ya da yan bakışta görünmesin)
-  if (fromLink)
-    try {
-      history.replaceState(
-        null,
-        '',
-        location.pathname + location.search + (state.adminRequested ? '#admin' : '')
-      );
-    } catch (error) {}
-  if (!code) {
-    state.stage = 'consent';
-    return render();
-  }
   try {
-    const allocation = await participantRepository.getAlloc(code);
-    if (!allocation) {
-      rememberCode(null);
-      state.codeInput = code;
-      state.codeError = fromLink
-        ? 'Bu link geçersiz. Kartındaki kodu kontrol et ya da araştırmacıya sor.'
-        : '';
+    await connectFirebase();
+    const user = await signInAnonymouslyIfNeeded();
+    const enrollment = await enrollmentRepository.findEnrollment(user.uid);
+    if (!enrollment) {
       state.stage = 'consent';
-      state.pendingCode = null;
       return render();
     }
-    const value = (await participantRepository.getP(code)) || {};
-    if (value.withdrawn) {
-      rememberCode(null);
+    const participant = (await participantRepository.getParticipant(enrollment.code)) || {};
+    if (participant.withdrawn) {
       state.stage = 'withdrawn';
       return render();
     }
-    state.pendingCode = code;
-    state.welcomeBack = {
-      code: code,
-      next: findNextSession(value),
-    };
-    state.stage = value.consentAt ? 'welcome' : 'consent';
+    state.pendingCode = enrollment.code;
+    state.welcomeBack = { code: enrollment.code, next: findNextSession(participant) };
+    state.stage = participant.consentAt ? 'welcome' : 'consent';
     render();
   } catch (error) {
-    state.stage = 'consent';
-    render();
+    showConnectionError(error);
   }
 }
-export async function enterCode(rawCode) {
-  await storeReady;
-  const code = normalizeCode(rawCode);
-  state.codeError = '';
-  if (!code) return showCodeError('Kod 12 karakter olmalı, örneğin KM7D-P2XR-9TQA.');
+
+// Onam kabul edildikten sonra: kullanıcının kodu yoksa sıradaki yuvayı al, sonra çalışmayı başlat
+export async function enrollAndStart() {
+  state.enrollError = '';
   state.busy = true;
   render();
   try {
-    const allocation = await participantRepository.getAlloc(code);
-    // Demo modunda kod listesi her cihazda ayrı üretilir: başka cihazda indirilen kart kodu burada geçersizdir
-    if (!allocation) {
-      rememberCode(null);
-      return showCodeError(
-        participantRepository.mode() === 'local'
-          ? 'Bu kod bu cihazın demo listesinde yok. Demo modunda her cihazın kodları farklıdır; aşağıdaki demo kodlarından birine dokun.'
-          : 'Bu kod listede yok. Kartındaki kodu kontrol et.'
-      );
-    }
-    const value = (await participantRepository.getP(code)) || {};
+    const user = await signInAnonymouslyIfNeeded();
+    const enrollment = await enrollmentRepository.enroll(user.uid);
+    await startParticipation(enrollment.code);
+  } catch (error) {
+    showEnrollmentError(
+      (error && error.message) || 'Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.'
+    );
+  }
+}
+
+// Katılımcı kodu belli olduktan sonra oturumu başlatır ya da kaldığı yerden sürdürür.
+// ARAŞTIRMA: grup (A/B) ve set sırası kayıtlı atamadan okunur; katılımcı değiştiremez.
+export async function startParticipation(code) {
+  state.enrollError = '';
+  state.busy = true;
+  render();
+  try {
+    const allocation = await enrollmentRepository.getAllocation(code);
+    if (!allocation) throw new Error('Katılım kaydın bulunamadı. Araştırmacıyla iletişime geç.');
+    const value = (await participantRepository.getParticipant(code)) || {};
     if (value.withdrawn) {
-      rememberCode(null);
-      return showCodeError(
-        participantRepository.mode() === 'local'
-          ? 'Bu demo kodla daha önce çalışmadan çekilmişsin. Aşağıdaki diğer demo kodlarından birine dokun ya da demo verisini sıfırla.'
-          : 'Bu kodla çalışmadan çekilmişsin. Tekrar katılmak istersen araştırmacıyla konuş.'
-      );
+      state.busy = false;
+      state.stage = 'withdrawn';
+      return render();
     }
     const nextX = findNextSession(value);
     // Tüm oturumlar bitti: son oturumun sonuna götür (son test / bilgilendirme eksikse orada tamamlanır)
@@ -116,9 +103,8 @@ export async function enterCode(rawCode) {
       state.preTest = value.pre != null ? value.pre : null;
       state.preTestBigThree = value.preB3 != null ? value.preB3 : null;
       state.postTest = value.post != null ? value.post : null;
-      state.manipulationCheck = value.manip;
-      state.pilotFeedback = value.fb;
-      rememberCode(code);
+      state.manipulationCheck = value.manip || null;
+      state.pilotFeedback = value.fb || null;
       if (value['sess_' + items]) restoreSnapshot(value['sess_' + items]);
       state.ended = true;
       state.busy = false;
@@ -131,14 +117,12 @@ export async function enterCode(rawCode) {
       state.waitUntil = Date.now() + wait;
       state.waitSession = nextX.n;
       state.stage = 'wait';
-      rememberCode(code);
       return render();
     }
     CONFIG.session = nextX.n;
-    rememberCode(code);
     // İlk onam zamanı katılımcı kaydına yazılır; sonraki oturumlarda onam tekrar sorulmaz
     if (state.consentAt && !value.consentAt)
-      await participantRepository.saveP(code, {
+      await participantRepository.saveParticipant(code, {
         code: code,
         grp: allocation.grp,
         consentAt: state.consentAt,
@@ -154,7 +138,7 @@ export async function enterCode(rawCode) {
     state.preTest = value.pre != null ? value.pre : null;
     state.preTestBigThree = value.preB3 != null ? value.preB3 : null;
     state.postTest = value.post != null ? value.post : null;
-    state.manipulationCheck = value.manip;
+    state.manipulationCheck = value.manip || null;
     state.hasDemographics = !!value.demo;
     // Önceki oturumdan gönderilemeyen olaylar varsa kuyruğa geri al
     try {
@@ -186,7 +170,7 @@ export async function enterCode(rawCode) {
       showToast('Kaldığın yerden devam ediyorsun.');
       return;
     }
-    await participantRepository.saveP(code, {
+    await participantRepository.saveParticipant(code, {
       code: code,
       grp: allocation.grp,
       firstSeen: value.firstSeen || new Date().toISOString(),
@@ -229,8 +213,9 @@ export async function enterCode(rawCode) {
     flushEvents();
   } catch (error) {
     state.busy = false;
-    state.codeError = 'Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.';
-    render();
+    showEnrollmentError(
+      (error && error.message) || 'Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.'
+    );
   }
 }
 export function endSession() {
@@ -252,8 +237,6 @@ export function endSession() {
 export async function withdrawParticipant() {
   const participantCode = state.participantCode;
   const group = state.group;
-  rememberCode(null);
-  state.allocationCache = null;
   try {
     await participantRepository.withdraw(participantCode, group);
   } catch (error) {
@@ -272,4 +255,3 @@ export async function withdrawParticipant() {
   state.stage = 'withdrawn';
   render();
 }
-const storeReady = participantRepository.init();

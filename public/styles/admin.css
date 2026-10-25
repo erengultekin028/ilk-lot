@@ -1,0 +1,30 @@
+/* Yönetim paneli: masaüstü öncelikli yerleşim. Katılımcı uygulamasının 460 px'lik sütunu burada geniş bir panoya dönüşür. */
+#app {
+  max-width: 1180px;
+}
+#main-view {
+  padding: 8px 24px 40px;
+}
+.admin-title {
+  font: 700 26px var(--fd);
+  margin: 8px 0 18px;
+}
+/* Kutular geniş ekranda yan yana dizilir; dar ekranda tek sütun */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.admin-grid > .card-section {
+  margin-bottom: 0;
+}
+/* Pano ve çok satırlı bölümler tüm genişliği kullanır */
+.admin-grid > .card-section:first-child {
+  grid-column: 1 / -1;
+}
+@media (max-width: 600px) {
+  #main-view {
+    padding: 8px 16px 32px;
+  }
+}

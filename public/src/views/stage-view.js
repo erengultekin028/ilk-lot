@@ -1,19 +1,16 @@
 // Ekran yönlendirici (aşamaya göre doğru görünümü seçer).
 
-import { renderAdmin } from '../admin/admin-view.js';
 import { CONFIG } from '../constants/app-config.js';
 import { state } from '../viewmodels/app-state.js';
 import { renderBridge } from './bridge-view.js';
 import { renderConsent } from './consent-view.js';
-import { demoHintHtml, renderDemoEnd, renderDemoLanding } from './demo-view.js';
+
 import { renderDemographics } from './demographics-view.js';
 import { renderEnd } from './end-view.js';
 import { escapeHtml, formatNumber } from '../utils/format.js';
 import { renderFreePlayEnd, renderFreePlayMenu } from './free-play-view.js';
 import { simulationMinutesText } from '../models/market-simulation.js';
-import { maskCode, participantLinkFor } from '../utils/participant-code.js';
-import { participantRepository } from '../repositories/participant-repository.js';
-import { renderQrSvg } from '../widgets/qr-code.js';
+
 import { renderSimulator } from './simulator-view.js';
 import { ATTENTION_QUESTION, TEST_QUESTIONS, testQuestionSequence } from '../constants/test-questions.js';
 import { TRIAL_SETS } from '../models/trial-generator.js';
@@ -57,13 +54,11 @@ export function renderStage() {
     return (
       '<div class="stage"><h1>Tekrar hoş geldin</h1><p>' +
       (next ? 'Kaldığın yerden devam edebilirsin.' : 'Çalışmayı tamamladın.') +
-      '</p><p class="muted small-text">Kod: ' +
-      maskCode(welcomeBack.code) +
       '</p><div class="stage-actions"><button class="button is-primary" data-a="continueFromWelcome"' +
       (state.busy ? ' disabled' : '') +
       '>' +
       (state.busy ? 'Açılıyor…' : next ? 'Devam et' : 'Sonuçlarıma git') +
-      '</button><button class="link" style="width:100%;margin-top:6px" data-a="rejectRememberedCode">Ben değilim, başka kodla gir</button></div></div>'
+      '</button></div></div>'
     );
   }
   if (state.stage === 'wait')
@@ -78,44 +73,26 @@ export function renderStage() {
       }) +
       '</b> itibarıyla açılacak.</p><p class="muted small-text">Oturumlar arasında en az ' +
       CONFIG.minGapHours +
-      ' saat olmalı. Bu pencereyi kapatabilirsin; aynı linkle tekrar gel.</p><button class="link" style="width:100%;margin-top:10px" data-a="rejectRememberedCode">Ben değilim, başka kodla gir</button></div>'
+      ' saat olmalı. Bu pencereyi kapatabilirsin; aynı linkle tekrar gel.</p></div>'
     );
   if (state.stage === 'consent') return renderConsent();
-  if (state.stage === 'code')
+  if (state.stage === 'connection-error')
     return (
-      '<div class="stage"><h1>Katılım kodun</h1><p>Kartındaki QR kodu okutursan bu ekranı görmezsin. Okutamıyorsan kartındaki 12 karakterli kodu yaz.</p><input id="code-input" class="field" maxlength="14" inputmode="text" style="height:56px;font:700 21px ui-monospace,Menlo,Consolas,monospace;text-align:center;letter-spacing:1px;text-transform:uppercase" placeholder="KM7D-P2XR-9TQA" aria-label="Katılımcı kodu" autocomplete="off" autocapitalize="characters" spellcheck="false" value="' +
-      escapeHtml(state.codeInput || '') +
-      '" data-in="code">' +
-      (state.codeError
-        ? '<div class="is-error" role="alert" id="code-error">' + escapeHtml(state.codeError) + '</div>'
-        : '') +
-      '<div class="stage-actions"><button class="button is-primary" data-a="submitCode"' +
-      (state.busy ? ' disabled' : '') +
-      '>' +
-      (state.busy ? 'Kontrol ediliyor…' : 'Devam') +
-      '</button></div><p class="muted small-text" style="margin-top:14px">Adını ya da e-postanı istemiyoruz; verilerin sadece bu kodla eşleşir. Bu cihaz seni hatırlar, sonraki oturumlarda kod sorulmaz.</p>' +
-      demoHintHtml() +
-      '</div>'
+      '<div class="stage"><h1>Bağlantı kurulamadı</h1><p>İnternet bağlantını kontrol edip tekrar dene. Sorun sürerse: ' +
+      escapeHtml(CONFIG.contact) +
+      '</p><p class="muted small-text">' +
+      escapeHtml(state.connectionError || '') +
+      '</p><div class="stage-actions"><button class="button is-primary" data-a="retryConnection">Tekrar dene</button></div></div>'
     );
   if (state.stage === 'withdrawn')
     return (
       '<div class="stage"><h1>Çalışmadan çekildin</h1><p>' +
-      (participantRepository.mode() === 'local'
-        ? 'Bu çalışmaya ait verilerin bu cihazdan silindi.'
-        : 'Verilerin analize dahil edilmeyecek ve araştırmacı tarafından kalıcı olarak silinecek.') +
+      'Verilerin analize dahil edilmeyecek ve araştırmacı tarafından kalıcı olarak silinecek.' +
       '</p><p>Katıldığın için teşekkürler. Sorun olursa: ' +
       escapeHtml(CONFIG.contact) +
       '</p><p class="muted small-text">Bu pencereyi kapatabilirsin.</p></div>'
     );
   if (state.stage === 'demo') return renderDemographics();
-  if (state.stage === 'moved')
-    return (
-      '<div class="stage" style="text-align:center"><h1 style="margin-top:0">Telefonunla okut</h1><p>Oturumun kaydedildi. Telefonunun kamerasıyla bu kodu okut, kaldığın yerden devam edeceksin.</p><div style="background:#fff;border-radius:22px;padding:14px;align-self:center;margin:8px 0 14px;border:3px solid var(--ac)">' +
-      renderQrSvg(participantLinkFor(state.movedCode), 220) +
-      '</div><p class="muted small-text">Okutamazsan telefonda bu kodu yaz:</p><p style="font:700 20px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;color:var(--tx);margin:0 0 14px">' +
-      escapeHtml(state.movedCode) +
-      '</p><p class="muted small-text">Bu cihazda oturum kapatıldı ve kodun bu cihazdan silindi.</p><button class="link" style="width:100%" data-a="cancelMoveDevice">Vazgeç, bu cihazda devam et</button></div>'
-    );
   if (state.stage === 'inelig')
     return '<div class="stage"><h1>Katılım koşulu</h1><p>Bu çalışma 18 yaş ve üzeri katılımcılarla yürütülüyor. İlgin için teşekkürler.</p><p class="muted small-text">Bu koda ait bir veri saklanmadı. Bu pencereyi kapatabilirsin.</p></div>';
   if (state.stage === 'pre')
@@ -124,8 +101,6 @@ export function renderStage() {
       testQuestionSequence('pre').length +
       ' kısa soru, yaklaşık 2 dakika. Bu bir sınav değil; bilmiyorsan "Bilmiyorum"u seçebilirsin.</p><div class="stage-actions"><button class="button is-primary" data-a="startTest" data-v="pre">Teste başla</button></div></div>'
     );
-  if (state.stage === 'demoland') return renderDemoLanding();
-  if (state.stage === 'demoend') return renderDemoEnd();
   if (state.stage === 'end') return renderEnd();
   if (state.stage === 'freemenu') return renderFreePlayMenu();
   if (state.stage === 'freeend') return renderFreePlayEnd();
@@ -133,7 +108,6 @@ export function renderStage() {
   if (state.stage === 'sim') return renderSimulator();
   if (state.stage === 'bridge') return renderBridge();
   if (state.stage === 'stress') return renderStress();
-  if (state.stage === 'admin') return renderAdmin();
   // Tanıtım: görevin ne olduğunu üç adımda anlatır. Hipotez ve bekleme süresi burada AÇIKLANMAZ
   const innerIndex = [
     [

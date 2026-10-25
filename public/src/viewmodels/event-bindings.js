@@ -1,14 +1,13 @@
 // Belge düzeyi olay dinleyicileri ve zamanlayıcılar.
 
 import { actions } from './actions/index.js';
-import { dashboardAutoRefresh } from '../admin/admin-dashboard.js';
+
 import { CONFIG } from '../constants/app-config.js';
 import { state } from './app-state.js';
 import { byId } from '../utils/dom.js';
 import { eventLog, flushEvents, logEvent } from '../services/event-log.js';
 import { endChartScrub, marketTick, scrubChartAt, scrubState } from './market-controller.js';
-import { formatCodeInput } from '../utils/participant-code.js';
-import { enterCode } from './session-lifecycle.js';
+
 import { saveSnapshot } from '../services/session-persistence.js';
 import { updateTradePreview } from '../views/simulator-view.js';
 
@@ -63,16 +62,7 @@ document.addEventListener('input', function (event) {
   const key = event.target.dataset && event.target.dataset.in;
   if (!key) return;
   const value = event.target.value;
-  if (key === 'code') {
-    state.codeError = '';
-    if (event.isComposing) {
-      state.codeInput = value;
-      return;
-    }
-    const formatted = formatCodeInput(value);
-    if (formatted !== value) event.target.value = formatted;
-    state.codeInput = formatted;
-  } else if (key === 'simq') {
+  if (key === 'simq') {
     const degrees = value.replace(/\D/g, '').slice(0, 6);
     if (degrees !== value) event.target.value = degrees;
     if (state.tradeDraft) {
@@ -85,16 +75,6 @@ document.addEventListener('input', function (event) {
     state.consentChecked = event.target.checked;
     const consentButtonElement = byId('consent-button');
     if (consentButtonElement) consentButtonElement.disabled = !state.consentChecked || !!state.busy;
-  } else if (key === 'dashAuto') {
-    state.dashboardAutoRefresh = event.target.checked;
-  } else if (key === 'baseIn') {
-    state.baseUrlInput = value;
-  } else if (key === 'landIn') {
-    state.landingUrlInput = value;
-  } else if (key === 'posterMail') {
-    state.posterEmail = value;
-  } else if (key === 'posterFoot') {
-    state.posterFooter = value;
   }
 });
 
@@ -110,17 +90,6 @@ document.addEventListener(
   },
   true
 );
-document.addEventListener('keydown', function (event) {
-  if (event.key === 'Enter' && event.target && event.target.id === 'code-input')
-    enterCode(event.target.value);
-});
-document.addEventListener('compositionend', function (event) {
-  if (event.target && event.target.id === 'code-input') {
-    const formatted = formatCodeInput(event.target.value);
-    event.target.value = formatted;
-    state.codeInput = formatted;
-  }
-});
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape' && byId('modal').classList.contains('is-open')) actions.cancelModal();
 });
@@ -144,7 +113,6 @@ addEventListener('pagehide', function () {
 setInterval(function () {
   if (state.participantCode && eventLog.queue.length) flushEvents();
 }, 15000);
-setInterval(dashboardAutoRefresh, 30000); // Bağlantı kopmuşsa kuyruğu düzenli dene
 
 // Yazı boyutu (b22 geri geldi): kayıtlı tercih 'ilklot:fs' (0/1/2); geçersiz değer yok sayılır. Bir arayüz ayarıdır, katılımcı verisi değil.
 (function () {

@@ -12,10 +12,10 @@ import { participantRepository } from '../repositories/participant-repository.js
 // ═════════════════ ANLIK GÖRÜNTÜ VE DEVAM ═════════════════
 function createSnapshot() {
   const simulation = state.simulation;
-  const quickMode = 0;
+
   if (typeof trackTabTime === 'function') trackTabTime();
   return {
-    quick: quickMode,
+    quick: 0,
     tabT: state.tabTimes,
     readMs: state.readingMs,
     tourSeen: state.seenTourSteps,
@@ -43,7 +43,7 @@ function createSnapshot() {
     practiced: !!state.practiceDone,
     cd: state.cooldownStats,
     ended: state.ended,
-    endedAt: state.endedAt,
+    endedAt: state.endedAt || null,
     evN: eventLog.counter,
     updatedAt: new Date().toISOString(),
   };
@@ -55,7 +55,7 @@ export async function saveSnapshot() {
   map.updatedAt = new Date().toISOString();
   map.lastVersion = APP_VERSION;
   try {
-    await participantRepository.saveP(state.participantCode, map);
+    await participantRepository.saveParticipant(state.participantCode, map);
   } catch (error) {
     state.syncError = String((error && error.message) || error);
   }

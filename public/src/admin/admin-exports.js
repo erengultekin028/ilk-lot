@@ -1,12 +1,12 @@
 // Yönetim paneli: CSV dışa aktarma, kartlar ve afiş.
 
-import { state } from '../viewmodels/app-state.js';
+import { adminState } from './admin-state.js';
 import { escapeHtml } from '../utils/format.js';
-import { participantLinkFor } from '../utils/participant-code.js';
-import { participantRepository } from '../repositories/participant-repository.js';
+import { adminRepository } from './admin-repository.js';
 import { renderQrSvg } from '../widgets/qr-code.js';
 import { summarizeSnapshot } from '../services/session-persistence.js';
 import { showToast } from '../widgets/toast.js';
+import { saveFile } from '../utils/file-download.js';
 
 // ═════════════════ DIŞA AKTARMA ═════════════════
 function csvCell(value) {
@@ -23,40 +23,8 @@ function toCsv(rows) {
     .join('\n');
 }
 
-export async function saveFile(name, text) {
-  const innerData = /\.svg$/.test(name) ? text : '\ufeff' + text; // BOM: Excel'de Türkçe karakterler bozulmasın
-  const data = typeof claude !== 'undefined' && claude.use ? await claude.use('downloads') : null;
-  const mime = /\.html$/.test(name)
-    ? 'text/html'
-    : /\.svg$/.test(name)
-      ? 'image/svg+xml'
-      : /\.txt$/.test(name)
-        ? 'text/plain'
-        : 'text/csv';
-  if (data) {
-    try {
-      await data.save({ filename: name, data: innerData });
-      showToast('Dosya kaydedildi.');
-    } catch (error) {
-      showToast(
-        error && error.code === 'declined' ? 'İndirme iptal edildi.' : 'İndirme bu görünümde yapılamadı.'
-      );
-    }
-    return;
-  }
-  const element = document.createElement('a');
-  element.href = URL.createObjectURL(new Blob([innerData], { type: mime + ';charset=utf-8' }));
-  element.download = name;
-  document.body.appendChild(element);
-  element.click();
-  setTimeout(function () {
-    URL.revokeObjectURL(element.href);
-    element.remove();
-  }, 1500);
-}
-
 export async function exportParticipants() {
-  let participants = await participantRepository.listP();
+  let participants = await adminRepository.listParticipants();
   const rows = [
     [
       'app_version',
@@ -163,12 +131,12 @@ export async function exportParticipants() {
 }
 
 export async function exportEvents() {
-  const participants = (await participantRepository.listP()).filter(function (item) {
+  const participants = (await adminRepository.listParticipants()).filter(function (item) {
     return !item.withdrawn;
   });
   const rows = [['app_version', 'code', 'grp', 'session', 'n', 'ts', 'trial_index', 'type', 'data']];
   for (let i = 0; i < participants.length; i++) {
-    const events = await participantRepository.listEvents(participants[i].code);
+    const events = await adminRepository.listEvents(participants[i].code);
     events.sort(function (left, right) {
       return left.session === right.session
         ? left.n - right.n
@@ -197,10 +165,10 @@ function sortedByNumber(map) {
   });
 }
 
-// Araştırmacı listesi: grup SADECE burada var, kartlarda yok
+// Araştırmacı listesi: grup SADECE burada var, katılımcıya gösterilmez
 export async function exportAllocations() {
-  const allocations = await participantRepository.listAlloc();
-  const rows = [['no', 'code', 'grp', 'set_order', 'block', 'link']];
+  const allocations = await adminRepository.listAllocations();
+  const rows = [['no', 'code', 'grp', 'set_order', 'block']];
   sortedByNumber(allocations).forEach(function (item) {
     rows.push([
       allocations[item].no,
@@ -208,41 +176,16 @@ export async function exportAllocations() {
       allocations[item].grp,
       allocations[item].order === 1 ? 'Y→X' : 'X→Y',
       allocations[item].block,
-      participantLinkFor(item),
     ]);
   });
   await saveFile('ilklot_liste_GIZLI.csv', toCsv(rows));
-}
-
-// Yazdırılabilir katılım kartları (A4, sayfada 6-8 kart): QR + kod. Grup bilgisi YOK
-export async function exportCards() {
-  const allocations = await participantRepository.listAlloc();
-  const innerSortedByNumber = sortedByNumber(allocations);
-  const cards = innerSortedByNumber
-    .map(function (item) {
-      return (
-        '<div class="c"><div class="n">No ' +
-        allocations[item].no +
-        '</div><div class="h">İlk Lot · Katılım kartın</div>' +
-        renderQrSvg(participantLinkFor(item), 150) +
-        '<div class="k">' +
-        item +
-        '</div><p>Telefonunun kamerasıyla QR kodu okut.<br>Okutamazsan uygulamada bu kodu yaz.</p><p class="w">Bu kart sana özel. Kimseyle paylaşma.</p></div>'
-      );
-    })
-    .join('');
-  const html =
-    '<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İlk Lot katılım kartları</title><style>@page{size:A4;margin:10mm}body{font-family:system-ui,-apple-system,sans-serif;margin:10px;color:#111}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(85mm,1fr));gap:6mm}.c{border:1px dashed #999;border-radius:4mm;padding:5mm;text-align:center;break-inside:avoid;position:relative}.h{font-weight:700;font-size:13px;margin-bottom:2mm}.k{font:700 18px ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;margin:2mm 0}p{font-size:11px;margin:1mm 0}.w{font-weight:600}.n{position:absolute;top:3mm;right:4mm;font-size:9px;color:#888}</style></head><body><div class="g">' +
-    cards +
-    '</div></body></html>';
-  await saveFile('ilklot_katilim_kartlari.html', html);
 }
 
 // ═════════════════ POSTER ═════════════════
 // Yazdırılabilir A4/A3 poster. Tüm ölçüler mm × k ile verilir; A3'te k = √2 ve her şey orantılı büyür.
 // Metin tanıtım sayfasıyla aynı: araştırmanın amacı genel, hipotez yok.
 export async function exportPoster(size) {
-  const unit = (state.landingUrlInput || '').trim();
+  const unit = (adminState.landingUrlInput || '').trim();
   if (!/^https?:\/\//.test(unit)) {
     showToast('Önce tanıtım sayfasının adresini yaz (https:// ile).');
     return;
@@ -251,8 +194,8 @@ export async function exportPoster(size) {
   const simulation = function (value) {
     return (value * key).toFixed(2) + 'mm';
   };
-  const mail = escapeHtml((state.posterEmail || '').trim());
-  const foot = escapeHtml((state.posterFooter || '').trim());
+  const mail = escapeHtml((adminState.posterEmail || '').trim());
+  const foot = escapeHtml((adminState.posterFooter || '').trim());
   const fact = function (other, value) {
     return '<div class="f"><b>' + other + '</b><span>' + value + '</span></div>';
   };

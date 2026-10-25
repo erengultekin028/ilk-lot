@@ -1,10 +1,10 @@
 // Yönetim paneli: canlı pano.
 
 import { CONFIG } from '../constants/app-config.js';
-import { render } from '../views/app-shell.js';
-import { state } from '../viewmodels/app-state.js';
+import { render } from './admin-shell.js';
+import { adminState } from './admin-state.js';
 import { escapeHtml } from '../utils/format.js';
-import { participantRepository } from '../repositories/participant-repository.js';
+import { adminRepository } from './admin-repository.js';
 import { section } from '../widgets/section.js';
 import { showToast } from '../widgets/toast.js';
 import { TRIAL_SETS } from '../models/trial-generator.js';
@@ -28,11 +28,11 @@ function stageDescription(snapshot) {
 }
 
 export async function loadDashboard() {
-  state.dashboardBusy = true;
+  adminState.dashboardBusy = true;
   render();
   try {
-    const participants = await participantRepository.listP();
-    const allocations = await participantRepository.listAlloc();
+    const participants = await adminRepository.listParticipants();
+    const allocations = await adminRepository.listAllocations();
     const timestamp = Date.now();
     const totalSessions = CONFIG.totalSessions;
     const isQuick = function (value) {
@@ -95,7 +95,7 @@ export async function loadDashboard() {
       const data = String(innerItem.consentAt).slice(0, 10);
       days[data] = (days[data] || 0) + 1;
     });
-    state.dashboard = {
+    adminState.dashboard = {
       at: timestamp,
       codes: Object.keys(allocations).length,
       cons: real.length,
@@ -119,7 +119,7 @@ export async function loadDashboard() {
   } catch (error) {
     showToast('Pano yüklenemedi: ' + ((error && error.code) || error));
   }
-  state.dashboardBusy = false;
+  adminState.dashboardBusy = false;
   render();
 }
 
@@ -143,14 +143,14 @@ function renderProgressRing(fraction) {
 }
 
 export function renderDashboard() {
-  const dashboard = state.dashboard;
+  const dashboard = adminState.dashboard;
   if (!dashboard)
     return section(
       'Canlı pano',
       '<p class="muted" style="margin:0 0 12px">Katılım ve veri kalitesini tek ekranda gör.</p><button class="button is-primary" data-a="refreshDashboard"' +
-        (state.dashboardBusy ? ' disabled' : '') +
+        (adminState.dashboardBusy ? ' disabled' : '') +
         '>' +
-        (state.dashboardBusy ? 'Yükleniyor…' : 'Panoyu yükle') +
+        (adminState.dashboardBusy ? 'Yükleniyor…' : 'Panoyu yükle') +
         '</button>'
     );
   const totalSessions = CONFIG.totalSessions;
@@ -277,7 +277,7 @@ export function renderDashboard() {
           '</div>'
         : '<p class="muted small-text" style="margin:0 0 8px">Şu an ekranda kimse yok.</p>') +
       '<label class="consent-check" style="margin:10px 0 4px"><input type="checkbox" data-in="dashAuto"' +
-      (state.dashboardAutoRefresh ? ' checked' : '') +
+      (adminState.dashboardAutoRefresh ? ' checked' : '') +
       '><span>Her 30 saniyede yenile (bu ekran açıkken)</span></label>' +
       (dashboard.tmode
         ? '<p class="muted small-text" style="margin:4px 0 0">Hızlı test modunda ' +
@@ -320,17 +320,16 @@ export function renderDashboard() {
           '</div>'
         : '<p class="muted small-text" style="margin:0">Uyarı yok.</p>') +
       '<div class="note is-info" style="margin:16px 0 10px"><span>Sonuç değişkenleri (panik satış, elden çıkarma etkisi vb.) veri toplama bitene kadar bilerek gösterilmez. Ara sonuçlara bakmak analiz yanlılığı yaratır.</span></div><button class="button" data-a="refreshDashboard"' +
-      (state.dashboardBusy ? ' disabled' : '') +
+      (adminState.dashboardBusy ? ' disabled' : '') +
       '>' +
-      (state.dashboardBusy ? 'Yükleniyor…' : 'Yenile') +
+      (adminState.dashboardBusy ? 'Yükleniyor…' : 'Yenile') +
       '</button>'
   );
 }
 
 // Pano otomatik yenileme: yalnızca panel açıkken ve bir kutuya yazılmıyorsa (yazılan alanlar silinmesin)
 export function dashboardAutoRefresh() {
-  if (!state.dashboardAutoRefresh || state.stage !== 'admin' || state.dashboardBusy || !state.dashboard)
-    return false;
+  if (!adminState.dashboardAutoRefresh || adminState.dashboardBusy || !adminState.dashboard) return false;
   const activeElement = document.activeElement;
   if (activeElement && /^(INPUT|TEXTAREA)$/.test(activeElement.tagName) && activeElement.type !== 'checkbox')
     return false;

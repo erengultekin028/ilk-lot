@@ -38,9 +38,9 @@ export function logEvent(type, data) {
 }
 
 // ── Kayıt durumu ──
-// Yerel modda kayıt cihazda yapıldığı için internet durumu önemsiz; sadece Firebase'de anlamlı
+// ok: tüm olaylar gönderildi · pend: gönderilmeyi bekleyen olay var · err: bağlantı yok ya da gönderim hatası
 export function syncStatus() {
-  if (state.syncError || (participantRepository.mode() === 'firebase' && !navigator.onLine)) return 'err';
+  if (state.syncError || !navigator.onLine) return 'err';
   return eventLog.queue.length ? 'pend' : 'ok';
 }
 addEventListener('online', function () {

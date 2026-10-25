@@ -1,7 +1,5 @@
-// Katılım kodu üretimi, doğrulama ve biçimlendirme; randomizasyon listesi üretimi.
-
-import { CONFIG } from '../constants/app-config.js';
-import { state } from '../viewmodels/app-state.js';
+// Randomizasyon listesi üretimi (yönetim paneli): katılım kodları ve 4'lük bloklu A/B ataması.
+// ARAŞTIRMA: Her 4 kişilik blokta 2 A + 2 B bulunur (sırası gizli rastgele); böylece gruplar her zaman dengeli doldurulur.
 
 // ═════════════════ KOD VE RANDOMİZASYON ═════════════════
 // Kod: 12 karakter, KM7D-P2XR-9TQA biçiminde. Karıştırılan karakterler (0/O, 1/I) alfabede yok.
@@ -20,23 +18,6 @@ function generateCode() {
     if (i === 3 || i === 7) text += '-';
   }
   return text;
-}
-
-// Boşluk, tire, küçük harf fark etmez; 12 karakter değilse geçersiz
-export function normalizeCode(input) {
-  const text = String(input || '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, '');
-  return text.length === 12 ? text.slice(0, 4) + '-' + text.slice(4, 8) + '-' + text.slice(8) : null;
-}
-
-// Yazarken 4'erli gruplara ayırır: "km7dp2" → "KM7D-P2"
-export function formatCodeInput(input) {
-  return String(input || '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, '')
-    .slice(0, 12)
-    .replace(/(.{4})(?=.)/g, '$1-');
 }
 
 // Blok randomizasyon: her 4 kişilik blokta 2 A + 2 B, sırası gizli rastgele. Grup sayıları hiçbir zaman 2'den fazla açılmaz
@@ -67,23 +48,4 @@ export function buildAllocationList(count, blockSize, startIndex) {
     }
   }
   return map;
-}
-export function participantLinkFor(code) {
-  const base = (state.baseUrlInput || CONFIG.baseUrl || location.origin + location.pathname).split('#')[0];
-  return base + '#k=' + code;
-}
-export function rememberCode(code) {
-  try {
-    code ? localStorage.setItem('ilklot:me', code) : localStorage.removeItem('ilklot:me');
-  } catch (error) {}
-}
-export function rememberedCode() {
-  try {
-    return localStorage.getItem('ilklot:me');
-  } catch (error) {
-    return null;
-  }
-}
-export function maskCode(code) {
-  return '••••-••••-' + String(code).slice(-4);
 }

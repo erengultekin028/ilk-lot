@@ -41,3 +41,8 @@ export function formatMinutesSeconds(seconds) {
   seconds = Math.max(0, Math.round(seconds));
   return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
 }
+
+// Katılım kodunu gizler: yalnızca son 4 karakter görünür (ekran görüntüsünde tam kod görünmesin)
+export function maskCode(code) {
+  return '••••-••••-' + String(code).slice(-4);
+}

@@ -203,7 +203,7 @@ export function sellStock(symbol, quantity, afterCooldown) {
     afterCooldown: !!afterCooldown,
     value: Math.round(quantity * price),
     why: state.sellReasonDraft ? state.sellReasonDraft.why : null,
-    qMode: value.mode,
+    qMode: value.mode || null,
     qEdits: value.edits || 0,
   });
   state.sellReasonDraft = null;
@@ -228,7 +228,7 @@ export function buyStock(symbol, quantity) {
   const value = state.tradeDraft || {};
   const innerRecordTrade = recordTrade(symbol, 'B', quantity, price, {
     value: Math.round(innerValue),
-    qMode: value.mode,
+    qMode: value.mode || null,
     qEdits: value.edits || 0,
   });
   position.avg =

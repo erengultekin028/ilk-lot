@@ -1,180 +1,215 @@
-// Yönetim paneli görünümleri.
+// Yönetim paneli görünümleri: giriş formu ve araştırmacı paneli.
 
 import { renderDashboard } from './admin-dashboard.js';
+import { adminState } from './admin-state.js';
 import { APP_VERSION, CONFIG, CONSENT_VERSION } from '../constants/app-config.js';
-import { state } from '../viewmodels/app-state.js';
-import { eventLog } from '../services/event-log.js';
 import { escapeHtml } from '../utils/format.js';
 import { simulationMinutesText } from '../models/market-simulation.js';
-import { participantRepository } from '../repositories/participant-repository.js';
 import { section } from '../widgets/section.js';
 import { TRIAL_SETS, stimulusFingerprint } from '../models/trial-generator.js';
 
-// ═════════════════ ARAŞTIRMACI PANELİ ═════════════════
-function renderAdminPanel() {
-  const allocationCache = state.allocationCache;
-  const count = allocationCache
-    ? Object.keys(allocationCache).reduce(
-        function (accumulator, item) {
-          accumulator[allocationCache[item].grp]++;
-          return accumulator;
-        },
-        {
-          A: 0,
-          B: 0,
-        }
-      )
-    : null;
-  let html =
-    '<div class="note"><span><b>Araştırmacı modu.</b> Bu bölüm katılımcıya görünmez. Kapatmak için logoya 5 kez dokun.</span></div>';
-  if (participantRepository.mode() === 'firebase' && !participantRepository.isAdminAuthed())
-    return (
-      html +
-      section(
-        'Araştırmacı girişi',
-        '<input id="admin-email" class="field" type="email" placeholder="E-posta" aria-label="E-posta" autocomplete="username"><input id="admin-password" class="field" type="password" placeholder="Şifre" aria-label="Şifre" autocomplete="current-password" style="margin-top:8px"><button class="button is-primary" style="margin-top:10px" data-a="adminLogin">Giriş yap</button>' +
-          (state.adminError
-            ? '<p class="price-down small-text">' + escapeHtml(state.adminError) + '</p>'
-            : '')
-      )
-    );
-  const items = ['controller', 'ethics', 'retention', 'hosting', 'support', 'contact'].filter(
-    function (item) {
-      return /^\[DOLDUR|ornek\.edu\.tr/.test(item === 'contact' ? CONFIG.contact : CONFIG.consentInfo[item]);
+// Katılımcıların gireceği adres: elle yazılan > CONFIG.baseUrl > bu sitenin kökü (yönetim paneli /admin/ altındaysa)
+export function participantUrl() {
+  if (adminState.participantUrlInput) return adminState.participantUrlInput;
+  if (CONFIG.baseUrl) return CONFIG.baseUrl;
+  return location.origin + location.pathname.replace(/admin\/(index\.html)?$/, '');
+}
+
+function renderLogin() {
+  return section(
+    'Araştırmacı girişi',
+    '<p class="muted small-text" style="margin:0 0 10px">Bu sayfa yalnızca araştırmacı içindir. Katılımcılar için ana adresi kullan.</p>' +
+      '<input id="admin-email" class="field" type="email" placeholder="E-posta" aria-label="E-posta" autocomplete="username">' +
+      '<input id="admin-password" class="field" type="password" placeholder="Şifre" aria-label="Şifre" autocomplete="current-password" style="margin-top:8px">' +
+      '<button class="button is-primary" style="margin-top:10px" data-a="adminLogin">Giriş yap</button>' +
+      (adminState.adminError
+        ? '<p class="price-down small-text">' + escapeHtml(adminState.adminError) + '</p>'
+        : '')
+  );
+}
+
+function renderConsentSection() {
+  const unfilled = ['controller', 'ethics', 'retention', 'hosting', 'support', 'contact'].filter(
+    function (key) {
+      return /^\[DOLDUR|ornek\.edu\.tr/.test(key === 'contact' ? CONFIG.contact : CONFIG.consentInfo[key]);
     }
   );
-  html += section(
+  return section(
     'Onam metni',
     '<div class="key-value"><span>Sürüm</span><b>' +
       CONSENT_VERSION +
       '</b></div>' +
-      (items.length
+      (unfilled.length
         ? '<div class="note" style="margin:10px 0"><span><b>Doldurulmamış alan var:</b> ' +
-          items.join(', ') +
-          '. Pilottan önce <code>CFG.consentInfo</code> ve <code>CFG.contact</code> alanlarını doldur; aksi halde katılımcıya sarı işaretli yer tutucular görünür.</span></div>'
+          unfilled.join(', ') +
+          '. Pilottan önce <code>CONFIG.consentInfo</code> ve <code>CONFIG.contact</code> alanlarını doldur; aksi halde katılımcıya sarı işaretli yer tutucular görünür.</span></div>'
         : '<p class="price-up small-text" style="margin:8px 0">Tüm onam alanları dolu.</p>') +
       '<button class="button" data-a="downloadConsentText">Onam metnini indir (.txt)</button>'
   );
-  html += section(
+}
+
+function renderSelfTestSection() {
+  return section(
     'Sistem testi',
-    '<p class="muted small-text" style="margin:0 0 10px">Depolama, Firebase bağlantısı ve yetki, olay kuyruğu, cihaz ve ekran bilgisini kontrol eder. <b>Pilottan önce her test cihazında çalıştır</b> ve sonucu kopyalayıp sakla.</p><button class="button is-primary" data-a="runSelfTest">Sistem testini çalıştır</button>'
+    '<p class="muted small-text" style="margin:0 0 10px">Firebase bağlantısını, yazma yetkisini, olay kuyruğunu, cihaz ve ekran bilgisini kontrol eder. <b>Pilottan önce çalıştır</b> ve sonucu kopyalayıp sakla.</p>' +
+      '<button class="button is-primary" data-a="runSelfTest">Sistem testini çalıştır</button>'
   );
-  html += section(
-    'Hızlı test modu',
-    CONFIG.firebase
-      ? '<p class="muted small-text" style="margin:0">Gerçek pilot modunda (Firebase ayarlı) kullanılamaz; bu bilerek böyle.</p>'
-      : '<div class="key-value"><span>Durum</span><b>' +
-          'kapalı' +
-          '</b></div><p class="muted small-text" style="margin:6px 0 10px">Piyasa 10 kat hızlı akar (7,5 dk yerine yaklaşık 45 sn), bekleme 3 sn olur; fiyatlar, krizler ve haberler aynı günlerde gelir. Açıkken ekranda uyarı şeridi görünür ve 30 dk sonra kendiliğinden kapanır. Bu modda üretilen veri analizde kullanılmamalı (CSV\'de <code>test_mode</code> = 1). Adresin sonuna <code>?hizli=1</code> ekleyerek de açabilirsin.</p><button class="button' +
-          ' is-primary' +
-          '" data-a="toggleQuickMode">' +
-          'Hızlı test modunu aç' +
-          '</button>'
-  );
-  html += section(
-    'Tanıtım modu',
-    '<p class="muted small-text" style="margin:0 0 10px">Simülatörü serbestçe gösterir; hiçbir veri kaydedilmez, bekleme ekranı çıkmaz. Adrese <code>?demo=1</code> eklemek de aynı işi yapar (bazı görünümlerde adres değiştirilemez, o zaman bu düğme). Çıkmak için ⋯ menüsünden "Tanıtımdan çık".</p><button class="button" data-a="startDemo">Tanıtım modunu aç</button>'
-  );
-  html += renderDashboard();
-  html += section(
+}
+
+function renderSettingsSection() {
+  return section(
     'Çalışma ayarları',
     '<div class="key-value"><span>Uygulama sürümü</span><b>' +
       APP_VERSION +
-      '</b></div><div class="key-value"><span>Kayıt yeri</span><b>' +
-      (participantRepository.mode() === 'firebase' ? 'Firebase' : 'Bu tarayıcı (demo)') +
-      '</b></div><div class="key-value"><span>Oturum</span><b>' +
+      '</b></div>' +
+      '<div class="key-value"><span>Kayıt yeri</span><b>Firebase (' +
+      escapeHtml(CONFIG.firebase.projectId) +
+      ')</b></div>' +
+      '<div class="key-value"><span>Oturum</span><b>' +
       escapeHtml(CONFIG.session) +
-      '</b></div><div class="key-value"><span>Akış</span><b>' +
+      '</b></div>' +
+      '<div class="key-value"><span>Akış</span><b>' +
       TRIAL_SETS.X.length +
       ' karar → ' +
       simulationMinutesText() +
       ' dk simülatör → ' +
       TRIAL_SETS.Y.length +
-      ' karar</b></div><div class="key-value"><span>Set sırası</span><b>X→Y / Y→X, gruplar içinde dengeli</b></div><div class="key-value"><span>Bekleme (A grubu)</span><b>Sadece simülatörde, ' +
+      ' karar</b></div>' +
+      '<div class="key-value"><span>Set sırası</span><b>X→Y / Y→X, gruplar içinde dengeli</b></div>' +
+      '<div class="key-value"><span>Bekleme (A grubu)</span><b>Sadece simülatörde, ' +
       CONFIG.cooldownSec +
       ' sn, zarar ≤ %' +
       Math.abs(CONFIG.lossThreshold * 100) +
-      '</b></div><div class="key-value"><span>Simülatör krizleri</span><b>' +
+      '</b></div>' +
+      '<div class="key-value"><span>Simülatör krizleri</span><b>' +
       CONFIG.simCrises
-        .map(function (item) {
-          return item.stocks.join('+') + ' @' + item.at;
+        .map(function (crisis) {
+          return crisis.stocks.join('+') + ' @' + crisis.at;
         })
         .join(', ') +
-      '</b></div><div class="key-value"><span>Gruplar arası fark</span><b>Sadece simülatördeki bekleme</b></div><div class="key-value"><span>Uyaran parmak izi</span><b class="tabular-number">' +
+      '</b></div>' +
+      '<div class="key-value"><span>Gruplar arası fark</span><b>Sadece simülatördeki bekleme</b></div>' +
+      '<div class="key-value"><span>Uyaran parmak izi</span><b class="tabular-number">' +
       stimulusFingerprint() +
       '</b></div>' +
-      (state.participantCode
-        ? '<div class="key-value"><span>Bu cihazdaki katılımcı</span><b>' +
-          escapeHtml(state.participantCode) +
-          ' / ' +
-          state.group +
-          '</b></div><div class="key-value"><span>Gönderilmeyi bekleyen olay</span><b>' +
-          eventLog.queue.length +
-          '</b></div>'
-        : '') +
-      (state.syncError
-        ? '<p class="price-down small-text">Senkron hatası: ' + escapeHtml(state.syncError) + '</p>'
-        : '') +
       '<p class="muted small-text" style="margin-top:10px">Parmak izi her cihazda aynı çıkmalı. Farklıysa katılımcılar farklı uyaranlar görüyor demektir.</p>'
   );
-  html += section(
-    'Randomizasyon listesi',
-    (count
-      ? '<div class="stat-row" style="margin:4px 0 12px"><div class="stat"><span>Toplam kod</span><b>' +
-        (count.A + count.B) +
-        '</b></div><div class="stat"><span>A (soğuma)</span><b>' +
-        count.A +
-        '</b></div><div class="stat"><span>B (kontrol)</span><b>' +
-        count.B +
-        '</b></div></div>'
-      : '<button class="button" data-a="loadAllocations">Listeyi yükle</button>') +
-      '<p class="muted small-text">Kodları katılımcılara tek tek dağıt. Hangi kodun hangi grupta olduğunu katılımcıyla paylaşma.</p><div style="display:flex;gap:8px;margin-top:10px"><input id="allocation-count" class="field" type="number" inputmode="numeric" value="80" min="4" step="4" aria-label="Kişi sayısı"><button class="button small-text" style="white-space:nowrap" data-a="generateAllocations">Yeni liste</button></div><label class="field-label" for="poster-base-url">Kartlardaki link adresi</label><input id="poster-base-url" class="field" data-in="baseIn" placeholder="https://…/ilk-lot.html" value="' +
-      escapeHtml(state.baseUrlInput || CONFIG.baseUrl || location.origin + location.pathname) +
-      '"><p class="muted small-text">Kendi yayın adresini yaz. claude.ai önizlemesinin adresi katılımcılar için çalışmaz.</p><button class="button is-primary" style="margin-top:10px" data-a="downloadCards">QR kartlarını indir (yazdırılabilir)</button><button class="button" data-a="downloadAllocations">Gizli liste: no, kod, grup, link (CSV)</button>' +
-      (participantRepository.mode() === 'local' && count
-        ? '<p class="muted small-text" style="margin-top:10px">Demo kodu: <b style="color:var(--tx)">' +
-          Object.keys(allocationCache).sort()[0] +
-          '</b></p>'
-        : '')
-  );
-  html += section(
-    'Çekilen katılımcılar',
-    state.withdrawnCount == null
-      ? '<button class="button" data-a="countWithdrawn">Say</button>'
-      : '<div class="key-value"><span>Çekilen</span><b>' +
-          state.withdrawnCount +
-          '</b></div><p class="muted small-text">Çekilenlerin verisi dışa aktarmaya girmez.' +
-          (participantRepository.mode() === 'firebase'
-            ? ' Kayıtları silinmez; "withdrawn" olarak işaretli kalır ve analize girmez.'
-            : ' Yerel modda veri çekilme anında silinir.') +
-          '</p>'
-  );
-  html += section(
-    'Poster',
-    '<p class="muted small-text" style="margin:0 0 8px">Tanıtım sayfasının yayın adresini yaz. Posterdeki QR oraya gider.</p><input class="field" data-in="landIn" placeholder="https://…/tanitim.html" value="' +
-      escapeHtml(state.landingUrlInput || '') +
-      '" aria-label="Tanıtım sayfası adresi"><input class="field" style="margin-top:8px" data-in="posterMail" placeholder="İletişim e-postası (isteğe bağlı)" value="' +
-      escapeHtml(state.posterEmail || '') +
-      '" aria-label="İletişim e-postası"><input class="field" style="margin-top:8px" data-in="posterFoot" placeholder="Alt bilgi, örn. Üniversite adı (isteğe bağlı)" value="' +
-      escapeHtml(state.posterFooter || '') +
-      '" aria-label="Alt bilgi"><div style="display:flex;gap:8px;margin-top:10px"><button class="button is-primary" style="flex:1" data-a="downloadPoster" data-v="A4">Poster A4</button><button class="button is-primary" style="flex:1;margin:0" data-a="downloadPoster" data-v="A3">Poster A3</button></div><button class="button" data-a="downloadPosterQr">Sadece QR (SVG)</button><p class="muted small-text" style="margin-top:10px">Posterde hipotez ve müdahale geçmez; katılımcıyı etkilememek için bilinçli olarak genel tutuldu.</p>'
-  );
-  html += section(
-    'Veri dışa aktarma',
-    '<button class="button is-primary" data-a="downloadParticipants">Katılımcı özeti (CSV)</button><button class="button" data-a="downloadEvents">Tüm olaylar (CSV)</button><p class="muted small-text" style="margin-top:10px">Özet dosyada panic_rate = zararına yapılan elle satışlar / tüm elle satışlar. Analizi olay dosyasından da yeniden hesaplayabilirsin.</p>' +
-      (participantRepository.mode() === 'local'
-        ? '<button class="button" style="margin-top:6px" data-a="resetLocalData">Yerel demo verisini sıfırla</button>'
-        : '<button class="button" style="margin-top:6px" data-a="adminLogout">Araştırmacı çıkışı (' +
-          escapeHtml(participantRepository.adminEmail()) +
-          ')</button>')
-  );
-  return html;
 }
 
-// ───────────────── Araştırmacı paneli ve menü ─────────────────
-export function renderAdmin() {
+// Randomizasyon listesi: her kod bir "yuva"dır; katılımcılar onamdan sonra sıradaki yuvayı otomatik alır (kod girmezler)
+function renderAllocationSection() {
+  const allocations = adminState.allocationCache;
+  const counts = allocations
+    ? Object.keys(allocations).reduce(
+        function (sum, code) {
+          sum[allocations[code].grp]++;
+          return sum;
+        },
+        { A: 0, B: 0 }
+      )
+    : null;
+  const progress = adminState.enrollmentProgress;
+  return section(
+    'Randomizasyon listesi (yuvalar)',
+    (counts
+      ? '<div class="stat-row" style="margin:4px 0 12px"><div class="stat"><span>Toplam yuva</span><b>' +
+        (counts.A + counts.B) +
+        '</b></div>' +
+        '<div class="stat"><span>A (bekleme)</span><b>' +
+        counts.A +
+        '</b></div><div class="stat"><span>B (kontrol)</span><b>' +
+        counts.B +
+        '</b></div></div>' +
+        (progress
+          ? '<div class="key-value"><span>Alınan yuva</span><b>' +
+            progress.claimed +
+            '</b></div><div class="key-value"><span>Sıradaki yuva</span><b>' +
+            (progress.next == null ? '—' : progress.next) +
+            '</b></div>'
+          : '')
+      : '<button class="button" data-a="loadAllocations">Listeyi yükle</button>') +
+      '<p class="muted small-text">Katılımcılar kod girmez: onamdan sonra sıradaki boş yuvayı otomatik alır; grubunu seçemez. Liste biterse yeni liste oluştur. Hangi yuvanın hangi grupta olduğunu katılımcıyla paylaşma.</p>' +
+      '<div style="display:flex;gap:8px;margin-top:10px"><input id="allocation-count" class="field" type="number" inputmode="numeric" value="80" min="4" step="4" aria-label="Kişi sayısı"><button class="button small-text" style="white-space:nowrap" data-a="generateAllocations">Yeni liste</button></div>' +
+      '<button class="button" style="margin-top:10px" data-a="downloadAllocations">Gizli liste: no, kod, grup (CSV)</button>'
+  );
+}
+
+// Katılım bağlantısı: tüm katılımcılar için tek ortak adres (QR ile de dağıtılabilir)
+function renderParticipationLinkSection() {
+  return section(
+    'Katılım bağlantısı',
+    '<p class="muted small-text" style="margin:0 0 8px">Katılımcılara verilecek tek ortak adres. Yönetim paneli ayrı bir sitedeyse buraya katılımcı sitesinin adresini yaz.</p>' +
+      '<input id="participant-url" class="field" data-in="participantUrl" placeholder="https://…" value="' +
+      escapeHtml(participantUrl()) +
+      '" aria-label="Katılım adresi">' +
+      '<div style="display:flex;gap:8px;margin-top:10px"><button class="button is-primary" style="flex:1" data-a="copyParticipationLink">Bağlantıyı kopyala</button><button class="button" style="flex:1;margin:0" data-a="downloadParticipationQr">QR (SVG)</button></div>'
+  );
+}
+
+function renderWithdrawnSection() {
+  return section(
+    'Çekilen katılımcılar',
+    adminState.withdrawnCount == null
+      ? '<button class="button" data-a="countWithdrawn">Say</button>'
+      : '<div class="key-value"><span>Çekilen</span><b>' +
+          adminState.withdrawnCount +
+          '</b></div><p class="muted small-text">Çekilenlerin verisi dışa aktarmaya girmez. Kayıtları silinmez; "withdrawn" olarak işaretli kalır ve analize girmez.</p>'
+  );
+}
+
+function renderPosterSection() {
+  return section(
+    'Poster',
+    '<p class="muted small-text" style="margin:0 0 8px">Tanıtım sayfasının yayın adresini yaz. Posterdeki QR oraya gider.</p>' +
+      '<input class="field" data-in="landingUrl" placeholder="https://…/tanitim.html" value="' +
+      escapeHtml(adminState.landingUrlInput || '') +
+      '" aria-label="Tanıtım sayfası adresi">' +
+      '<input class="field" style="margin-top:8px" data-in="posterEmail" placeholder="İletişim e-postası (isteğe bağlı)" value="' +
+      escapeHtml(adminState.posterEmail || '') +
+      '" aria-label="İletişim e-postası">' +
+      '<input class="field" style="margin-top:8px" data-in="posterFooter" placeholder="Alt bilgi, örn. Üniversite adı (isteğe bağlı)" value="' +
+      escapeHtml(adminState.posterFooter || '') +
+      '" aria-label="Alt bilgi">' +
+      '<div style="display:flex;gap:8px;margin-top:10px"><button class="button is-primary" style="flex:1" data-a="downloadPoster" data-v="A4">Poster A4</button><button class="button is-primary" style="flex:1;margin:0" data-a="downloadPoster" data-v="A3">Poster A3</button></div>' +
+      '<button class="button" data-a="downloadPosterQr">Sadece QR (SVG)</button>' +
+      '<p class="muted small-text" style="margin-top:10px">Posterde hipotez ve müdahale geçmez; katılımcıyı etkilememek için bilinçli olarak genel tutuldu.</p>'
+  );
+}
+
+function renderExportSection() {
+  return section(
+    'Veri dışa aktarma',
+    '<button class="button is-primary" data-a="downloadParticipants">Katılımcı özeti (CSV)</button><button class="button" data-a="downloadEvents">Tüm olaylar (CSV)</button>' +
+      '<p class="muted small-text" style="margin-top:10px">Özet dosyada panic_rate = zararına yapılan elle satışlar / tüm elle satışlar. Analizi olay dosyasından da yeniden hesaplayabilirsin.</p>' +
+      '<button class="button" style="margin-top:6px" data-a="adminLogout">Araştırmacı çıkışı (' +
+      escapeHtml(adminState.user.email) +
+      ')</button>'
+  );
+}
+
+// Sayfanın tamamı: giriş yapılmamışsa giriş formu, yapılmışsa panel
+export function renderAdminPage() {
+  const heading = '<h1 class="admin-title">Araştırmacı paneli</h1>';
+  if (adminState.connectionError)
+    return (
+      heading +
+      '<div class="note"><span><b>Bağlantı kurulamadı.</b> ' +
+      escapeHtml(adminState.connectionError) +
+      '</span></div><button class="button is-primary" data-a="reloadPage">Sayfayı yenile</button>'
+    );
+  if (!adminState.user) return heading + renderLogin();
   return (
-    '<div style="display:flex;align-items:center;gap:10px;margin:4px 0 14px"><button class="icon-button" data-a="closeAdmin" aria-label="Paneli kapat">‹</button><span style="font:700 22px var(--fd)">Araştırmacı paneli</span></div>' +
-    renderAdminPanel()
+    heading +
+    '<div class="admin-grid">' +
+    renderDashboard() +
+    renderAllocationSection() +
+    renderParticipationLinkSection() +
+    renderExportSection() +
+    renderWithdrawnSection() +
+    renderConsentSection() +
+    renderSelfTestSection() +
+    renderSettingsSection() +
+    renderPosterSection() +
+    '</div>'
   );
 }

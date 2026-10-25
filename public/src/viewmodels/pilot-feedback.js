@@ -17,7 +17,7 @@ export function savePilotFeedback(skip) {
   position.at = new Date().toISOString();
   state.pilotFeedback = position;
   logEvent('pilot_feedback', position);
-  participantRepository.saveP(state.participantCode, { fb: position }).catch(function () {});
+  participantRepository.saveParticipant(state.participantCode, { fb: position }).catch(function () {});
   flushEvents();
   render();
 }

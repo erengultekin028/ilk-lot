@@ -5,7 +5,7 @@ import { state } from '../viewmodels/app-state.js';
 import { escapeHtml } from '../utils/format.js';
 import { simulationMinutesText } from '../models/market-simulation.js';
 import { fontSizeHtml } from './menu-view.js';
-import { maskCode } from '../utils/participant-code.js';
+
 import { TRIAL_SETS } from '../models/trial-generator.js';
 
 // ───────────────── Katmanlı onam ─────────────────
@@ -180,13 +180,8 @@ export function renderConsent() {
     '<label class="consent-check"><input type="checkbox" data-in="consentOk"' +
     (state.consentChecked ? ' checked' : '') +
     '><span>Yukarıdaki bilgileri okudum ve anladım. Bu çalışmaya gönüllü olarak katılmak istiyorum.</span></label>' +
-    (state.pendingCode
-      ? '<p class="muted small-text" style="margin:10px 0 0">Kartındaki kodla giriş yapılacak: ' +
-        maskCode(state.pendingCode) +
-        '</p>'
-      : '') +
-    (state.codeError && !state.pendingCode
-      ? '<div class="is-error" role="alert">' + escapeHtml(state.codeError) + '</div>'
+    (state.enrollError
+      ? '<div class="is-error" role="alert" id="enroll-error">' + escapeHtml(state.enrollError) + '</div>'
       : '') +
     '<div class="stage-actions" style="margin-top:14px"><button class="button is-primary" id="consent-button" data-a="acceptConsent"' +
     (state.busy || !state.consentChecked ? ' disabled' : '') +

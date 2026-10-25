@@ -3,7 +3,7 @@
 import { state } from '../viewmodels/app-state.js';
 import { consentField } from './consent-view.js';
 import { GLOSSARY } from '../constants/glossary.js';
-import { maskCode } from '../utils/participant-code.js';
+import { maskCode } from '../utils/format.js';
 import { FONT_SIZE_LEVELS } from '../constants/ui-constants.js';
 
 // Terim düğmesi: dokununca GLOSSARY[i] tek maddelik pencerede açılır. Başka bir düğmenin (ör. .srow) içine konmaz: iç içe düğme geçersiz.
@@ -63,16 +63,13 @@ export function fontSizeHtml() {
 }
 export function menuHtml() {
   return (
-    '<h2>Menü</h2><p>Katılımcı kodun: ' +
+    '<h2>Menü</h2><p>Katılım kodun (destek için): ' +
     (state.participantCode ? maskCode(state.participantCode) : '-') +
     '</p><p class="muted small-text" style="margin:0 0 10px">Sorular ve destek: ' +
     consentField('contact') +
     '</p>' +
     fontSizeHtml() +
-    '<p class="muted small-text" style="margin:0 0 10px">Ana ekrana eklemek için tarayıcının paylaş ya da menü düğmesinden "Ana ekrana ekle"yi seç. Eklenen kısayol açılınca katılımcı kodunu yeniden girmen gerekebilir; oturum kaldığın yerden devam eder.</p>' +
-    (state.participantCode && !state.ended
-      ? '<button class="button" data-a="moveDevice">Başka cihazda devam et</button>'
-      : '') +
+    '<p class="muted small-text" style="margin:0 0 10px">İlerlemen bu tarayıcıda saklanır. Çalışmayı bitirene kadar aynı tarayıcıyı kullan; başka bir tarayıcıda ya da "Ana ekrana ekle" kısayolundan açarsan kaldığın yerden devam edemezsin.</p>' +
     (state.participantCode
       ? '<button class="button ghost-danger" data-a="requestWithdraw">Çalışmadan çekil, verilerimi sil</button>'
       : '') +

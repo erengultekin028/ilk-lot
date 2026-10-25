@@ -1,21 +1,19 @@
 // Eylemler: onam, form, testler, giriş akışı.
 
 import { actions } from './index.js';
-import { saveFile } from '../../admin/admin-exports.js';
+import { saveFile } from '../../utils/file-download.js';
 import { render } from '../../views/app-shell.js';
 import { state } from '../app-state.js';
 import { comprehensionQuestionAt } from '../../models/comprehension.js';
 import { COMPREHENSION_POOLS } from '../../constants/comprehension-questions.js';
 import { consentText } from '../../views/consent-view.js';
-import { byId } from '../../utils/dom.js';
 import { createSummaryCard } from '../../views/end-view.js';
 import { eventLog, flushEvents, logEvent } from '../../services/event-log.js';
 import { startFilm } from '../../widgets/film-widget.js';
-import { askConfirm } from '../../widgets/modal.js';
-import { rememberCode } from '../../utils/participant-code.js';
 import { participantRepository } from '../../repositories/participant-repository.js';
 import { savePilotFeedback } from '../pilot-feedback.js';
-import { endSession, enterCode } from '../session-lifecycle.js';
+import { byId } from '../../utils/dom.js';
+import { bootstrap, endSession, enrollAndStart, startParticipation } from '../session-lifecycle.js';
 import { saveSnapshot } from '../../services/session-persistence.js';
 import { advanceAfterOutcome, chooseOption, startTrial } from '../study-flow.js';
 import { ATTENTION_QUESTION, TEST_QUESTIONS, testQuestionSequence } from '../../constants/test-questions.js';
@@ -30,19 +28,12 @@ export const flowActions = {
     }
     state.consentAt = new Date().toISOString();
     state.consentMs = Date.now() - (state.consentStartedAt || Date.now());
-    // Linkten ya da hatırlanan koddan geldiyse kod ekranı atlanır
+    // Bu cihazda daha önce yuva alınmışsa aynı kayıtla devam edilir; yoksa sıradaki yuva alınır
     if (state.pendingCode) {
-      state.busy = true;
-      render();
-      enterCode(state.pendingCode);
+      startParticipation(state.pendingCode);
       return;
     }
-    state.stage = 'code';
-    render();
-    setTimeout(function () {
-      const codeInputElement = byId('code-input');
-      if (codeInputElement) codeInputElement.focus();
-    }, 50);
+    enrollAndStart();
   },
   downloadConsentText: function () {
     state.consentDownloaded = 1;
@@ -51,46 +42,12 @@ export const flowActions = {
     });
   },
   continueFromWelcome: function () {
-    state.busy = true;
+    startParticipation(state.welcomeBack.code);
+  },
+  retryConnection: function () {
+    state.stage = 'boot';
     render();
-    enterCode(state.welcomeBack.code);
-  },
-  rejectRememberedCode: function () {
-    rememberCode(null);
-    state.pendingCode = null;
-    state.welcomeBack = null;
-    state.codeError = '';
-    state.stage = 'consent';
-    render();
-  },
-  submitCode: function () {
-    const codeInputElement = byId('code-input');
-    state.codeInput = codeInputElement ? codeInputElement.value : state.codeInput;
-    state.busy = true;
-    render();
-    enterCode(state.codeInput);
-  },
-  useDemoCode: function (value) {
-    state.codeInput = value;
-    enterCode(value);
-  },
-  resetDemoData: function () {
-    askConfirm(
-      'Demo verisini sıfırla',
-      'Bu cihazdaki tüm demo kayıtları silinir ve yeni demo kodları oluşturulur.',
-      'Sıfırla',
-      true,
-      function () {
-        participantRepository.resetLocal();
-        rememberCode(null);
-        state.allocationCache = null;
-        state.demoCodeUsed = null;
-        state.codeInput = '';
-        state.codeError = '';
-        state.stage = 'code';
-        render();
-      }
-    );
+    bootstrap();
   },
   setDemographic: function (innerValue) {
     const value = innerValue.split('|');
@@ -117,8 +74,6 @@ export const flowActions = {
       const participantCode = state.participantCode;
       const group = state.group;
       // 18 yaş altı: hiçbir demografik veri saklanmaz, kayıt kapatılır
-      rememberCode(null);
-      state.allocationCache = null;
       try {
         await participantRepository.withdraw(participantCode, group, { ineligible: true });
       } catch (error) {}
@@ -140,7 +95,7 @@ export const flowActions = {
       sim: demographics.sim || null,
     };
     participantRepository
-      .saveP(state.participantCode, { demo: demo, demoAt: new Date().toISOString() })
+      .saveParticipant(state.participantCode, { demo: demo, demoAt: new Date().toISOString() })
       .catch(function () {});
     logEvent('demographics_done', {});
     state.hasDemographics = true;
@@ -159,7 +114,7 @@ export const flowActions = {
       state.attentionPassed = +value === ATTENTION_QUESTION[2];
       logEvent('attention_check', { pass: state.attentionPassed, choice: +value });
       participantRepository
-        .saveP(state.participantCode, { attPass: state.attentionPassed })
+        .saveParticipant(state.participantCode, { attPass: state.attentionPassed })
         .catch(function () {});
     } else {
       logEvent('test_answer', {
@@ -198,7 +153,7 @@ export const flowActions = {
         score: sc,
         b3: testQuestion.kind === 'pre' ? state.preTestBigThree : undefined,
       });
-      participantRepository.saveP(state.participantCode, map).catch(function () {});
+      participantRepository.saveParticipant(state.participantCode, map).catch(function () {});
       flushEvents();
       state.testQuestion = null;
     }
@@ -248,7 +203,9 @@ export const flowActions = {
     comprehension.sel = null;
     if (comprehension.i >= COMPREHENSION_POOLS.length) {
       comprehension.score = comprehension.first.filter(Boolean).length;
-      participantRepository.saveP(state.participantCode, { comp: comprehension.score }).catch(function () {});
+      participantRepository
+        .saveParticipant(state.participantCode, { comp: comprehension.score })
+        .catch(function () {});
       state.practiceDone = true;
       state.trial.phase = 'ready';
       saveSnapshot();
@@ -263,13 +220,15 @@ export const flowActions = {
     const group = (byId('purpose-guess') || {}).value || '';
     state.purposeGuess = group.trim().slice(0, 400);
     logEvent('purpose_guess', { len: state.purposeGuess.length });
-    participantRepository.saveP(state.participantCode, { guess: state.purposeGuess }).catch(function () {});
+    participantRepository
+      .saveParticipant(state.participantCode, { guess: state.purposeGuess })
+      .catch(function () {});
     flushEvents();
     render();
   },
   skipPurposeGuess: function () {
     state.purposeGuess = '';
-    participantRepository.saveP(state.participantCode, { guess: '' }).catch(function () {});
+    participantRepository.saveParticipant(state.participantCode, { guess: '' }).catch(function () {});
     render();
   },
   chooseDecision: function (value) {
@@ -323,7 +282,7 @@ export const flowActions = {
   answerManipulationCheck: function (value) {
     state.manipulationCheck = value;
     logEvent('manipulation_check', { answer: value });
-    participantRepository.saveP(state.participantCode, { manip: value }).catch(function () {});
+    participantRepository.saveParticipant(state.participantCode, { manip: value }).catch(function () {});
     flushEvents();
     render();
   },

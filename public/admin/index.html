@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>İlk Lot · Araştırmacı paneli</title>
+    <link rel="icon" type="image/png" href="../assets/icon-180.png" />
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <link rel="stylesheet" href="../styles/base.css" />
+    <link rel="stylesheet" href="../styles/components.css" />
+    <link rel="stylesheet" href="../styles/free-play.css" />
+    <link rel="stylesheet" href="../styles/sheet-and-screens.css" />
+    <link rel="stylesheet" href="../styles/effects.css" />
+    <link rel="stylesheet" href="../styles/film-and-tour.css" />
+    <link rel="stylesheet" href="../styles/motion-and-responsive.css" />
+    <link rel="stylesheet" href="../styles/admin.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="brand" role="img" aria-label="İlk Lot">
+          <svg width="30" height="30" viewBox="0 0 120 120" aria-hidden="true">
+            <rect width="120" height="120" rx="28" fill="#10263F" />
+            <rect x="48" y="54" width="24" height="46" rx="12" fill="#F4F1EA" />
+            <circle cx="60" cy="31" r="15" fill="#E8A92B" />
+            <circle cx="60" cy="31" r="9" fill="none" stroke="#B87A0E" stroke-width="2.5" />
+          </svg>
+          <b>İlk Lot · Yönetim</b>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button" data-a="toggleTheme" aria-label="Temayı değiştir">◐</button>
+        </div>
+      </header>
+      <main id="main-view"></main>
+      <div id="toast" role="status" aria-live="polite"></div>
+      <div id="modal" role="dialog" aria-modal="true">
+        <div class="box" id="modal-box"></div>
+      </div>
+    </div>
+    <noscript>Bu sayfa JavaScript gerektirir.</noscript>
+    <script type="module" src="../src/admin/admin-main.js"></script>
+  </body>
+</html>
