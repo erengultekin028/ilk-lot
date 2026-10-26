@@ -7,21 +7,23 @@
 | Aşama | Ne olur | Kim | Not |
 |---|---|---|---|
 | Toplama | Katılımcı kodu, grup, davranış, test, isteğe bağlı demografik, serbest metin tek alan (≤ 400 karakter) | Uygulama → Firebase | Ad, e-posta, öğrenci no toplanmaz |
-| Barındırma | Firebase (Google) | [DOLDUR: bölge, sözleşme] | Yurt dışı aktarım KVKK birimine danışılacak |
+| Barındırma | Firebase (Google): proje `ilk-lot-pilot`, Firestore konumu **nam5 (ABD)**, site Firebase Hosting | [DOLDUR: sözleşme] | Yurt dışı aktarım KVKK birimine danışılacak; AB bölgesine taşıma seçeneği `docs/KARAR_PAKETI.md` içinde |
 | Erişim | Yalnızca araştırmacı hesabı | [DOLDUR: kimler] | Katılımcı grubunu değiştiremez, çekilmiş kaydı geri açamaz |
 | Dışa aktarma | Panelden CSV (katılımcı ve olay) | Araştırmacı | **[KARAR]** Veri toplama bitmeden sonuç amacıyla açılmaz (ön kayıt taslağında bu karar bekliyor) |
-| Yedek | CSV, şifreli diskte iki kopya | [DOLDUR] | Bulutta ikinci kopya tutulacaksa yeri belirtilir |
+| Yedek | Panelden **Tam yedek (JSON)** ve CSV dışa aktarımları, şifreli diskte iki kopya | [DOLDUR: kimde, nerede] | Veri toplama sırasında en az haftalık; bulutta ikinci kopya tutulacaksa yeri belirtilir |
 | Temizlik | Serbest metin kişisel bilgi içeriyor mu diye gözden geçirilir, gerekirse silinir | Araştırmacı | Analizden önce yapılır |
-| Çekilme | Katılımcı menüden çekilir, araştırmacı "Çekilenlerin verisini kalıcı sil" der | Araştırmacı | Süre: [DOLDUR: örn. haftalık] |
+| Çekilme | Katılımcı menüden çekilir (iki aşamalı onay). **Kayıt silinmez** (politika A, soft delete): `withdrawn: true` ile işaretlenir, analize ve dışa aktarmaya girmez, katılımcı geri açamaz | Katılımcı / araştırmacı | **[KARAR]** Kalıcı silme gerekirse süreci ve süresi onam v2'de yazılmalı (`etik/ONAM_DEGISIKLIK_ONERISI_A.md`) |
+| Test kayıtları | Denemelerden kalan kayıtlar panelden "test kaydı" olarak işaretlenir (silinmez, geri alınabilir); analize girmez | Araştırmacı | Pilot ve ana toplamadan önce yapılır |
 | Saklama | [DOLDUR: süre ve başlangıç tarihi] | Araştırmacı | `etik/saklama_takvimi.py` hatırlatma takvimi üretir; süreyi **o seçmez**, etik kurul ve KVKK birimiyle aynı olmalı |
 | Silme | Süre sonunda ham veri silinir | Araştırmacı | Yalnızca kimliksiz toplu sonuçlar kalır |
 | Paylaşım | Bkz. 3 | | |
 
 ## 2. Anonim mi, takma adlı mı
 
-- Kod rastgeledir, kişiyle eşleşmesi tutulmuyorsa veri **kimlik içermez** ama tamamen anonim demek de zordur (cihaz türü, ekran boyutu, küçük gruplarda demografik birleşim).
-- Kart dağıtımında kim hangi kodu aldı kaydedilirse veri **takma adlı** olur; bu durumda onamda, etik başvuruda ve silme talebi prosedüründe açıkça yazılmalı. **[KARAR]** Önerim: kaydetme.
-- Katılımcı kodunu kaybederse verisi bulunamaz; onam metninde bu yazılı.
+- Katılımcı kod girmez: Firebase **anonim girişle** sıradaki yuvayı alır. Kod rastgeledir, kişiyle eşleşmesi tutulmaz; ad, e-posta, öğrenci numarası toplanmaz.
+- Yine de tamamen anonim demek zordur: `users/{uid}` kaydı, tarayıcıya bağlı anonim kimliği (uid) yuva koduna bağlar (aynı tarayıcının kaldığı yerden devam edebilmesi için). Bu kimlik bir **kişiyi değil bir tarayıcıyı** gösterir ve araştırmacıya kimlik bilgisi vermez, ama veri teknik olarak **takma adlıdır**. Onamdaki "kimliksiz" ifadesi ve etik başvuru bununla uyumlu olmalı. **[KARAR]**
+- Yuva–kod–grup listesi yalnızca araştırmacıdadır; kim hangi yuvayı aldı eşleşmesi (kişi ↔ yuva) hiçbir yerde tutulmaz. Cihaz türü, ekran boyutu ve küçük gruplarda demografik birleşim yine de dolaylı belirleme riski taşır.
+- Tarayıcı verisi silinirse ya da başka tarayıcıdan girilirse aynı kişi yeni yuva alır; kayıp yuva geri verilmez. Menüde katılımcıya uyarı yazılı.
 
 ## 3. Paylaşım ve açık bilim
 
@@ -42,5 +44,6 @@ Kod paylaşımı veri paylaşımı değildir; ikisi ayrı karar. Onam metni (`et
 ## 5. Açık noktalar
 
 - Barındırıcı günlüklerinde IP kalabilir; araştırma verisiyle eşleştirilmez ama ayar kontrolü [DOLDUR].
-- Firebase güvenlik kuralları kodu bilen herkesin kaydı okuyup yazmasına izin verir; koruma kodun tahmin edilemezliğine dayanır (12 karakter). Bu sınırlılık etik başvuruda yazılı ve KVKK birimiyle konuşulmalı.
-- Gerçek Firebase kurulumu henüz yapılmadı; bu plan o zaman doğrulanmalı.
+- Güvenlik kuralları (b27 sonrası): katılımcı yalnızca **kendi** yuvasına ait kaydı okur/yazar, grubunu değiştiremez, çekilmiş kaydı geri açamaz, test işaretini yazamaz; hiçbir kullanıcı hiçbir şeyi silemez; kayıtları listelemek ve olayları okumak yalnızca araştırmacı hesabındadır. 18 emulator testi GitHub Actions'ta çalışır (`firebase/kural_testleri`).
+- Firebase kuruldu (`ilk-lot-pilot`), ama gerçek cihaz protokolü ve pilot henüz yapılmadı; bu plan o zaman doğrulanmalı.
+- Araştırmacı hesabı tek e-postadır; iki faktörlü doğrulama ve hesabın kimde olduğu yazılmalı. **[DOLDUR]**

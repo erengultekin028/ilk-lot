@@ -47,7 +47,8 @@ Uygulama yalnızca Firebase ile çalışır: yerel (tarayıcıda) kayıt kipi, t
 4. **"Gizli liste"** CSV'sini sakla: yuva–kod–grup eşleşmesi yalnızca burada ve Firebase'dedir. Katılımcıyla paylaşma.
    - **Pilottan önce test kayıtlarını ayır:** panelde **Test kayıtları → Kayıtları yükle**; süzgeçlerle (eski sürüm, bekleme ekranı görenler, tamamlanmayan) deneme kayıtlarını seç, **Test kaydı olarak işaretle**. Kayıt silinmez, analizden ve dışa aktarmadan çıkar; işaret geri alınabilir. Test sırasında alınan yuvalar geri verilemez, bu yüzden pilot için yine **Yeni liste** oluştur.
 5. Tek oturum (yaklaşık 30 dk): 6 karar → 7,5 dk simülatör → 6 karar. Yarıda bırakan katılımcı aynı tarayıcıdan tekrar açınca kaldığı yerden devam eder.
-6. Veri toplama bitince: "Katılımcı özeti" ve "Tüm olaylar" CSV'lerini indir (sütunlar: `docs/VERI_SOZLUGU.md`).
+6. **Yedek:** panelde **Tam yedek (JSON) → Tam yedeği indir**; veri toplama sırasında en az haftada bir, dosyayı şifreli diskte (iki kopya) sakla; dosya grup bilgisini içerir, paylaşma.
+7. Veri toplama bitince: "Katılımcı özeti" ve "Tüm olaylar" CSV'lerini indir (sütunlar: `docs/VERI_SOZLUGU.md`).
 
 ## Kontrol listesi
 - [ ] `/admin/` sayfasında giriş yapılıyor mu? "Sistem testini çalıştır" tüm satırlar ✓ mi?

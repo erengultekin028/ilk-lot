@@ -1,5 +1,18 @@
 # Testler
 
+## Güncel tarayıcı testleri: `ekran_testleri.py` (yeni yapı, b34)
+
+```
+pip install playwright
+python -m playwright install chromium
+python testler/ekran_testleri.py                 # hepsi (~2 dk)
+python testler/ekran_testleri.py "(A grubu)"     # adında bu metin geçenler (ASCII önerilir)
+```
+
+Kendi yerel sunucusunu açar ve Firebase SDK isteklerini keser: **gerçek veritabanına hiçbir şey yazılmaz.** Ekranlar `window.ilkLot` (uygulamanın durum nesnesi) ile kurulur; yazma çağrıları sahtesiyle değiştirilir. Kapsam: açılış, onam, bekleme ekranı geri sayımı (A) ve yokluğu (B), canlı portföy toplamı, simülatör sekmeleri, hisse grafiği ve gezme, rehberli tur, çekilmede ikinci onay, eşzamanlama göstergesi, geniş ekran ve telefon düzeni, yönetim paneli (Yeni eklenenler, Test kayıtları, Tam yedek). **Kapsam dışı:** gerçek katılım akışı (yuva alma); o, `firebase/kural_testleri` ve `docs/GERCEK_CIHAZ_TESTI.md` ile denenir. Her test, bilinen bir hatayı koda geri sokarak (mutasyon) doğrulandı; yeni test eklersen aynısını yap.
+
+## Eski testler (b26, çalışmaz)
+
 > **b27 uyarısı (25.10.2026):** Uygulama köklü yeniden yapılandırıldı (`docs/MIMARI.md`). Bu klasördeki tarayıcı tabanlı testler (`uygulama_testleri.py`, `erisilebilirlik_taramasi.py`, `gorsel_karsilastirma.py`) **eski tek dosya yapısı için yazılmıştı** (`ilk-lot.html`, global `S`/`ACT`/`CFG` adları, kodla giriş, yerel kayıt kipi) ve **olduğu gibi ÇALIŞMAZ**. Yeniden yazılırken: adlar için `docs/ESKI_YENI_ADLAR.md` (`docs/eski_yeni_adlar.json`), uygulama sayfası `http://localhost:8088/` (`npm run serve`), testlerin çevrimdışı çalışması için Firebase'in sahte SDK'sı ya da Emulator kullanılmalı, katılım akışı için anonim giriş + yuva alma (`public/src/repositories/enrollment-repository.js`) kurulmalı, ekran görüntüsü referansları (`gorsel_referans/`) eski yapının görüntüleridir, geniş ekran için yeni referans gerekir. Geçerli otomatik denetimler: `arac_testleri.py` (aşağıdaki listenin dışında), `npm run lint`, `npm run check:modules`, `npm run check:classes`, `firebase/kural_testleri`, `analiz/test_betikler.py`.
 >
 > Aşağıdaki liste ESKİ (b26) uygulama testlerini anlatır ve yeniden yazım için kapsam listesi olarak durur.

@@ -59,17 +59,45 @@ function recordRowHtml(row) {
   );
 }
 
+// Tam yedek bölümü: tüm kayıtları tek JSON dosyasında indirir
+export function renderBackupSection() {
+  const last = adminState.backupLast;
+  return section(
+    'Tam yedek (JSON) <span class="new-badge">Yeni · b34</span>',
+    '<p class="muted small-text" style="margin:0 0 10px">Tüm katılımcı kayıtlarını, olayları ve yuva listesini tek dosyada indirir. Çekilmiş ve test olarak işaretlenmiş kayıtlar da dahildir (yedek eksiksiz olmalı). Dosya grup bilgisini içerir: <b>paylaşma</b>, şifreli diskte sakla. Veri toplama sırasında en az haftada bir al.</p>' +
+      '<button class="button is-primary" data-a="downloadBackup"' +
+      (adminState.backupBusy ? ' disabled' : '') +
+      '>' +
+      (adminState.backupBusy ? 'Hazırlanıyor…' : 'Tam yedeği indir') +
+      '</button><p class="muted small-text" id="backup-progress" style="margin:8px 0 0">' +
+      escapeHtml(adminState.backupProgress || '') +
+      '</p>' +
+      (last
+        ? '<div class="key-value"><span>Son yedek</span><b>' +
+          escapeHtml(String(last.at).slice(0, 16).replace('T', ' ')) +
+          '</b></div><div class="key-value"><span>İçerik</span><b>' +
+          last.counts.participants +
+          ' katılımcı · ' +
+          last.counts.events +
+          ' olay · ' +
+          last.counts.allocations +
+          ' yuva</b></div>'
+        : '')
+  );
+}
+
 export function selectedRecordCount() {
   return Object.keys(adminState.selectedRecords).length;
 }
 
 export function renderTestRecordsSection() {
+  const title = 'Test kayıtları <span class="new-badge">Yeni · b32</span>';
   const intro =
     '<p class="muted small-text" style="margin:0 0 10px">Denemelerden kalan kayıtları analizden ve dışa aktarmadan çıkarır. Kayıt <b>silinmez</b>: ' +
     '"çekilmiş" gibi işaretlenir ve "test kaydı" olarak not edilir; işaret geri alınabilir. Hangi kaydın deneme olduğunu sürüm, durum, yuva ve son harekete bakarak ayırt et. Kırmızı sürüm, şu anki uygulamadan eski demektir; kırmızı bekleme sayısı, A grubunda bekleme ekranı gösterildiğini belirtir.</p>';
   if (!adminState.recordRows)
     return section(
-      'Test kayıtları',
+      title,
       intro +
         '<button class="button" data-a="loadTestRecords"' +
         (adminState.recordBusy ? ' disabled' : '') +
@@ -98,7 +126,7 @@ export function renderTestRecordsSection() {
   }).join('');
   const isMarkedView = adminState.recordFilter === 'marked';
   return section(
-    'Test kayıtları',
+    title,
     intro +
       '<div class="font-size-selector" role="group" aria-label="Süzgeç" style="margin:0 0 10px">' +
       chips +

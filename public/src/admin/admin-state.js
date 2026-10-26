@@ -21,4 +21,8 @@ export const adminState = {
   recordFilter: 'unmarked',
   selectedRecords: {}, // { kod: true }
   recordBusy: false,
+  // Tam yedek
+  backupBusy: false,
+  backupProgress: '',
+  backupLast: null, // { at, counts }
 };

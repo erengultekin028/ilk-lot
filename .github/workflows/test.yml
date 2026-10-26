@@ -35,6 +35,11 @@ jobs:
         run: python analiz/test_betikler.py
       - name: Araç testleri (yayın aracı, saklama takvimi, CI tanımı)
         run: python testler/arac_testleri.py
+      - name: Tarayıcı uçtan uca testleri (Firebase kesik, gerçek veri yazılmaz)
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python testler/ekran_testleri.py
       - name: Kuru çalıştırma (sahte veriyle uçtan uca hat)
         run: python analiz/kuru_calistirma.py
       - name: Firestore güvenlik kuralları (Emulator)

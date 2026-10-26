@@ -140,12 +140,14 @@ Dosyaya çift tıklayarak açılmaz; ES modülleri bir web sunucusu ister. Yerel
 npm run lint             # ESLint
 npm run check:modules    # tüm modüller içe aktarılabiliyor mu
 npm run check:classes    # JS'te kullanılan CSS sınıfları CSS'te tanımlı mı
-python testler/arac_testleri.py      # yayın aracı, takvim, CI tanımı, klasör yapısı
+npm run check:records    # test kaydı ayırma ve tam yedek mantığı
+python testler/arac_testleri.py      # yayın aracı, takvim, CI tanımı, klasör yapısı, DOM kimlik denetimi
+python testler/ekran_testleri.py     # tarayıcı uçtan uca testleri (Playwright; gerçek veri yazılmaz)
 python analiz/test_betikler.py       # analiz betikleri
 cd firebase/kural_testleri && npm install && npm test   # Firestore güvenlik kuralları (Node + Java)
 ```
 
-GitHub Actions her gönderimde bunları çalıştırır (rozetler yukarıda). Tarayıcı tabanlı uçtan uca testler eski tek dosyalı yapı için yazılmıştı ve yeniden yazılmayı bekliyor ([`testler/README.md`](testler/README.md)).
+GitHub Actions her gönderimde bunları çalıştırır (rozetler yukarıda). Tarayıcı testleri Firebase'i keser, gerçek veri yazılmaz; ayrıntı ve kapsam: [`testler/README.md`](testler/README.md). Eski (b26) tarayıcı testleri çalışmaz, yerlerini `ekran_testleri.py` aldı.
 
 ## Yayın
 
@@ -167,6 +169,10 @@ Yayın öncesi ön kontrol (boş `[DOLDUR]` alanları, örnek e-posta, ölçüt 
 | [`docs/VERI_SOZLUGU.md`](docs/VERI_SOZLUGU.md) | Firestore alanları, olaylar, CSV sütunları |
 | [`docs/ON_KAYIT_TASLAGI.md`](docs/ON_KAYIT_TASLAGI.md) | Ön kayıt taslağı |
 | [`docs/PILOT_PLANI.md`](docs/PILOT_PLANI.md) | Pilot planı |
+| [`docs/KARAR_PAKETI.md`](docs/KARAR_PAKETI.md) | Pilottan önce kapatılacak kararlar (KVKK/konum, onam v2, ödül, lisans…) |
+| [`docs/KURAMSAL_CERCEVE.md`](docs/KURAMSAL_CERCEVE.md) | Kuramsal çerçeve ve kaynakça taslağı (kaynaklar doğrulanacak) |
+| [`docs/GANTT_VE_RISK.md`](docs/GANTT_VE_RISK.md) | İş-zaman çizelgesi (Gantt), kilometre taşları ve risk matrisi |
+| [`docs/VERI_YONETIM_PLANI.md`](docs/VERI_YONETIM_PLANI.md) | Veri yaşam döngüsü, saklama, paylaşım, yedek |
 | [`docs/ESKI_YENI_ADLAR.md`](docs/ESKI_YENI_ADLAR.md) | Eski ad → yeni ad tablosu |
 | [`analiz/README.md`](analiz/README.md) | Analiz betikleri ve güç hesabı |
 | [`etik/`](etik/) | Etik kurul başvuru taslağı, onam ve bilgilendirme metinleri |
@@ -184,7 +190,9 @@ Katılım gönüllüdür; çekilme her an mümkündür. Ad, e-posta ya da öğre
 - [ ] Onam alanları (`[DOLDUR]`) ve iletişim adresi
 - [ ] Gerçek cihazlarda deneme ve pilot
 - [ ] Etik kurul onayı ve ön kayıt
-- [ ] Tarayıcı tabanlı uçtan uca testlerin yeni yapıya uyarlanması
+- [x] Tarayıcı tabanlı uçtan uca testler yeni yapıya yazıldı (gerçek katılım akışı kapsam dışı: emulator ve gerçek cihaz testi)
+- [x] Test kayıtlarını ayırma ve tam yedek (yönetim paneli)
+- [ ] Kararların kapatılması: `docs/KARAR_PAKETI.md` (KVKK/konum, onam v2, lisans…)
 
 ## Lisans ve katkılar
 

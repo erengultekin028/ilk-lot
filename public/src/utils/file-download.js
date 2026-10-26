@@ -2,14 +2,17 @@
 
 // Metni dosya olarak indirtir. CSV ve metin dosyalarına BOM eklenir: Excel'de Türkçe karakterler bozulmasın.
 export async function saveFile(name, text) {
-  const content = /\.svg$/.test(name) ? text : '﻿' + text;
+  // JSON ve SVG dosyalarına BOM eklenmez (ayrıştırıcılar bozulmasın)
+  const content = /\.(svg|json)$/.test(name) ? text : '﻿' + text;
   const mime = /\.html$/.test(name)
     ? 'text/html'
     : /\.svg$/.test(name)
       ? 'image/svg+xml'
-      : /\.txt$/.test(name)
-        ? 'text/plain'
-        : 'text/csv';
+      : /\.json$/.test(name)
+        ? 'application/json'
+        : /\.txt$/.test(name)
+          ? 'text/plain'
+          : 'text/csv';
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([content], { type: mime + ';charset=utf-8' }));
   link.download = name;

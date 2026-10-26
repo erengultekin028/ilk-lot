@@ -80,3 +80,14 @@ Denemelerden kalan kayıtları analizden ayırmak için yönetim panelindeki "Te
 | `testUnmarkedAt` | Geri alma zamanı |
 
 Özet ve olay CSV'lerine `testRecord: true` ya da `withdrawn: true` olan katılımcılar girmez. Bu alanları yalnızca araştırmacı yazabilir (`firebase/firestore.rules`).
+
+## Tam yedek dosyası (b34)
+Yönetim paneli → "Tam yedek (JSON)": tek dosya, adı `ilklot_tam_yedek_GIZLI_GGGG-AA-GG.json`. **Grup bilgisini içerir; paylaşılmaz.** Çekilmiş ve test olarak işaretlenmiş kayıtlar da dahildir. `users`/`claims` (tarayıcı kimliği ↔ kod) yedeğe girmez.
+
+| Alan | Anlamı |
+|---|---|
+| `format`, `formatVersion` | `ilklot-tam-yedek`, 1 |
+| `appVersion`, `exportedAt`, `exportedBy` | Yedeği alan uygulama sürümü, zaman (ISO), araştırmacı e-postası |
+| `counts` | `participants`, `events`, `allocations`, `testRecords`, `withdrawn` sayıları (indirmeden önce içerikle doğrulanır) |
+| `allocations` | `{ kod: { grp, order, no, block } }` randomizasyon listesi |
+| `participants[]` | Her katılımcı belgesi + `events[]` (olayları) |

@@ -28,6 +28,34 @@ header {
 .admin-grid > .card-section:first-child {
   grid-column: 1 / -1;
 }
+/* "Yeni" rozeti ve yeni eklenenler kartı: araştırmacı yeni özellikleri kolay bulsun */
+.new-badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--acs);
+  color: var(--act);
+  border: 1px solid var(--ac);
+  font: 800 11px/1.5 var(--fb);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.whats-new-item {
+  padding: 10px 0;
+  border-top: 1px solid var(--ln);
+}
+.whats-new-item:first-of-type {
+  border-top: 0;
+}
+.whats-new-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.whats-new-title .new-badge {
+  margin: 0 6px 0 0;
+}
 /* Test kayıtları bölümü: tam genişlikte tablo */
 .admin-grid > .card-section:has(.record-list),
 .admin-grid > .card-section:has([data-a='loadTestRecords']) {

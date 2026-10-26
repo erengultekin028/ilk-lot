@@ -25,20 +25,21 @@
 
 | Kanal | Artısı | Eksisi |
 |---|---|---|
-| Sınıfta toplu oturum (ders hocasının izniyle) | Hızlı, düşük kayıp, kodları yüz yüze dağıtmak kolay | Baskı hissi; aynı sınıf birbirine anlatır (bulaşma); hoca iznine bağlı |
+| Sınıfta toplu oturum (ders hocasının izniyle) | Hızlı, düşük kayıp; tek ortak bağlantı/QR yeterli | Baskı hissi; aynı sınıf birbirine anlatır (bulaşma); hoca iznine bağlı |
 | Kampüs standı / koridor (poster + QR) | Gönüllülük net; kişiler dağınık | Yavaş; telefonla 30 dk durmayı kabul edenler seçilir |
-| Duyuru (öğrenci toplulukları, kulüpler) | Geniş erişim | Yatırım ilgisi olanlara kayar; kodu elden vermek gerekir |
-| Çevrimiçi (kod mesajla gönderilir) | Kolay erişim | Kodu kimin aldığı kayda geçmesin diye düzen gerekir; kişi tamamlamayabilir |
+| Duyuru (öğrenci toplulukları, kulüpler) | Geniş erişim; tek ortak bağlantı | Yatırım ilgisi olanlara kayar; bağlantı serbestçe yayılabilir (yuva listesi bitince katılım kapanır) |
+| Çevrimiçi (ortak bağlantı mesajla gönderilir) | Kolay erişim | Bağlantıyı herkes açabilir; yuva sayısı kadar katılım olur, davetli olmayanlar yuva tüketir; kişi tamamlamayabilir |
 
 **[KARAR]** Hangi kanallar? Önerim: ağırlığı kampüs standı ve sınıf oturumuna ver, çevrimiçi duyuruyu yalnız yedek olarak kullan; kanalı oturum başına not al (kimlik tutmadan), analizde betimsel rapor edilir.
 
-## 4. Kart ve randomizasyon bozulmasın
+## 4. Yuva ataması ve randomizasyon bozulmasın
 
-- Kartlar önceden 4'lük bloklarda (2 A + 2 B) rastgele sıralanıp basılmıştır. Kodda grup görünmez.
-- **Kartları basıldığı sırayla ver.** Katılımcı kart seçmez, sen de "şuna şu kod olsun" demezsin. En üstteki kart verilir.
-- Kart yığınını karıştırma, bozuk ya da atılan kartı sıralamaya geri koyma; atılanı ayrı listeye yaz.
-- **[KARAR]** Kim hangi kodu aldı **kaydedilmez** (anonimlik için). Kaydedersen veri takma adlı olur; etik başvuruda ve onamda bu yazılmalı.
-- Kodunu kaybeden kişi için kod yeniden verilmez; yeni kart verilirse sırayı bozar. Böyle durumlarda kişiyi çalışmadan çıkarıp ayrı listeye yaz.
+- Yuva listesi önceden 4'lük bloklarda (2 A + 2 B) rastgele üretilir (yönetim paneli → "Yeni liste"); grup yuvanın içinde saklıdır, katılımcıya görünmez.
+- Katılımcı kod ya da kart almaz: **tek ortak bağlantı/QR** ile girer, onamdan sonra **sıradaki boş yuvayı** otomatik alır (Firebase anonim giriş). Grubunu seçemez, sen de seçtiremezsin.
+- Liste biterse yeni liste oluştur; mevcut yuvalar korunur. Sırayı bozacak elle müdahale yok: yuva alma tek bir veritabanı işlemidir.
+- **Pilot ve denemelerde tüketilen yuvalar geri verilemez.** Ana toplamaya geçmeden önce deneme kayıtlarını panelden "test kaydı" olarak işaretle, sonra yeni liste oluştur.
+- **[KARAR]** Kim hangi yuvayı aldı **kaydedilmez** (anonimlik için); tutulan tek bağ tarayıcıya bağlı anonim kimliktir (`docs/VERI_YONETIM_PLANI.md` bölüm 2).
+- Tarayıcı verisini silen ya da başka tarayıcıdan giren kişi yeni yuva alır ve aynı kişi iki kez sayılabilir; menüde uyarı yazılı, pilotta gözle.
 
 ## 5. Ödül
 

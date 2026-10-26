@@ -14,6 +14,8 @@ import { stimulusFingerprint } from '../models/trial-generator.js';
 import { buildAllocationList } from './allocation-builder.js';
 import { currentBuildNumber, selectedRecordCount } from './admin-records-view.js';
 import { describeRecord, filterRecords, planMark, planUnmark } from './test-records.js';
+import { backupFileName, buildBackup, verifyBackup } from './backup.js';
+import { dismissWhatsNew } from './whats-new.js';
 import { byId } from '../utils/dom.js';
 import { escapeHtml } from '../utils/format.js';
 import { saveFile } from '../utils/file-download.js';
@@ -218,6 +220,51 @@ export const adminActions = {
     adminState.withdrawnCount = null;
     adminState.dashboard = null;
     await adminActions.loadTestRecords();
+  },
+
+  // ── Tam yedek (JSON) ──
+  downloadBackup: async function () {
+    if (adminState.backupBusy) return;
+    adminState.backupBusy = true;
+    adminState.backupProgress = 'Katılımcılar okunuyor…';
+    render();
+    const progress = function (text) {
+      adminState.backupProgress = text;
+      const element = byId('backup-progress');
+      if (element) element.textContent = text;
+    };
+    try {
+      const participants = await adminRepository.listParticipants();
+      const allocations = await adminRepository.listAllocations();
+      const eventsByCode = {};
+      for (let index = 0; index < participants.length; index++) {
+        progress('Olaylar okunuyor: ' + (index + 1) + ' / ' + participants.length);
+        eventsByCode[participants[index].code] = await adminRepository.listEvents(participants[index].code);
+      }
+      const now = new Date().toISOString();
+      const backup = buildBackup({
+        participants: participants,
+        eventsByCode: eventsByCode,
+        allocations: allocations,
+        appVersion: APP_VERSION,
+        exportedAt: now,
+        exportedBy: adminState.user && adminState.user.email,
+      });
+      const problems = verifyBackup(backup);
+      if (problems.length) throw new Error('Yedek doğrulanamadı: ' + problems.join(' '));
+      await saveFile(backupFileName(now), JSON.stringify(backup));
+      adminState.backupLast = { at: now, counts: backup.counts };
+      adminState.backupProgress = 'Hazır: dosya indirildi.';
+    } catch (error) {
+      adminState.backupProgress = '';
+      showToast('Yedek alınamadı: ' + errorText(error));
+    }
+    adminState.backupBusy = false;
+    render();
+  },
+  dismissWhatsNew: function () {
+    dismissWhatsNew();
+    render();
   },
 
   // ── Dışa aktarma ──

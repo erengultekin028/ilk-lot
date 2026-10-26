@@ -34,7 +34,7 @@
 |---|---|---|---|
 | Barındırma (Firebase) | Evet | Ücretsiz katman yeterli mi, kota denetlenmeli; yurt dışı aktarım KVKK görüşü ayrı | [DOLDUR] |
 | Alan adı | Belki | Tanıtım sayfası için | [DOLDUR] |
-| Kart ve poster baskısı | Evet | İşe alım sayısından fazla kart (ör. +%20), poster, QR | [DOLDUR] |
+| Poster baskısı | Evet | Poster ve QR (kart kalktı: katılımcı ortak bağlantıyla girer); yuva listesi hedef n'den fazla üretilir (ör. +%20) | [DOLDUR] |
 | Test cihazları / erişim | Belki | Gerçek cihaz testi için | [DOLDUR] |
 | Katılımcı ödülü | **[KARAR]** | Yoksa 0; varsa kimlikten ayrı mekanizma, etik görüş | [DOLDUR] |
 | Yazılım (analiz, sunum) | Hayır | Python ve açık kaynak araçlar | 0 |
