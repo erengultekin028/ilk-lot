@@ -26,7 +26,8 @@ Otomatik testler şunları zaten denetler: `python testler/ekran_testleri.py` (m
 | A12 | Telefonu yatay çevir | Düzen bozulmaz, hiçbir düğme kesilmez | ⚠️ |
 | A13 | Sistem yazı boyutunu en büyüğe al; uygulamada Büyük ve Çok büyük yazı | Metin taşmaz, yatay kaydırma çıkmaz; yenileyince seçim kalır | ✅ masaüstü (axe taraması) · ⚠️ telefon |
 | A14 | Koyu/açık tema düğmesi; sistem koyu modu; düşük güç modu; hareketi azalt | Okunur kontrast; animasyonlar bozulmaz. (Bilinen: açık temada kırmızı rozet kontrastı 4,13:1, `docs/ERISILEBILIRLIK.md`) | ✅ axe · ⚠️ telefon |
-| A15 | Menü (⋯) → **Çalışmadan çekil** (**yalnızca denemelik bir kayıtla; geri açılamaz**) | İlk onaydan sonra "Emin misin?" gelir; vazgeçersen kayıt değişmez; onaylarsan "Çalışmadan çekildin" ve yenileyince aynı ekran | ✅ masaüstü · ⚠️ gerçek (konsolda `withdrawn: true`) |
+| A15 | Menü (⋯) → **Çalışmadan çekil** (**yalnızca denemelik bir kayıtla; geri açılamaz**) | İlk onaydan sonra "Emin misin?" gelir; vazgeçersen kayıt değişmez; onaylarsan "Çalışmadan çekildin" ve yenileyince aynı ekran; ekranda **"Yeni katılım başlat"** düğmesi görünür (18 yaş altı kayıtta görünmez) | ✅ masaüstü · ⚠️ gerçek (konsolda `withdrawn: true`) |
+| A16 | "Çekildin" ekranında **Yeni katılım başlat** → onayla | Sayfa yenilenir, onam ekranı gelir; onayladığında **yeni yuva** alınır (panelde "Alınan yuva" 1 artar), önceki kayıt çekilmiş kalır; tema/yazı boyutu tercihi korunur | ✅ masaüstü (yenileme, anahtar temizliği) · ⚠️ gerçek (yeni kimlik ve yuva) |
 
 ## B. Özel durumlar
 

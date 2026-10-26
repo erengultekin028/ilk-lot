@@ -11,7 +11,7 @@
 - Kararlar `docs/KARAR_PAKETI.md` tablosunda toplanır; orada açık olan bir kararı sen verme.
 - Yeni test eklersen koda bilerek hata sokarak (mutasyon) yakaladığını doğrula.
 - Çalışma simülatörünün fiyat yolu özeti sabittir (`3171573551 18600`, 300 gün × 6 hisse); değişmemeli.
-- Sürüm: `public/src/constants/app-config.js` içinde `APP_VERSION` (şu an `2026.10.26-b35`). Her yayında artır, `DEVIR_NOTU.md`'ye kayıt yaz.
+- Sürüm: `public/src/constants/app-config.js` içinde `APP_VERSION` (şu an `2026.10.26-b36`). Her yayında artır, `DEVIR_NOTU.md`'ye kayıt yaz.
 - Pilot başladıktan sonra çalışma ayarlarını (`CONFIG`) değiştirme (`python firebase/dagit.py --kilitle`).
 - Kullanıcı testleri kendisi koşar (25.10.2026 kararı): koşmadığın testi "geçti" diye yazma; ne denendi, ne denenmedi açıkça belirt.
 

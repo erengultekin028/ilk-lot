@@ -9,6 +9,7 @@ export const state = {
   postTest: null,
   testQuestion: null,
   ended: false,
+  withdrawnIneligible: false, // "çekildin" ekranı 18 yaş altı nedeniyle mi (o zaman yeni katılım önerilmez)
   enrollError: '',
   connectionError: '',
   setOrder: 0,

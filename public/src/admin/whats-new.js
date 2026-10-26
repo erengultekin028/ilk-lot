@@ -8,6 +8,14 @@ import { section } from '../widgets/section.js';
 // Her öğe: sürüm, başlık, nerede, nasıl kontrol edilir
 export const WHATS_NEW = [
   {
+    version: 'b36',
+    title: 'Çekilen katılımcı için "Yeni katılım başlat"',
+    where:
+      'Katılımcı uygulaması → "Çalışmadan çekildin" ekranı (menüden çekilince ya da sonradan siteyi açınca)',
+    check:
+      'Ekranın altında "Baştan başlamak ister misin?" ve "Yeni katılım başlat" düğmesi çıkar; onaylayınca sayfa yenilenir, onam ekranından yeni bir katılım (yeni yuva) başlar. 18 yaş altı nedeniyle kapanan kayıtta düğme çıkmaz. Ana veri toplamada kapatmayı düşün: karar paketi madde 17.',
+  },
+  {
     version: 'b35',
     title: 'Erişilebilirlik taraması (axe-core) ve düzeltme',
     where: 'Bilgisayarında: python testler/ekran_testleri.py "axe-core" · belge: docs/ERISILEBILIRLIK.md',

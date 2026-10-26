@@ -14,6 +14,7 @@ import { simulationMinutesText } from '../models/market-simulation.js';
 import { renderSimulator } from './simulator-view.js';
 import { ATTENTION_QUESTION, TEST_QUESTIONS, testQuestionSequence } from '../constants/test-questions.js';
 import { TRIAL_SETS } from '../models/trial-generator.js';
+import { ALLOW_FRESH_START_AFTER_WITHDRAWAL } from '../constants/ui-constants.js';
 import { renderStress, renderTrial } from './trial-view.js';
 
 // ───────────────── Giriş, test, tanıtım ekranları ─────────────────
@@ -90,7 +91,11 @@ export function renderStage() {
       'Verilerin analize dahil edilmeyecek ve araştırmacı tarafından kalıcı olarak silinecek.' +
       '</p><p>Katıldığın için teşekkürler. Sorun olursa: ' +
       escapeHtml(CONFIG.contact) +
-      '</p><p class="muted small-text">Bu pencereyi kapatabilirsin.</p></div>'
+      '</p><p class="muted small-text">Bu pencereyi kapatabilirsin.</p>' +
+      (ALLOW_FRESH_START_AFTER_WITHDRAWAL && !state.withdrawnIneligible
+        ? '<p style="margin-top:18px"><b>Baştan başlamak ister misin?</b></p><p class="muted small-text">Yeni bir katılım başlatırsan onam adımından itibaren baştan geçersin. Önceki katılımın çekilmiş kalır ve analize girmez; yeni katılım ayrı bir kayıttır.</p><div class="stage-actions"><button class="button" data-a="requestFreshStart">Yeni katılım başlat</button></div>'
+        : '') +
+      '</div>'
     );
   if (state.stage === 'demo') return renderDemographics();
   if (state.stage === 'inelig')

@@ -6,7 +6,7 @@ import { logEvent } from '../../services/event-log.js';
 import { GLOSSARY } from '../../constants/glossary.js';
 import { helpHtml, menuHtml, termHtml } from '../../views/menu-view.js';
 import { askConfirm, closeModal, openModal } from '../../widgets/modal.js';
-import { withdrawParticipant } from '../session-lifecycle.js';
+import { startFreshParticipation, withdrawParticipant } from '../session-lifecycle.js';
 import { endTour, renderTour } from '../tour-controller.js';
 
 // ═════════════════ EYLEMLER ═════════════════// ═════════════════ EYLEMLER ═════════════════
@@ -57,6 +57,16 @@ export const uiActions = {
           withdrawParticipant
         );
       }
+    );
+  },
+  requestFreshStart: function () {
+    if (state.withdrawnIneligible) return; // 18 yaş altı nedeniyle kapanan kayıt yeniden başlatılamaz
+    askConfirm(
+      'Yeni katılım başlat',
+      'Bu tarayıcıda yeni bir katılım açılır ve onam adımından başlarsın. Önceki katılımın çekilmiş kalır, geri açılmaz. Devam edilsin mi?',
+      'Yeni katılım başlat',
+      false,
+      startFreshParticipation
     );
   },
   confirmModal: function () {

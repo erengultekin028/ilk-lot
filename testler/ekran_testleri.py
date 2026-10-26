@@ -259,6 +259,32 @@ def _(o):
     assert r['cagri3'] == 1 and r['stage3'] == 'withdrawn', r
 
 
+@test('Çekildin ekranı: gönüllü çekilmede "Yeni katılım başlat" görünür; 18 yaş altı kayıtta görünmez ve eylem çalışmaz; onaylanınca sayfa yenilenir, eski kuyruk anahtarları silinir, tema kalır')
+def _(o):
+    s = o.sayfa()
+    metin = "document.getElementById('main-view').innerText"
+
+    def goster(ineligible):
+        s.evaluate("(i) => { const k = window.ilkLot; k.state.withdrawnIneligible = i; k.state.stage = 'withdrawn'; k.render(); }", ineligible)
+
+    goster(False)
+    assert 'Yeni katılım başlat' in s.evaluate(metin) and 'Çalışmadan çekildin' in s.evaluate(metin)
+    goster(True)
+    assert 'Yeni katılım başlat' not in s.evaluate(metin) and 'Çalışmadan çekildin' in s.evaluate(metin)
+    s.evaluate("() => window.ilkLot.actions.requestFreshStart()")
+    assert s.evaluate("document.getElementById('modal').classList.contains('is-open')") is False, '18 yaş altı kayıtta yeni katılım penceresi açılmamalı'
+    goster(False)
+    s.evaluate("() => { localStorage.setItem('ilklot:q:ESKI', '[1]'); localStorage.setItem('ilklot:evn:ESKI', '5'); localStorage.setItem('ilklot:theme', 'dark'); }")
+    s.evaluate("() => window.ilkLot.actions.requestFreshStart()")
+    assert s.evaluate("document.querySelector('#modal-box h2').textContent") == 'Yeni katılım başlat'
+    with s.expect_navigation(timeout=30000):
+        s.evaluate("() => window.ilkLot.actions.confirmModal()")
+    s.wait_for_function('window.ilkLot && ["connection-error","consent","welcome"].includes(window.ilkLot.state.stage)', timeout=30000)
+    anahtarlar = s.evaluate('Object.keys(localStorage)')
+    assert not [k for k in anahtarlar if k.startswith('ilklot:q:') or k.startswith('ilklot:evn:')], anahtarlar
+    assert 'ilklot:theme' in anahtarlar, 'tema tercihi korunmalı'
+
+
 @test('Eşzamanlama göstergesi: kuyruk boşken yeşil nokta (hata sınıfı yok)')
 def _(o):
     s = o.sayfa()

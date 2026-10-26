@@ -3,6 +3,11 @@
 import { CONFIG } from './app-config.js';
 import { formatNumber } from '../utils/format.js';
 
+// ───────────────── Katılım ─────────────────
+// Çalışmadan çekilen katılımcı, "çekildin" ekranından yeni bir katılım başlatabilsin mi? Yeni katılım ayrı bir kimlik ve ayrı bir yuvadır;
+// önceki kayıt çekilmiş kalır. 18 yaş altı nedeniyle kapanan kayıtlarda bu seçenek HİÇBİR ZAMAN gösterilmez. false yapılırsa seçenek kalkar.
+export const ALLOW_FRESH_START_AFTER_WITHDRAWAL = true;
+
 // ───────────────── Demografik form ─────────────────
 // Sadece analizde kontrol değişkeni olacak, kimlik belirlemeyen kaba kategoriler.
 // 18 yaş sorusu zorunlu (katılım koşulu), gerisi isteğe bağlı.

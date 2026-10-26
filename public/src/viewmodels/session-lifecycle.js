@@ -10,7 +10,7 @@ import { eventLog, flushEvents, logEvent } from '../services/event-log.js';
 import { participantRepository } from '../repositories/participant-repository.js';
 import { enrollmentRepository } from '../repositories/enrollment-repository.js';
 import { connectFirebase } from '../services/firebase-service.js';
-import { signInAnonymouslyIfNeeded } from '../services/auth-service.js';
+import { signInAnonymouslyIfNeeded, signOutUser } from '../services/auth-service.js';
 import { hashSeed } from '../utils/random.js';
 import {
   findNextSession,
@@ -49,6 +49,7 @@ export async function bootstrap() {
     }
     const participant = (await participantRepository.getParticipant(enrollment.code)) || {};
     if (participant.withdrawn) {
+      state.withdrawnIneligible = !!participant.ineligible;
       state.stage = 'withdrawn';
       return render();
     }
@@ -89,6 +90,7 @@ export async function startParticipation(code) {
     const value = (await participantRepository.getParticipant(code)) || {};
     if (value.withdrawn) {
       state.busy = false;
+      state.withdrawnIneligible = !!value.ineligible;
       state.stage = 'withdrawn';
       return render();
     }
@@ -233,6 +235,20 @@ export function endSession() {
   saveSnapshot();
   flushEvents();
 }
+// Yeni katılım: bu tarayıcının anonim kimliğini bırakır ve sayfayı yeniler; sonuç yeni kimlik, onam ekranı ve YENİ yuvadır.
+// Önceki kayıt çekilmiş kalır (geri açılmaz). Yalnızca bu tarayıcıdaki önceki katılıma ait kuyruk ve sayaç anahtarları silinir.
+export async function startFreshParticipation() {
+  try {
+    await signOutUser();
+  } catch (error) {}
+  try {
+    Object.keys(localStorage).forEach(function (key) {
+      if (key.indexOf('ilklot:q:') === 0 || key.indexOf('ilklot:evn:') === 0) localStorage.removeItem(key);
+    });
+  } catch (error) {}
+  location.reload();
+}
+
 export async function withdrawParticipant() {
   const participantCode = state.participantCode;
   const group = state.group;
