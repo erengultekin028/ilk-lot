@@ -85,7 +85,7 @@ Veri akışı şeması: `veri_akisi.svg` (PNG: `veri_akisi.png`). Alan tanımlar
 
 | Veri | Örnek | Kimliği belirler mi? |
 |---|---|---|
-| Katılım kodu ve grup | `KM7D-P2XR-9TQA`, A/B | Hayır (rastgele). Kart dağıtımında kişi-kod eşleşmesi kaydedilirse takma adlı olur |
+| Katılım kodu ve grup | `KM7D-P2XR-9TQA`, A/B | Hayır (rastgele; kişi–kod eşleşmesi tutulmaz). Tarayıcıya bağlı anonim oturum kimliği (uid) yuva koduna bağlıdır; bu bir kişiyi değil bir tarayıcıyı gösterir ama veriyi teknik olarak **takma adlı** yapar |
 | Demografik (isteğe bağlı) | Yaş aralığı, cinsiyet, bölüm alanı, sınıf, yatırım ve simülasyon deneyimi | Tek başına hayır; çok küçük gruplarda dolaylı belirleme riski, bu yüzden aralıklı kategoriler kullanılır |
 | Davranış | Kararlar, süreler, simülatör işlemleri, gerekçeler, gerginlik, test cevapları, ekran ve sekme etkinliği | Hayır |
 | Serbest metin | "Araştırma neyi ölçüyordu?" (en fazla 400 karakter) | **Katılımcı yazarsa kişisel bilgi içerebilir**; analizden önce gözden geçirilir ve gerekirse temizlenir |
@@ -95,10 +95,10 @@ Veri akışı şeması: `veri_akisi.svg` (PNG: `veri_akisi.png`). Alan tanımlar
 - **Veri sorumlusu:** [DOLDUR]
 - **Hukuki dayanak:** Açık rıza (onam ekranı ve onay kutusu; kabul edilen onam sürümü ve zaman damgası kaydedilir). **[DOLDUR]** Kurumun KVKK birimi onaylamalı.
 - **Saklama ve silme:** [DOLDUR: süre]. Süre sonunda ham veri silinir; yalnızca kimliksiz toplu sonuçlar kalır.
-- **Erişim:** Yalnızca [DOLDUR: araştırmacılar]. Sunucuda kurallarla zorlanır: katılımcı grubunu değiştiremez ve çekilmiş kaydı geri açamaz; kayıtları listeleme ve olay kayıtlarını okuma yalnızca yetkili araştırmacı hesabındadır. **Sınır:** Katılımcı kaydı, kodunu bilen herhangi bir anonim oturumla okunup yazılabilir; koruma, kodun rastgele ve tahmin edilemez olmasına (12 karakter, yaklaşık 10¹⁸ olasılık) dayanır, kişiye bağlı bir kimlik doğrulamasına değil (`firebase/firestore.rules`). Araştırmacı hesabı için iki adımlı doğrulama önerilir. **[DOLDUR]**
-- **Yurt dışı aktarım:** Firebase (Google) sunucuları yurt dışında olabilir. Bunun KVKK kapsamında nasıl değerlendirildiğini ve hangi dayanakla yapılacağını **kurumunun KVKK/hukuk birimine danış**; bölge ve sözleşme bilgisi: **[DOLDUR]**.
-- **Kart dağıtımı:** Kartları dağıtırken kimin hangi kodu aldığını **kaydetme**. Kaydedersen veri anonim değil, takma adlı olur ve silme/erişim talepleri için bu eşleşmenin güvenliği ayrıca açıklanmalıdır. **[KARAR]**
-- **Kodunu kaybeden katılımcı:** Araştırmacı kişiyi tanımadığı için verisini bulamaz; bu, onamda "veriler yalnızca sana verilen rastgele kodla eşleşir" cümlesiyle belirtilir. Katılımcı kodunu bilerek talepte bulunabilir.
+- **Erişim:** Yalnızca [DOLDUR: araştırmacılar]. Sunucuda kurallarla zorlanır: katılımcı grubunu değiştiremez ve çekilmiş kaydı geri açamaz; kayıtları listeleme ve olay kayıtlarını okuma yalnızca yetkili araştırmacı hesabındadır. Katılımcı **kod girmez**: Firebase anonim girişle sıradaki yuvayı alır ve yalnızca **kendi** yuvasına ait kaydı okuyup yazabilir (kural, oturum kimliği ile yuva kaydını eşleştirir); başkasının kaydına, listeye ya da olaylara erişemez. 18 otomatik kural testi vardır (`firebase/kural_testleri`). Araştırmacı hesabı tek e-postadır; iki adımlı doğrulama önerilir. **[DOLDUR]**
+- **Yurt dışı aktarım:** Araştırma verisi Google Firebase'de (şu an Firestore konumu **nam5, ABD**; AB bölgesine taşıma seçeneği `docs/KONUM_VE_KVKK_KARARI.md` içinde) saklanır; **kimlik doğrulama (anonim oturum) ve ağ günlükleri yalnızca ABD veri merkezlerinde işlenir** (Firebase gizlilik sayfası). Bunun KVKK m. 9 kapsamında hangi dayanakla yapılacağını **kurumunun KVKK/hukuk birimine danış** (soru listesi aynı belgede); sözleşme bilgisi: **[DOLDUR]**.
+- **Yuva ataması (kart yok):** Katılımcıya kod ya da kart verilmez; ortak bağlantıyla girer ve onamdan sonra sıradaki yuvayı otomatik alır. Kimin hangi yuvayı aldığı **kaydedilmez**; tutulan tek bağ tarayıcıya bağlı anonim kimliktir (yukarıdaki tablo). **[KARAR]** Veriyi "anonim" değil "takma adlı" olarak tanımlamak ve onamdaki "kimliksiz" ifadesini buna uydurmak (karar paketi madde 3).
+- **Tarayıcı verisini silen katılımcı:** Aynı tarayıcıya bağlı kaydına dönemez, yeni yuva alır; eski kaydı bulunamaz (kimlik tutulmadığı için). Katılımcı, ekranda gösterilen kodunu (menüde maskeli) bilerek destek isteyebilir.
 - **Yayın ve paylaşım:** Yalnızca kimliksiz, toplu sonuçlar. **[KARAR]** Anonim satır düzeyinde veri (serbest metin hariç) açık veri olarak paylaşılacak mı?
 - **Veri ihlali:** [DOLDUR: kime, ne zaman bildirilecek]
 
