@@ -1,6 +1,8 @@
 # Testler
 
-## Güncel tarayıcı testleri: `ekran_testleri.py` (yeni yapı, b34)
+## Güncel tarayıcı testleri: `ekran_testleri.py` (yeni yapı, b34; erişilebilirlik b35)
+
+Erişilebilirlik taraması (axe-core, WCAG 2.1 A/AA; koyu/açık tema ve büyük yazı, katılımcı ekranları ve panel): `python testler/ekran_testleri.py "axe-core"` (~90 sn; `npm install` ile `axe-core` gerekir). Sonuç ve bekleyen karar: `docs/ERISILEBILIRLIK.md`.
 
 ```
 pip install playwright

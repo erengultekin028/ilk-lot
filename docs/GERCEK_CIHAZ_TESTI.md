@@ -1,69 +1,83 @@
-# Gerçek cihaz ve Firebase deneme protokolü
+# Gerçek cihaz ve Firebase deneme protokolü (b34 sonrası akış)
 
-Otomatik testler (`testler/uygulama_testleri.py`) masaüstü Chromium'da çalışır ve Firebase'i **sahte bir SDK** ile dener. Aşağıdakileri yalnızca gerçek telefonlarda ve gerçek Firebase projende görebilirsin. Her satırı işaretle, sonucu yaz.
+> Güncelleme: 26 Ekim 2026. Önceki sürüm kartlı, kod girişli ve "başka cihazda devam et" akışını anlatıyordu; bunların hepsi kalktı. Bu protokol **anonim giriş + sıralı yuva** akışına göredir (`docs/MIMARI.md`).
 
-**Önkoşul:** Uygulamayı kendi adresinde yayınla (Firebase Hosting ya da GitHub Pages) ve `CFG.firebase`'i doldur. claude.ai içinde Firebase çalışmaz; orada yalnızca yerel (demo) mod denenebilir.
+Otomatik testler şunları zaten denetler: `python testler/ekran_testleri.py` (masaüstü Chromium; Firebase **kesik**, gerçek veri yazılmaz), `firebase/kural_testleri` (kurallar, emulator), `npm run check:*`. Aşağıdakileri yalnızca **gerçek telefonlarda ve gerçek Firebase projesinde** görebilirsin. Her satırı işaretle, sonucu yaz; **bir satır ✗ ise pilota başlama.**
 
-**Durum sütunu:** ✅ otomatik testle denendi (masaüstü) · ⚠️ denenmedi, bu protokolde dene.
+**Önkoşul:** Site yayında (`https://ilk-lot-pilot.web.app`; `main` dalına her gönderim otomatik yayınlanır), araştırmacı hesabıyla `/admin/` girişi çalışıyor, `meta/counter` ve yuva listesi var (panel → Randomizasyon listesi → "Listeyi yükle" sayıyı göstermeli). **Deneme kayıtları gerçek kayıttır**; protokol bitince panelden "Test kayıtları" ile ayır.
 
-## A. Her cihazda
+**Durum sütunu:** ✅ otomatik testle denendi (masaüstü, Firebase kesik) · ⚠️ denenmedi, bu protokolde dene. Sonuç sütununa ✓/✗ ve not yaz.
+
+## A. Her cihazda (telefon başına)
 
 | # | Dene | Beklenen | Durum |
 |---|---|---|---|
-| A1 | Karttaki QR'ı telefonun kamerasıyla okut | Link açılır, kod ekranı atlanır, onam ekranı gelir | ⚠️ |
-| A2 | Linkte `#k=KOD` var; sayfa açılınca adres çubuğuna bak | Kod adres çubuğundan silinir | ⚠️ |
-| A3 | Panel → **Sistem testini çalıştır** | Tüm kontroller ✓; "Sonucu kopyala" ile kaydet | ✅ yerel · ⚠️ Firebase |
-| A4 | Tam akış (kartla, baştan sona) | 12 karar + simülatör + bitiş tamamlanır | ✅ yerel · ⚠️ Firebase |
-| A5 | Lot kutusuna dokun, klavyeyle yaz | Klavye açılınca "lot sat/al" düğmesi ve özet erişilebilir kalır | ⚠️ (masaüstünde taklit edilemez) |
-| A6 | Simülatör ortasında sayfayı yenile | Aynı fiyat ve portföyle devam | ✅ yerel · ⚠️ Firebase |
-| A7 | Simülatör ortasında ekranı kilitle, 30 sn sonra dön | Piyasa duruyordu, kaldığı yerden devam; kayıt kaybı yok | ⚠️ |
-| A8 | Başka uygulamaya geç, 1 dk sonra dön | Aynı | ⚠️ |
-| A9 | Menü → **Başka cihazda devam et** → ikinci telefondan QR | İkinci cihaz kaldığı yerden devam eder, ilk cihaz kodu unutur | ✅ yerel · ⚠️ Firebase |
-| A10 | Telefonu yatay çevir | Düzen bozulmaz, hiçbir buton kesilmez | ⚠️ |
-| A11 | Sistem yazı boyutunu en büyüğe al | Metin taşmaz; tablo okunur | ⚠️ |
-| A12 | Koyu mod / düşük güç modu / hareketi azalt | Okunur kontrast; ilerleme çubuğu ve animasyonlar bozulmaz | ⚠️ |
-| A13 | VoiceOver ya da TalkBack ile onam ve bir karar ekranı (5 dk) | Düğmeler adlandırılmış; yükseliş/düşüş okunur; pencere (⋯ menü) açılınca ekran okuyucu başlığı okur ve arka plana geçmez | ⚠️ |
-| A14 | Onam ekranında ve ⋯ menüsünde **Yazı boyutu**: Büyük ve Çok büyük seç; onam, karar, simülatör portföy ve hisse detayı ekranlarına bak (iPhone Safari ve Android Chrome/Firefox) | Metin büyür, hiçbir düğme ya da sayı kesilmez, yatay kaydırma çıkmaz, üst çubuk düğmeleri ekrana sığar; yenileyince seçim kalır | ⚠️ (yalnızca masaüstü Chromium'da denendi) |
+| A1 | Katılım bağlantısını (panel → Katılım bağlantısı → QR/kopyala) telefonda aç; QR'ı kamerayla okut | Site açılır, "Yükleniyor…" sonra onam ekranı gelir; kod girmen istenmez | ⚠️ |
+| A2 | Onam ekranı: yazı boyutu (Normal/Büyük/Çok büyük), açılır ayrıntılar, onay kutusu | Hepsi çalışır; onay kutusu işaretlenmeden "Katılıyorum" ilerlemez; metin taşmaz | ✅ ekranın çizilmesi (masaüstü) · ⚠️ onay kutusu kapısı ve telefon |
+| A3 | Onamı kabul et (**yeni yuva tüketir**) | Form/ön test ekranına geçilir; panelde "Alınan yuva" 1 artar; konsolda `users`, `claims`, `participants/{kod}` ve altında `events` oluşur | ⚠️ |
+| A4 | Panel → **Sistem testini çalıştır** (ayrı bir cihazda, araştırmacı girişiyle) | Tüm satırlar ✓; "Sonucu kopyala" ile kaydet | ⚠️ gerçek Firebase |
+| A5 | Tam akış: form → ön test → tanıtım ve alıştırma (rehberli tur) → 1. bölüm (6 karar) → simülatör (7,5 dk) → 3. bölüm (6 karar) → son test → bilgilendirme | Hiçbir ekran takılmaz; ilerleme çubuğu geri gitmez; bitişte teşekkür ekranı | ✅ ekranlar · ⚠️ uçtan uca gerçek |
+| A6 | Rehberli tur (alıştırma ve simülatör başı) | Adımlar sırayla çıkar, ilgili öğe vurgulanır, "Anladım" turu kapatır | ✅ masaüstü · ⚠️ telefon |
+| A7 | Simülatörde Portföy / Piyasa / Analiz sekmeleri, hisse ayrıntısı (grafik üzerinde parmakla gezme) | Toplam, nakit, gün canlı güncellenir; Piyasa kartları dolu; gezme doğru günü gösterir | ✅ masaüstü (fare) · ⚠️ dokunmatik |
+| A8 | **A grubu:** simülatörde zarardaki hisseyi sat (gerekçe seç) | 10 sn bekleme ekranı gelir, sayı **ilerler**, süre bitince "Satışı onayla" açılır; "Vazgeç" işlem penceresine döndürür. B grubunda bu ekran **çıkmaz**. Grubu panelden (Gizli liste CSV'si, `code` → `grp`) doğrula | ✅ masaüstü · ⚠️ telefon |
+| A9 | Lot kutusuna dokun, klavyeyle yaz | Klavye açılınca "Sat/Al" düğmesi ve özet erişilebilir kalır | ⚠️ (masaüstünde taklit edilemez) |
+| A10 | Simülatör ortasında sayfayı **yenile** | Aynı kişi ("Tekrar hoş geldin"), aynı fiyat ve portföyle devam; yeni yuva **alınmaz** (panelde "Alınan yuva" artmaz) | ⚠️ |
+| A11 | Simülatör ortasında ekranı kilitle, 30 sn sonra dön; başka uygulamaya geç, 1 dk sonra dön | Kaldığı yerden devam; kayıt kaybı yok | ⚠️ |
+| A12 | Telefonu yatay çevir | Düzen bozulmaz, hiçbir düğme kesilmez | ⚠️ |
+| A13 | Sistem yazı boyutunu en büyüğe al; uygulamada Büyük ve Çok büyük yazı | Metin taşmaz, yatay kaydırma çıkmaz; yenileyince seçim kalır | ✅ masaüstü (axe taraması) · ⚠️ telefon |
+| A14 | Koyu/açık tema düğmesi; sistem koyu modu; düşük güç modu; hareketi azalt | Okunur kontrast; animasyonlar bozulmaz. (Bilinen: açık temada kırmızı rozet kontrastı 4,13:1, `docs/ERISILEBILIRLIK.md`) | ✅ axe · ⚠️ telefon |
+| A15 | Menü (⋯) → **Çalışmadan çekil** (**yalnızca denemelik bir kayıtla; geri açılamaz**) | İlk onaydan sonra "Emin misin?" gelir; vazgeçersen kayıt değişmez; onaylarsan "Çalışmadan çekildin" ve yenileyince aynı ekran | ✅ masaüstü · ⚠️ gerçek (konsolda `withdrawn: true`) |
 
 ## B. Özel durumlar
 
 | # | Dene | Beklenen | Durum |
 |---|---|---|---|
-| B1 | **iPhone özel gezinme** ya da **uygulama içi tarayıcı** (WhatsApp/Instagram bağlantısı) ile aç; Sistem testi | Tarayıcı deposu ✗ olabilir. Yerel modda veri bellekte tutulur (sayfa kapanınca silinir). **Gerçek pilotta bu görünümde katılım yaptırma**; katılımcıdan Safari/Chrome'da açmasını iste | ✅ yerel · ⚠️ Firebase |
-| B2 | Simülatör sırasında **uçak modunu 30 sn aç, kapat** (Firebase modunda) | Oyun devam eder; üstteki durum noktası "Bağlantı yok, veriler cihazda bekliyor" durumuna geçer; bağlantı gelince olaylar gönderilir (Sistem testinde "Olay kuyruğu" önce > 0, sonra 0) | ⚠️ |
-| B3 | Yavaş ağ (Ayarlar → geliştirici → ağ hız sınırı ya da kötü Wi-Fi) | Karar ekranları takılmaz; yazma gecikmesi katılımcıyı bekletmez | ⚠️ |
-| B4 | Aynı kodla iki cihazdan **aynı anda** girmeye çalış | **Korunmuyor, davranış belirsiz.** İki cihaz aynı olay numaralarını üretip birbirinin kaydını ezebilir. Katılımcıya tek cihaz kullanmasını söyle; cihaz değiştirmek gerekirse Menü → "Başka cihazda devam et" akışını kullandır (A9). Bunu bilerek deneyip ne olduğunu not et | ⚠️ |
+| B1 | **iPhone özel gezinme** ve **uygulama içi tarayıcı** (WhatsApp/Instagram bağlantısı) ile aç | Anonim giriş tarayıcı deposuna (IndexedDB) bağlıdır; çalışmayabilir ya da oturum yenilemede kaybolabilir ("Bağlantı kurulamadı" ya da yeni yuva). **Sonucu yaz.** Gerçek pilotta katılımcıdan Safari/Chrome'da açmasını iste | ⚠️ |
+| B2 | Simülatör sırasında **uçak modunu 30 sn aç, kapat** | Oyun devam eder; üstteki nokta "bağlantı yok/bekliyor" durumuna geçer; bağlantı gelince olaylar gönderilir (Sistem testinde "Olay kuyruğu" önce > 0, sonra 0) | ⚠️ |
+| B3 | Yavaş ağ (kötü Wi-Fi ya da ağ hız sınırı) | Karar ekranları takılmaz; yazma gecikmesi katılımcıyı bekletmez | ⚠️ |
+| B4 | **Aynı tarayıcıda iki sekme** aç (aynı anonim kimlik, aynı kayıt) | Korunmuyor: iki sekme olay numaralarını çakıştırıp birbirini ezebilir. Katılımcıya tek sekme kullanmasını söyle; ne olduğunu not et | ⚠️ |
+| B5 | **Tarayıcı verisini sil**, siteyi yeniden aç | Yeni anonim kimlik ve **yeni yuva** alınır; eski kayıt bu kişiye bağlanamaz (katılımcı uyarısı menüde yazılı) | ⚠️ |
+| B6 | **Başka tarayıcıdan** (Chrome yerine Safari) ya da "Ana ekrana ekle" kısayolundan aç | Yeni yuva alınır (aynı kişi iki kez sayılabilir); menü uyarısı görünür | ⚠️ |
+| B7 | **Bağlantısız aç** (uçak modunda siteyi aç) | "Bağlantı kurulamadı" ekranı ve "Tekrar dene"; yerel/örnek veri **yok** | ✅ masaüstü (Firebase kesik) · ⚠️ telefon |
 
-## C. Firebase projesi
+## C. Firebase projesi ve araştırmacı paneli
 
 | # | Dene | Beklenen | Durum |
 |---|---|---|---|
-| C1 | `firestore.rules` yayınla; Firebase konsolunda **Rules Playground** | Anonim kullanıcı: kendi `allocations/{kod}` kaydını **okuyabilir**, listeleyemez; kod listede yoksa `participants` yazamaz | ⚠️ (kurallar hiç çalıştırılmadı) |
-| C2 | Kullanılmamış bir kartla akışı bitir | Konsolda `participants/{kod}` (grp, consentAt, demo, pre, `sess_1` …) ve `events` alt koleksiyonu görünür | ✅ sahte SDK · ⚠️ gerçek |
-| C3 | **Rules Playground**'da `participants/{kod}` üzerinde, anonim kullanıcıyla ve `grp` alanını listedekinden **farklı** bir değerle bir güncelleme simüle et | Reddedilmeli. (Konsoldaki elle düzenleme kurallardan geçmez; kuralları bu yüzden konsoldan sınayamazsın) | ⚠️ |
-| C4 | Katılımcı menüden **Çalışmadan çekil** | Kayıt `withdrawn: true` olur; olaylar hâlâ durur (katılımcı silemez) | ✅ sahte SDK · ⚠️ gerçek |
-| C5 | Araştırmacı olarak giriş → Çekilenler bölümünde **Say** (politika A: silme düğmesi yok) | Çekilen sayısı görünür; konsolda kayıt `withdrawn: true`, `withdrawnAt` ile durur, olaylar silinmez; CSV'ye girmez | ✅ sahte SDK · ⚠️ gerçek |
-| C6 | Araştırmacı girişiyle **Sistem testi** | "Firestore yazma (araştırmacı)" ✓ | ✅ sahte SDK · ⚠️ gerçek |
-| C7 | Panelden CSV indir → `analiz/ilklot_analiz.py` ile çalıştır | Sütunlar eşleşir, rapor üretilir | ✅ yerel örnek · ⚠️ Firebase çıktısı |
-| C8 | Güvenlik kurallarında `arastirmaci@ornek.edu.tr` yerine kendi e-postanı yaz | Araştırmacı girişi çalışır; başkası liste okuyamaz | ⚠️ |
+| C1 | Güvenlik kuralları | Yayınlı kurallar `firebase/firestore.rules` ile aynı; **18 emulator testi geçiyor** (`cd firebase/kural_testleri && npm test`) | ✅ otomatik (emulator, CI'da) |
+| C2 | Konsolda bir deneme katılımcısı | `participants/{kod}` (grp, consentAt, demo, pre, `sess_1`…), `events` alt koleksiyonu, `users/{uid}`, `claims/{kod}`; `meta/counter.next` arttı | ⚠️ |
+| C3 | Panel → **Randomizasyon listesi** | Toplam yuva, A/B sayısı, "Alınan yuva" ve "Sıradaki yuva" doğru; **Gizli liste CSV**'si iner | ⚠️ |
+| C4 | Panel → **Canlı pano** | Onam veren, aktif, tamamlayan, ilerleme; birkaç dakika içinde deneme oturumu "şu an ekranda" listesinde | ⚠️ |
+| C5 | Panel → **Test kayıtları**: yükle, süzgeç, seç, işaretle, geri al | İşaretlenen kayıt panoda "Test kaydı (dışarıda)" sayısına girer; CSV'lere girmez; geri alınca döner (`testRecord` alanları konsolda) | ✅ masaüstü (sahte veriyle) · ⚠️ gerçek |
+| C6 | Panel → **Tam yedek (JSON)** | `ilklot_tam_yedek_GIZLI_*.json` iner; içindeki sayımlar panodakiyle uyuşur; çekilmiş ve test kayıtları da içindedir | ✅ masaüstü (sahte veriyle) · ⚠️ gerçek |
+| C7 | Panelden **Katılımcı özeti** ve **Tüm olaylar** CSV'sini indir → `analiz/ilklot_analiz.py` ile çalıştır | Sütunlar eşleşir, rapor üretilir; test/çekilmiş kayıtlar **yok** | ⚠️ gerçek Firebase çıktısı |
+| C8 | Araştırmacı dışı hesapla (ya da çıkış yapıp) `/admin/` aç | Giriş formu gelir; katılımcı hesabı liste okuyamaz (kurallar) | ✅ kurallar · ⚠️ elle |
+| C9 | Araştırmacı hesabında iki faktörlü doğrulama | Açık | ⚠️ |
 
-## D. Ekran okuyucu senaryosu (A13'ün ayrıntısı, ~15 dk, gerçek telefonda)
+## D. Klavye ve ekran okuyucu (~20 dk, gerçek telefonda ve masaüstünde)
 
-Otomatik tarama (`testler/erisilebilirlik_taramasi.py`) yalnızca adsız öğe, taşma ve küçük hedef gibi biçimsel sorunları arar; ekran okuyucunun **ne okuduğunu** göremez. iPhone'da VoiceOver (Ayarlar → Erişilebilirlik) ya da Android'de TalkBack ile, ekrana bakmadan şu akışı yürüt ve her satıra not düş:
+Otomatik axe taraması (`docs/ERISILEBILIRLIK.md`) yalnızca biçimsel sorunları bulur; ekran okuyucunun **ne okuduğunu** ve klavye akışını göremez. iPhone'da VoiceOver ya da Android'de TalkBack ile (ve masaüstünde yalnızca klavye ile) şu akışı yürüt:
 
 | # | Dene | Beklenen | Durum |
 |---|---|---|---|
 | D1 | Onam ekranı: metni sırayla oku, onay kutusunu işaretle, devam et | Başlıklar başlık olarak okunur; kutu "işaretli/işaretsiz" söyler; düğme adı anlaşılır | ⚠️ |
-| D2 | Kod ekranı, form, ön test soruları | Her alanın adı okunur; cevap seçenekleri tek tek ve seçili durumuyla okunur | ⚠️ |
-| D3 | Karar ekranı: hisse bilgisi, yükseliş/düşüş, Sat/Tut/Al | Yükseliş ve düşüş yalnız renkle değil sözle de anlaşılır; üç düğme ayırt edilir | ⚠️ |
-| D4 | ⋯ menüsünü aç, kapat | Açılınca pencere başlığı okunur, odak pencerede; arka plana geçilemez; kapanınca odak ⋯ düğmesine döner | ✅ otomatik (odak) · ⚠️ okuma |
-| D5 | Simülatör portföy: bir hisseyi seç, detay, işlem penceresi | Fiyat, adet, kâr/zarar okunur; piyasa **durmuş** olduğu söylenir ya da anlaşılır | ⚠️ |
-| D6 | Bekleme ekranı (A grubu): 10 sn boyunca | Geri sayım duyurulur (ya da en azından "bekle" denir); ekran okuyucu kullanıcısı bunun bir bekleme olduğunu anlar; süre dolunca düğme duyurulur | ⚠️ **Bu, müdahalenin kendisi; ekran okuyucuyla farklı çalışırsa grup farkı bozulur.** Koddan gördüğüm (denemedim): geri sayım sayısı sessizce güncelleniyor (`aria-live` yok, `kaynak/07_app.js` `setTxt('cdn',…)`) ve süre bitince "devam" düğmesi sessizce açılıyor; okuyucu kullanıcısı bitişi duymayabilir. Gerçek cihazda doğrula; sorun çıkarsa düzeltme uygulama değişikliğidir (sürüm, test, etik materyal) |
-| D7 | Terim açıklaması (noktalı alt çizgili kelime) | Düğme olarak okunur, açıklama penceresi başlıkla gelir | ⚠️ |
-| D8 | Bilgilendirme ekranı ve çekilme düğmesi | Okunur ve ulaşılabilir | ⚠️ |
+| D2 | Form ve ön test soruları | Her alanın adı okunur; seçenekler tek tek ve seçili durumuyla okunur | ⚠️ |
+| D3 | Karar ekranı: hisse bilgisi, yükseliş/düşüş, Sat/Tut/Daha al | Yükseliş/düşüş yalnız renkle değil sözle de anlaşılır; üç düğme ayırt edilir | ⚠️ |
+| D4 | ⋯ menüsünü aç, kapat | Açılınca pencere başlığı okunur, odak pencerede; arka plana geçilemez; kapanınca odak ⋯ düğmesine döner | ⚠️ (odak ve okuma; otomatik test yok) |
+| D5 | Simülatör portföy: hisse seç, detay, işlem penceresi | Fiyat, adet, kâr/zarar okunur; işlem penceresi açıkken piyasanın durduğu anlaşılır | ⚠️ |
+| D6 | **Bekleme ekranı (A grubu), 10 sn** | Geri sayım duyurulur (ya da en azından "bekle" denir); süre dolunca "Satışı onayla" düğmesinin açıldığı duyulur | ⚠️ **Bu, müdahalenin kendisi.** Koddan gördüğüm (denemedim): sayı sessizce güncelleniyor (`#cooldown-number` üzerinde `aria-live` yok) ve düğme sessizce açılıyor; ekran okuyucu kullanıcısı bunu duymayabilir. Farklı çalışıyorsa grup farkı bozulur; düzeltme bir **uygulama değişikliğidir** (sürüm, test, etik materyal) |
+| D7 | Terim açıklaması (noktalı alt çizgili kelime) | Düğme olarak okunur; açıklama penceresi başlıkla gelir | ⚠️ |
+| D8 | Bilgilendirme ekranı, çekilme düğmesi (iki aşamalı onay) | Okunur ve ulaşılabilir; ikinci pencerenin başlığı ("Emin misin?") okunur | ⚠️ |
+| D9 | Yalnızca klavye (masaüstü): Sekme ile onamdan karar ekranına, menüye ve bekleme penceresine ulaş; Esc ile pencere kapat | Odak görünür, mantıklı sırada; pencerede odak tuzağı vardır | ⚠️ |
 
-**Ekran okuyucu kullanan birini katılımcı olarak almayı planlamıyorsan bile** bu senaryoyu bir kez yürütmen, kullanıcı gerçekten ihtiyaç duyduğunda ve etik kurul sorduğunda dürüst bir cevap verir. Hata bulursan etik başvurudaki "erişilebilirlik" cümlesini buna göre yaz (otomatik tarama + manuel deneme sonucu; "tam erişilebilir" deme).
+**Ekran okuyucu kullanan birini katılımcı olarak almayı planlamıyorsan bile** bu senaryoyu bir kez yürütmen, etik kurul sorduğunda dürüst bir cevap verir. Hata bulursan başvurudaki "erişilebilirlik" cümlesini buna göre yaz (otomatik tarama + manuel deneme sonucu; "tam erişilebilir" deme).
 
-## Sonuçları kaydet
+## E. Sonuçları kaydet
 
-Her cihaz için: model, işletim sistemi sürümü, tarayıcı, Sistem testi çıktısı, işaretlenen satırlar, gözlenen sorunlar. Pilot raporuna (`PILOT_PLANI.md`) ek olarak sakla. Bir satır ✗ ise pilota başlama.
+Her cihaz için bir satır:
+
+| Cihaz (model) | İşletim sistemi | Tarayıcı | Sistem testi | A | B | D | Sorunlar / notlar |
+|---|---|---|---|---|---|---|---|
+| | | | | ✓/✗ | ✓/✗ | ✓/✗ | |
+
+Pilot raporuna (`docs/PILOT_PLANI.md`) ek olarak sakla. **Deneme bittiğinde:** panelden önce **Tam yedek** al, sonra deneme kayıtlarını **Test kaydı olarak işaretle** (pilot için yeni yuva listesi oluştur; tüketilen yuvalar geri verilemez).

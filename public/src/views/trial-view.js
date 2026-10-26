@@ -29,7 +29,7 @@ function trialProgressHtml() {
       '</div>'
     );
   return (
-    '<div class="steps" aria-label="Karar ' +
+    '<div class="steps" role="img" aria-label="Karar ' +
     (state.trialIndex + 1) +
     ' / ' +
     currentBlockTrials().length +

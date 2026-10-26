@@ -7,11 +7,13 @@
 ## Pilottan önce (hepsi tamam olmadan başlama)
 
 - [ ] **Sarı yer tutucu kalmadı.** Panel → "Onam metni" bölümü "Tüm onam alanları dolu" demeli (kurum, etik onay, saklama, barındırma, **destek birimi**, iletişim).
-- [ ] **Gerçek modda çalışıyorsun.** `CFG.firebase` dolu ve kendi adresinde yayınlı (claude.ai içinde Firebase çalışmaz). Hızlı test modu bu durumda kilitlidir.
-- [ ] **Sistem testi** (panel → "Sistem testini çalıştır") her test cihazında ✓; sonuçları kopyalayıp sakla. `docs/GERCEK_CIHAZ_TESTI.md` protokolünü uygula.
+- [ ] **Gerçek Firebase'de yayında.** Site `https://ilk-lot-pilot.web.app` (ya da karar paketi madde 1'in sonucuna göre yeni proje); `main` dalına her gönderim otomatik yayınlanır. Bağlantı kurulamazsa uygulama "Bağlantı kurulamadı" der; yerel/örnek veri kipi **yoktur**.
+- [ ] **Karar paketi kapandı:** özellikle madde 1 (konum/KVKK), madde 2 (onam v2, silme politikası), madde 3 (anonim/takma adlı ifadesi). Onam metni değiştiyse `CONSENT_VERSION` ve etik onay güncel.
+- [ ] **Gerçek cihaz protokolü** (`docs/GERCEK_CIHAZ_TESTI.md`) uygulandı, hiçbir satır ✗ değil; Sistem testi (panel → "Sistem testini çalıştır") her test cihazında ✓, sonuçlar kopyalanıp saklandı.
 - [ ] **Etik onay pilotu da kapsıyor mu?** [DOLDUR] Uygulama içi 3 soruluk geri bildirim formunu (aşağıda) da kapsadığından emin ol.
-- [ ] **Pilot formu açık, doğru dosyadan:** `kaynak/02_core.js` içinde `pilot:true`, derle, `python firebase/dagit.py --pilot` (HATA yok). Ana veri toplama dosyasında bu `false` olmalı.
-- [ ] **Kartlar basıldı**, pilot kodları ayrı sırada.
+- [ ] **Pilot formu açık:** `public/src/constants/app-config.js` içinde `CONFIG.pilot: true`, `python firebase/dagit.py --pilot` (HATA yok). Ana veri toplamada bu `false` olmalı.
+- [ ] **Yuva listesi hazır ve temiz:** Önceki denemelerin kayıtları panelden **Test kayıtları** ile işaretlendi (silinmez; analizden çıkar); pilot için yeterli büyüklükte (12 kişi + yedek) **yeni liste** oluşturuldu (panel → Randomizasyon listesi → Yeni liste). Tüketilen yuvalar geri verilmez.
+- [ ] **Yedek alışkanlığı:** Panel → **Tam yedek (JSON)** denendi; pilot boyunca ve sonunda alınacak.
 - [ ] **Güç hedefi hâlâ açık.** Pilot, ON_KAYIT_TASLAGI.md'deki "Örneklem yolu" kararını netleştirmek için yapılır; karardan önce kayıt yapma.
 
 ## Örneklem ve cihaz çeşitliliği
@@ -31,7 +33,7 @@ Kişileri gerçek hedef kitleden seç (üniversite öğrencisi, borsa bilgisi az
 
 ## Uygulama
 
-1. Katılımcı kendi telefonunda, karttaki QR ile girer. Sen yanında sessizce gözlersin.
+1. Katılımcı kendi telefonunda, **ortak bağlantı ya da QR** ile girer (panel → Katılım bağlantısı); kod ya da kart yoktur, onamdan sonra sıradaki yuvayı otomatik alır (grubunu sen de seçmezsin, görmezsin). Sen yanında sessizce gözlersin. Katılımcıya "tek sekme, aynı tarayıcı; tarayıcı verisini silme" de.
 2. **İki kişide yüksek sesle düşünme:** "Ne düşündüğünü söyleyerek ilerle." Müdahale etme, yönlendirme.
 3. Gözlem notu (süre uygulamadan otomatik gelir): nerede durakladı, neyi yanlış anladı, neye güldü / sıkıldı / kaşlarını çattı.
 4. Bilgilendirme ekranının **sonunda**, uygulama içinde 3 isteğe bağlı soru çıkar (yalnızca pilot yayınında): ilk dakikada anlama (1-5), süre algısı, rahatsızlık/gerginlik. Yanıtlar CSV'ye (`pilot_clear`, `pilot_duration`, `pilot_unease`) gider ve `ilklot_pilot.py` raporuna girer; aşağıdaki 1. ve 3. sorunun kaba karşılığıdır, **açık uçlu cevap yerine geçmez**.
@@ -74,7 +76,28 @@ Rapor süreyi, maruz kalma oranını (güven aralığıyla), anlama ve dikkat ko
 
 ## Pilot sonrası
 
-- **`pilot:false` yap** ve `APP_VERSION`'ı artır; ana veri toplama formsuz dosyayla yapılır (`python firebase/dagit.py`, `--pilot` olmadan, form açıksa HATA verir).
-- Uygulamada **herhangi bir değişiklik** yaparsan `APP_VERSION`'ı artır (`kaynak/02_core.js`) ve yeniden derle (`python kaynak/derle.py`). Ana veri tek sürümden gelmeli.
-- Ön kayıt, **bu değişikliklerden sonra** yapılır.
-- Pilot verisini ayrı bir klasörde sakla; analiz betiği ona karışmasın.
+**Sıra önemli (pilot verisini kaybetme):**
+1. Panelden önce **Katılımcı özeti** ve **Tüm olaylar** CSV'lerini indir ve `ilklot_pilot.py` raporunu üret. (Test olarak işaretlenen kayıtlar CSV'lere girmez; işaretlemeden **önce** indir.)
+2. Panelden **Tam yedek (JSON)** al; pilot verisinin tam kopyasıdır (çekilmiş ve test kayıtları dahil). Dosya grup bilgisi içerir, paylaşma; pilot verisini ayrı klasörde sakla, ana analize karışmasın.
+3. Pilot kayıtlarını panelden **Test kayıtları → işaretle** (silinmez; ana analizden ve dışa aktarmadan çıkar). Ana toplama için **yeni yuva listesi** oluştur; pilotta kullanılan yuvalar geri verilmez.
+
+- **`CONFIG.pilot: false` yap** ve `APP_VERSION`'ı artır (`public/src/constants/app-config.js`); ana veri toplama formsuz sürümle yapılır (`python firebase/dagit.py`, `--pilot` olmadan, form açıksa HATA verir).
+- Uygulamada **herhangi bir değişiklik** yaparsan `APP_VERSION`'ı artır; testleri koş (`npm run lint`, `npm run check:*`, `python testler/arac_testleri.py`, `python testler/ekran_testleri.py`, kural testleri); `main`'e gönderince site otomatik yayınlanır. Ana veri tek sürümden gelmeli.
+- Ön kayıt, **bu değişikliklerden sonra**, ardından `python firebase/dagit.py --kilitle` ile ölçüt ayarlarını kilitle.
+
+## Pilot raporu şablonu
+
+`pilot_raporu.md` (üretilen rapora ek) şu başlıklarla yazılır; **hipotez testi yapma**, yalnızca uygulanabilirliği raporla:
+
+| Bölüm | İçerik |
+|---|---|
+| 1. Özet | Kaç kişi, kaç A/B, hangi tarihler, uygulama sürümü (`APP_VERSION`), tek cümlelik sonuç |
+| 2. Katılımcılar ve cihazlar | Cihaz/tarayıcı tablosu (iPhone Safari, Android Chrome, eski telefon, uygulama içi tarayıcı, koyu mod, küçük ekran) ve her cihazın gerçek cihaz protokolü sonucu |
+| 3. Ölçülenler | Medyan süre ve dağılım, tamamlama oranı, bekleme ekranını gören A oranı (güven aralığıyla), anlama kontrolü (ilk denemede ≥ 2 doğru), dikkat kontrolü, taban panik satış oranı |
+| 4. Karar kuralları | Yukarıdaki tablonun her satırı için ölçülen değer, eşik, karar (geç/sınırda/değiştir) |
+| 5. Gözlem ve görüşmeler | Nerede takıldı/duraksadı, anlaşılmayan kelime ve ekranlar, uygulama içi 3 soru ve 7 görüşme sorusunun özeti |
+| 6. Teknik sorunlar | `client_error` olayları, bağlantı/kuyruk sorunları, yuva ve oturum sorunları (aynı kişi iki kez, tarayıcı verisi silme vb.), panel sorunları |
+| 7. Erişilebilirlik | Otomatik axe sonucu, elle denenen klavye/ekran okuyucu (D bölümü), bekleme ekranının ekran okuyucuyla davranışı |
+| 8. Güç hesabı | Ölçülen ve güven aralığı alt sınırıyla çalıştırılan güç komutlarının çıktısı |
+| 9. Yapılacak değişiklikler | Uygulama/metin/örneklem değişiklikleri; her biri için etki (sürüm, test, etik onay, ön kayıt) |
+| 10. Karar | Pilot ana çalışmaya geçişi için "devam / değiştirip devam / tekrarla" ve gerekçe |

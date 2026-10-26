@@ -15,6 +15,7 @@ import subprocess
 import sys
 import time
 
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 
 KOK = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
@@ -57,22 +58,39 @@ class Ortam:
         self.taban = taban
         yol = os.environ.get('CHROMIUM')
         self.tarayici = p.chromium.launch(executable_path=yol) if yol else p.chromium.launch()
+        self.baglamlar = []
+
+    def temizle(self):
+        """Açık tarayıcı bağlamlarını kapatır (uzun testlerde kaynak tükenmesin)."""
+        for baglam in self.baglamlar:
+            try:
+                baglam.close()
+            except Exception:  # noqa: BLE001 (zaten kapanmış olabilir)
+                pass
+        self.baglamlar = []
 
     def sayfa(self, genislik=1280, yukseklik=800, yol='/', mobil=False):
         """Yeni, temiz bir sayfa açar; Firebase SDK'sı kesilir; sayfa hataları toplanır (sayfa.hatalar)."""
         ctx = self.tarayici.new_context(viewport={'width': genislik, 'height': yukseklik}, color_scheme='dark', locale='tr-TR',
                                         is_mobile=mobil, has_touch=mobil, accept_downloads=True)
+        self.baglamlar.append(ctx)
         ctx.route('**/gstatic.com/**', lambda r: r.abort())
         ctx.route('**/googleapis.com/**', lambda r: r.abort())
         sayfa = ctx.new_page()
         sayfa.hatalar = []
         sayfa.on('pageerror', lambda e: sayfa.hatalar.append(str(e)))
-        sayfa.goto(self.taban + yol)
-        if yol == '/':
-            sayfa.wait_for_function('window.ilkLot && ["connection-error","consent","welcome"].includes(window.ilkLot.state.stage)', timeout=30000)
-            time.sleep(1.5)  # bağlantı akışı oturmadan durumu zorlamak sonradan ezilir
-        else:
-            sayfa.wait_for_selector('.admin-title', timeout=15000)
+        for deneme in (1, 2):  # makine yüklüyken sayfa yüklemesi ara sıra zaman aşımına uğrar: bir kez yeniden dene
+            try:
+                sayfa.goto(self.taban + yol)
+                if yol == '/':
+                    sayfa.wait_for_function('window.ilkLot && ["connection-error","consent","welcome"].includes(window.ilkLot.state.stage)', timeout=30000)
+                    time.sleep(1.5)  # bağlantı akışı oturmadan durumu zorlamak sonradan ezilir
+                else:
+                    sayfa.wait_for_selector('.admin-title', timeout=30000)
+                break
+            except PlaywrightTimeoutError:
+                if deneme == 2:
+                    raise
         return sayfa
 
     def kapat(self):
@@ -284,8 +302,9 @@ def yonetim_kur(sayfa):
       const repo = await import('/src/admin/admin-repository.js');
       const sh = await import('/src/admin/admin-shell.js');
       st.adminState.user = { email: 'arastirmaci@ornek.edu' };
+      const { APP_VERSION } = await import('/src/constants/app-config.js');   // "eski sürüm" hesabı sürüm artınca bozulmasın
       const mk = (code, grp, ver, ended, cd, ek) => Object.assign({ code, grp, lastVersion: ver, updatedAt: '2026-10-25T14:10:00Z', sess_1: { ended, cd: cd ? { n: cd } : undefined } }, ek || {});
-      const belgeler = [ mk('AAAA-1111', 'A', '2026.10.25-b27', false, 3), mk('BBBB-2222', 'B', '2026.10.25-b28', true, 0, { withdrawn: true }), mk('CCCC-3333', 'A', '2026.10.25-b34', true, 1), mk('DDDD-4444', 'B', '2026.10.25-b34', false) ];
+      const belgeler = [ mk('AAAA-1111', 'A', '2026.10.25-b27', false, 3), mk('BBBB-2222', 'B', '2026.10.25-b28', true, 0, { withdrawn: true }), mk('CCCC-3333', 'A', APP_VERSION, true, 1), mk('DDDD-4444', 'B', APP_VERSION, false) ];
       window.__yazilan = [];
       repo.adminRepository.listParticipants = async () => JSON.parse(JSON.stringify(belgeler));
       repo.adminRepository.listAllocations = async () => Object.fromEntries(belgeler.map((d, i) => [d.code, { no: i + 1, grp: d.grp }]));
@@ -359,6 +378,77 @@ def _(o):
     hata_yok(s)
 
 
+# ───────── erişilebilirlik (axe-core, WCAG 2.1 A/AA) ─────────
+AXE_YOLU = os.path.join(KOK, 'node_modules', 'axe-core', 'axe.min.js')
+# Bilinen ve KARAR BEKLEYEN istisnalar: (kural, öğe, tema). Uyaranın yön rengi olduğu için araştırmacı onayı olmadan değiştirilmez.
+# Açık temada "-%x başlangıca göre" rozeti (kırmızı #c2412d, açık kırmızı zemin) 4,13:1 verir, eşik 4,5:1 (docs/ERISILEBILIRLIK.md).
+BILINEN_ISTISNALAR = {('color-contrast', '#portfolio-change', 'light')}
+
+
+def axe_tara(sayfa):
+    sayfa.evaluate(open(AXE_YOLU, encoding='utf-8').read())
+    return sayfa.evaluate("""async () => {
+      const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
+      return r.violations.flatMap(v => v.nodes.map(n => ({ kural: v.id, hedef: n.target.join(' '), etki: v.impact })));
+    }""")
+
+
+def ekranlari_tara(o, tema, fs=''):
+    """Katılımcı ekranlarını iki boyutta ve yönetim panelini tarar; [(ekran, ihlal)] döndürür."""
+    bulunan = []
+
+    def sayfa(w, h, mobil=False, yol='/'):
+        s = o.sayfa(w, h, mobil=mobil, yol=yol)
+        s.evaluate("([t, f]) => { document.documentElement.setAttribute('data-theme', t); if (f) document.documentElement.setAttribute('data-fs', f); }", [tema, fs])
+        return s
+
+    def kaydet(ekran, s):
+        time.sleep(0.7)  # ekran giriş animasyonu bitmeden taranırsa yarı saydam öğeler için kontrast yanlış ölçülür
+        for ihlal in axe_tara(s):
+            bulunan.append((ekran, ihlal))
+
+    for etiket, w, h, mobil in (('telefon', 390, 844, True), ('masaüstü', 1440, 900, False)):
+        s = sayfa(w, h, mobil)
+        s.evaluate("() => { const k = window.ilkLot; k.state.stage = 'consent'; k.render(); }")
+        kaydet(etiket + ' onam', s)
+        s.evaluate("""() => { const k = window.ilkLot, st = k.state; st.group = 'A'; st.setOrder = 0; st.phase = 'pre'; st.block = 'pre'; st.trialIndex = 0; st.decisions = [];
+          st.stage = 'task'; st.trial = { mode: 'main', i: 0, phase: 'choose', t0: Date.now(), first: null }; st.seenTourSteps = { tc: 1, tpos: 1, tnews: 1, tcrowd: 1, tch: 1 }; k.render(); }""")
+        kaydet(etiket + ' karar anı', s)
+        simulator_kur(s, 'A', sekme='p')
+        s.evaluate("() => { const st = window.ilkLot.state; st.seenTourSteps = { sim: 1 }; st.tour = null; window.ilkLot.render(); }")
+        kaydet(etiket + ' simülatör portföy', s)
+        for sekme in ('m', 'a'):
+            s.evaluate("(t) => { const k = window.ilkLot; k.state.marketTab = t; k.render(); k.updateSimulatorLive(); }", sekme)
+            kaydet(etiket + ' simülatör ' + sekme, s)
+        s.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'p'; k.state.detailSymbol = 'PGSUS'; k.render(); k.updateSimulatorLive(); }")
+        kaydet(etiket + ' hisse ayrıntısı', s)
+        s.evaluate("() => { const k = window.ilkLot; k.state.detailSymbol = null; k.render(); k.actions.openTradeWindow('KOZAL|S'); k.actions.setTradeQuantity('max'); k.actions.submitTrade(); k.actions.chooseSellReason('0'); }")
+        time.sleep(0.4)
+        kaydet(etiket + ' bekleme penceresi', s)
+        s.evaluate("() => { const k = window.ilkLot; k.actions.cancelCooldown(); k.actions.cancelModal(); k.actions.openMenu(); }")
+        kaydet(etiket + ' menü penceresi', s)
+        o.temizle()
+    a = sayfa(1440, 900, yol='/admin/')
+    yonetim_kur(a)
+    a.evaluate("() => import('/src/admin/admin-actions.js').then(m => m.adminActions.loadTestRecords())")
+    time.sleep(0.3)
+    kaydet('yönetim paneli', a)
+    return bulunan
+
+
+@test('Erişilebilirlik (axe-core, WCAG 2.1 A/AA): karanlık tema, açık tema ve büyük yazıda tüm ekranlar ihlalsiz (bilinen istisna dışında)')
+def _(o):
+    if not os.path.exists(AXE_YOLU):
+        raise AssertionError('axe-core yok: npm install')
+    sorunlar = []
+    for tema, fs in (('dark', ''), ('light', ''), ('light', '2')):
+        for ekran, ihlal in ekranlari_tara(o, tema, fs):
+            if (ihlal['kural'], ihlal['hedef'], tema) in BILINEN_ISTISNALAR:
+                continue
+            sorunlar.append(f"[{tema}{'/yazı ' + fs if fs else ''}] {ekran}: {ihlal['kural']} ({ihlal['etki']}) {ihlal['hedef']}")
+    assert not sorunlar, '\n         '.join(sorunlar)
+
+
 # ───────── çalıştırıcı ─────────
 def main():
     surec, taban = sunucu_baslat()
@@ -380,6 +470,8 @@ def main():
                     except Exception as hata:  # noqa: BLE001 (her hata testi kırmızı yapar)
                         basarisiz.append(ad)
                         print(f'KALDI ({time.time() - t0:4.1f} sn)  {ad}\n         -> {type(hata).__name__}: {str(hata)[:400]}')
+                    finally:
+                        ortam.temizle()
             finally:
                 ortam.kapat()
     finally:

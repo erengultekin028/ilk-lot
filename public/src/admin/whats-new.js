@@ -8,6 +8,27 @@ import { section } from '../widgets/section.js';
 // Her öğe: sürüm, başlık, nerede, nasıl kontrol edilir
 export const WHATS_NEW = [
   {
+    version: 'b35',
+    title: 'Erişilebilirlik taraması (axe-core) ve düzeltme',
+    where: 'Bilgisayarında: python testler/ekran_testleri.py "axe-core" · belge: docs/ERISILEBILIRLIK.md',
+    check:
+      'Katılımcı ekranları (telefon ve masaüstü; koyu, açık tema, büyük yazı) ve bu panel WCAG 2.1 A/AA için taranır. Karar ekranındaki ilerleme çubuğu düzeltildi. Açık temada kırmızı rozetin kontrastı 4,13:1 (eşik 4,5:1); uyaran rengi olduğu için SENİN onayını bekliyor, seçenekler belgede.',
+  },
+  {
+    version: 'b35',
+    title: 'Gerçek cihaz protokolü ve pilot raporu şablonu (yeni akışa göre)',
+    where: 'Depo → docs/GERCEK_CIHAZ_TESTI.md ve docs/PILOT_PLANI.md',
+    check:
+      'Eski kart/kod akışı kalktı; protokol anonim giriş, yuva, bekleme ekranı, test kaydı ve tam yedeği kapsar (klavye ve ekran okuyucu senaryosu dahil). Pilot planında "önce CSV indir, sonra test olarak işaretle" sırası ve 10 başlıklı rapor şablonu var.',
+  },
+  {
+    version: 'b35',
+    title: 'Kaynakça doğrulandı',
+    where: 'Depo → docs/KURAMSAL_CERCEVE.md',
+    check:
+      "10 kaynağın künyesi web'den denetlendi, DOI'ler eklendi; 3 kaynakta DOI/yayıncı hâlâ [DOĞRULA]. Yanlış atfedilen iki kavram düzeltildi. Makalelerin tam metni okunmadı.",
+  },
+  {
     version: 'b34',
     title: 'Tam yedek (JSON)',
     where: 'Panel → "Tam yedek" bölümü',
