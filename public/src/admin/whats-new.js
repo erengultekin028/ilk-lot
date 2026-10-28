@@ -8,6 +8,14 @@ import { section } from '../widgets/section.js';
 // Her öğe: sürüm, başlık, nerede, nasıl kontrol edilir
 export const WHATS_NEW = [
   {
+    version: 'b38',
+    title: 'Açık temada kayıp kırmızısı koyulaştırıldı (erişilebilirlik)',
+    where:
+      'Katılımcı uygulaması → açık tema (◐ düğmesi) → simülatör portföyü, "-%x başlangıca göre" rozeti ve kayıp (▼) göstergeleri',
+    check:
+      'Kırmızı biraz koyulaştı (#c2412d → #b53a27); kontrast 4,13:1 → 4,70:1. Koyu tema, fiyat yolu ve uyaran içeriği aynı. Telefonda açık temada gözle bak; eskisiyle fark çok ince olmalı.',
+  },
+  {
     version: 'b36',
     title: 'Çekilen katılımcı için "Yeni katılım başlat"',
     where:
@@ -20,7 +28,7 @@ export const WHATS_NEW = [
     title: 'Erişilebilirlik taraması (axe-core) ve düzeltme',
     where: 'Bilgisayarında: python testler/ekran_testleri.py "axe-core" · belge: docs/ERISILEBILIRLIK.md',
     check:
-      'Katılımcı ekranları (telefon ve masaüstü; koyu, açık tema, büyük yazı) ve bu panel WCAG 2.1 A/AA için taranır. Karar ekranındaki ilerleme çubuğu düzeltildi. Açık temada kırmızı rozetin kontrastı 4,13:1 (eşik 4,5:1); uyaran rengi olduğu için SENİN onayını bekliyor, seçenekler belgede.',
+      "Katılımcı ekranları (telefon ve masaüstü; koyu, açık tema, büyük yazı) ve bu panel WCAG 2.1 A/AA için taranır. Karar ekranındaki ilerleme çubuğu düzeltildi. Açık temada kırmızı rozetin kontrastı 4,13:1 çıktı (eşik 4,5:1); onayınla b38'de düzeltildi.",
   },
   {
     version: 'b35',

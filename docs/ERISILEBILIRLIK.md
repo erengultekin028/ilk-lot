@@ -14,10 +14,10 @@ Test CI'da çalışır (`.github/workflows/test.yml`); yeni bir ihlal eklenirse 
 ## Sonuç (26 Ekim 2026)
 - **Koyu tema, büyük yazı:** ihlal yok.
 - **Düzeltilen:** karar ekranındaki ilerleme çubuğu (`.steps`) rolsüz bir `div` üzerinde `aria-label` taşıyordu (`aria-prohibited-attr`); `role="img"` eklendi. Görünüm değişmedi.
-- **Açık tema, tek açık madde (karar bekliyor):** simülatör portföyünde `-%x başlangıca göre` rozeti (`#portfolio-change`): kırmızı metin `#c2412d`, açık kırmızı rozet zemini (`#f0e4e2`) üzerinde **4,13:1**, eşik **4,5:1** (WCAG 1.4.3).
+- **Açık tema (b38'de düzeltildi, 28.10.2026):** simülatör portföyünde `-%x başlangıca göre` rozeti (`#portfolio-change`): kırmızı metin `#c2412d`, açık kırmızı rozet zemini (`#f0e4e2`) üzerinde **4,13:1** veriyordu, eşik **4,5:1** (WCAG 1.4.3). Araştırmacı onayıyla **seçenek A** uygulandı: açık temada `--dn` → `#b53a27` (**4,70:1**). Test artık bilinen istisna içermiyor (`BILINEN_ISTISNALAR` boş) ve eski renge dönülürse kırmızıya döner (mutasyonla doğrulandı).
 
-## Bekleyen karar: açık temadaki kırmızı rozet
-Bu renk **fiyat yönünü gösteren uyaran renkleridir** (iki grupta da aynı); değiştirmek, kayıp gösteriminin görünümünü küçük ölçüde değiştirir. Bu yüzden onayınız olmadan **değiştirilmedi**; test bu tek öğeyi bilinen istisna olarak anar (`BILINEN_ISTISNALAR`, `testler/ekran_testleri.py`).
+## Karar kaydı: açık temadaki kırmızı rozet (A seçildi, uygulandı)
+Bu renk **fiyat yönünü gösteren uyaran renkleridir** (iki grupta da aynı); değiştirmek, kayıp gösteriminin görünümünü küçük ölçüde değiştirir. Bu yüzden önce araştırmacıya sunuldu. **Seçilen: A.** Etkisi: açık temada tüm "kayıp" kırmızıları (grafik çizgisi, ▼ rozetleri, zarar yazıları) ≈ %6 koyulaştı; **koyu tema aynı**, fiyat yolu ve uyaran içeriği değişmedi. Pilot ve ana veri toplama bu renkle yapılacağı için, değişiklik **ön kayıttan önce** yapıldı. Aşağıdaki tablo karar anındaki seçenekleri gösterir.
 
 | Seçenek | Ne değişir | Kontrast (rozet) | Not |
 |---|---|---|---|

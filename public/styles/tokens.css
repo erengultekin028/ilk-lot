@@ -37,7 +37,7 @@
   --pend: #c98a1b;
   --up: #1b7b54;
   --ups: rgba(27, 123, 84, 0.1);
-  --dn: #c2412d;
+  --dn: #b53a27; /* açık tema kayıp kırmızısı: rozet zemininde 4,5:1 kontrast için #c2412d'den koyulaştırıldı (b38, docs/ERISILEBILIRLIK.md) */
   --dns: rgba(194, 65, 45, 0.09);
   --wr: #fcefd6;
   --wt: #7a4b00;

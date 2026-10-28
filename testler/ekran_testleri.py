@@ -406,9 +406,9 @@ def _(o):
 
 # ───────── erişilebilirlik (axe-core, WCAG 2.1 A/AA) ─────────
 AXE_YOLU = os.path.join(KOK, 'node_modules', 'axe-core', 'axe.min.js')
-# Bilinen ve KARAR BEKLEYEN istisnalar: (kural, öğe, tema). Uyaranın yön rengi olduğu için araştırmacı onayı olmadan değiştirilmez.
-# Açık temada "-%x başlangıca göre" rozeti (kırmızı #c2412d, açık kırmızı zemin) 4,13:1 verir, eşik 4,5:1 (docs/ERISILEBILIRLIK.md).
-BILINEN_ISTISNALAR = {('color-contrast', '#portfolio-change', 'light')}
+# Bilinen ve KABUL EDİLMİŞ istisnalar: (kural, öğe, tema). Şu an yok: açık temadaki kırmızı rozet kontrastı b38'de düzeltildi
+# (--dn #c2412d → #b53a27, 4,13:1 → 4,70:1; docs/ERISILEBILIRLIK.md). Yeni bir istisna eklenecekse nedeni ve onayı belgeye yazılır.
+BILINEN_ISTISNALAR = set()
 
 
 def axe_tara(sayfa):
@@ -462,7 +462,7 @@ def ekranlari_tara(o, tema, fs=''):
     return bulunan
 
 
-@test('Erişilebilirlik (axe-core, WCAG 2.1 A/AA): karanlık tema, açık tema ve büyük yazıda tüm ekranlar ihlalsiz (bilinen istisna dışında)')
+@test('Erişilebilirlik (axe-core, WCAG 2.1 A/AA): karanlık tema, açık tema ve büyük yazıda tüm ekranlar ihlalsiz')
 def _(o):
     if not os.path.exists(AXE_YOLU):
         raise AssertionError('axe-core yok: npm install')

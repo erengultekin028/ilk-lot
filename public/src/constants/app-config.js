@@ -1,7 +1,7 @@
 // Uygulama sürümü ve çalışma ayarları (CONFIG). Tüm modüller buradan okur; pilot başladıktan sonra ölçüt ayarları DEĞİŞTİRİLMEZ.
 
 // Her olay ve anlık görüntü bu sürümle etiketlenir. Pilot ortasında kodu değiştirirsen MUTLAKA artır.
-export const APP_VERSION = '2026.10.28-b37';
+export const APP_VERSION = '2026.10.28-b38';
 
 // ═════════════════ ÇALIŞMA AYARLARI ═════════════════
 export const CONFIG = {
