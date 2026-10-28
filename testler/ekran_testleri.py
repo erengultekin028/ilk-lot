@@ -351,6 +351,51 @@ def _(o):
     assert all(d == 'none' for _, d in gizli), gizli
 
 
+UST_USTE_OLCUM = """() => {
+  const mv = document.getElementById('main-view'), kutular = [];
+  for (const c of mv.children) { if (getComputedStyle(c).display === 'contents') kutular.push(...c.children); else kutular.push(c); }
+  const gorunur = kutular.filter(c => { const b = c.getBoundingClientRect(); return b.height > 1 && b.width > 1 && getComputedStyle(c).visibility !== 'hidden'; });
+  const ad = c => c.id || c.className || c.tagName, bin = [];
+  gorunur.forEach((a, i) => gorunur.slice(i + 1).forEach(b => { const p = a.getBoundingClientRect(), q = b.getBoundingClientRect();
+    if (p.bottom > q.top + 1 && q.bottom > p.top + 1 && p.right > q.left + 1 && q.right > p.left + 1) bin.push(ad(a) + ' x ' + ad(b)); }));
+  return { bin, sol: gorunur.filter(c => c.classList.contains('side-summary')).map(c => Math.round(c.getBoundingClientRect().left) + ':' + Math.round(c.getBoundingClientRect().width)) };
+}"""
+
+
+@test('Geniş ekran panelleri (b40): Portföy, Piyasa, Analiz ve hisse ayrıntısı (normal ve serbest mod) aynı iskelette; kartlar üst üste binmez; sol özet toplam parayla uyuşur; telefonda gizli')
+def _(o):
+    s = o.sayfa(1440, 900)
+    simulator_kur(s, 'B')
+    genislikler = set()
+    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'PGSUS')):
+        s.evaluate("""([sekme, detay]) => { const k = window.ilkLot; k.state.marketTab = sekme; k.state.detailSymbol = detay; k.render(); k.updateSimulatorLive(); }""", [sekme, detay])
+        time.sleep(0.3)
+        r = s.evaluate(UST_USTE_OLCUM)
+        assert not r['bin'], f'{sekme}/{detay}: üst üste binen kartlar {r["bin"]}'
+        if sekme != 'p' or detay:
+            assert len(r['sol']) == 1, f'{sekme}/{detay}: sol özet kartı yok ya da birden fazla: {r["sol"]}'
+            genislikler.add(r['sol'][0])
+            # Sol özet, Portföy'deki büyük toplam para ile aynı sayıyı göstermeli
+            yan = s.evaluate("() => document.getElementById('side-total').textContent")
+            s.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'p'; k.state.detailSymbol = null; k.render(); k.updateSimulatorLive(); }")
+            ana = s.evaluate("() => document.getElementById('portfolio-value').textContent")
+            assert yan == ana, f'{sekme}/{detay}: sol özet {yan} ≠ portföy {ana}'
+            s.evaluate("""([sekme, detay]) => { const k = window.ilkLot; k.state.marketTab = sekme; k.state.detailSymbol = detay; k.render(); k.updateSimulatorLive(); }""", [sekme, detay])
+    assert len(genislikler) == 1, f'sol sütun sekmeler arasında kayıyor: {genislikler}'
+    # Serbest mod: ek paneller (kayıp sınırı, hız, otomatik sat emri) kartları bozmasın
+    s.evaluate("() => { const k = window.ilkLot; k.state.stage = 'end'; k.state.freePlay = null; k.actions.openFreePlay(); k.actions.startFreePlay(); k.state.seenTourSteps = { sim: 1 }; k.state.tour = null; for (let i = 0; i < 40; i++) k.stepSimulation(); }")
+    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'KOZAL')):
+        s.evaluate("""([sekme, detay]) => { const k = window.ilkLot; k.state.marketTab = sekme; k.state.detailSymbol = detay; k.render(); k.updateSimulatorLive(); }""", [sekme, detay])
+        time.sleep(0.3)
+        r = s.evaluate(UST_USTE_OLCUM)
+        assert not r['bin'], f'serbest mod {sekme}/{detay}: üst üste binen kartlar {r["bin"]}'
+    hata_yok(s)
+    t = o.sayfa(390, 844, mobil=True)
+    simulator_kur(t, 'B')
+    t.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'm'; k.render(); k.updateSimulatorLive(); }")
+    assert t.evaluate("getComputedStyle(document.querySelector('.side-summary')).display") == 'none'
+
+
 @test('Yazı tipleri (b39): Manrope ve sayılar için Inter dosyadan yüklenir (dış sunucu yok); ₺ ve Türkçe harfler var; rakamlar sabit genişlikli')
 def _(o):
     s = o.sayfa(1440, 900)

@@ -58,9 +58,10 @@ export function simulatorNavHtml() {
 export function renderSimulator() {
   const simulation = state.simulation;
   let html = '<div id="crisis-alert"></div>' + (state.freePlay ? '<div id="news-banner"></div>' : '');
-  if (state.detailSymbol) return html + stockDetailHtml(state.detailSymbol);
-  if (state.marketTab === 'm') return html + marketTabHtml();
-  if (state.marketTab === 'a') return html + '<div id="analysis-panel">' + analysisTabHtml() + '</div>';
+  if (state.detailSymbol) return html + sideSummaryHtml() + stockDetailHtml(state.detailSymbol);
+  if (state.marketTab === 'm') return html + sideSummaryHtml() + marketTabHtml();
+  if (state.marketTab === 'a')
+    return html + sideSummaryHtml() + '<div id="analysis-panel">' + analysisTabHtml() + '</div>';
   const portfolioTotal = portfolioValue();
   const change = (portfolioTotal / simulation.v0 - 1) * 100;
   html +=
@@ -111,13 +112,9 @@ export function renderSimulator() {
         key +
         '" data-sim="' +
         key +
-        '"><span class="stock-avatar" aria-hidden="true" style="background:' +
-        STOCK_COLORS[key] +
-        ';color:' +
-        readableTextColor(STOCK_COLORS[key]) +
         '">' +
-        key.slice(0, 2) +
-        '</span><span class="stock-row-top"><span class="stock-symbol">' +
+        stockAvatarHtml(key) +
+        '<span class="stock-row-top"><span class="stock-symbol">' +
         key +
         (state.freePlay ? '<span class="news-flag" hidden>Haber</span>' : '') +
         '<small>' +
@@ -226,6 +223,34 @@ function allocationHtml() {
       })
       .join('') +
     '</div>'
+  );
+}
+
+// Sol özet kartı (yalnızca geniş ekran panelinde görünür): Piyasa, Analiz ve hisse ayrıntısında toplam para hep görünsün
+function sideSummaryHtml() {
+  const portfolioTotal = portfolioValue();
+  const change = (portfolioTotal / state.simulation.v0 - 1) * 100;
+  return (
+    '<div class="side-summary"><div class="side-summary-label">Toplam paran</div><div class="side-summary-value" id="side-total">₺' +
+    formatNumber(portfolioTotal, 0) +
+    '</div><span class="direction-badge ' +
+    directionClass(change) +
+    '" id="side-change">' +
+    formatPercentChange(change) +
+    ' başlangıca göre</span></div>'
+  );
+}
+
+// Hisse kutusu (geniş ekranda sembolün ilk iki harfi, hissenin rengiyle); telefonda gizli
+function stockAvatarHtml(symbol) {
+  return (
+    '<span class="stock-avatar" aria-hidden="true" style="background:' +
+    STOCK_COLORS[symbol] +
+    ';color:' +
+    readableTextColor(STOCK_COLORS[symbol]) +
+    '">' +
+    symbol.slice(0, 2) +
+    '</span>'
   );
 }
 
@@ -417,6 +442,7 @@ function stockCardHtml(symbol) {
   const position = simulation.pos[symbol];
   const hasPosition = position && position.q > 0;
   return (
+    stockAvatarHtml(symbol) +
     '<div style="display:flex;justify-content:space-between;align-items:baseline"><b>' +
     symbol +
     '</b><span class="' +
@@ -505,7 +531,9 @@ function analysisTabHtml() {
                 return (
                   '<div class="key-value"><span style="flex:none;font-size:11px;font-weight:700;background:var(--sf2);border-radius:8px;padding:3px 7px;color:var(--mu)">Gün ' +
                   item.t +
-                  '</span><span style="flex:1;color:var(--tx)"><b style="font-weight:700">' +
+                  '</span>' +
+                  stockAvatarHtml(item.sym) +
+                  '<span style="flex:1;color:var(--tx)"><b style="font-weight:700">' +
                   item.sym +
                   '</b> · ' +
                   (stateCopy ? 'Sattın' : 'Aldın') +
@@ -628,6 +656,15 @@ export function updateSimulatorLive() {
   updateCrisisAlert();
   updateNewsBanner();
   updateNewsDot();
+  const sideTotalElement = byId('side-total');
+  if (sideTotalElement) {
+    const sideTotal = portfolioValue();
+    const sideChange = (sideTotal / simulation.v0 - 1) * 100;
+    sideTotalElement.textContent = '₺' + formatNumber(sideTotal, 0);
+    const sideChangeElement = byId('side-change');
+    sideChangeElement.textContent = formatPercentChange(sideChange) + ' başlangıca göre';
+    sideChangeElement.className = 'direction-badge ' + directionClass(sideChange);
+  }
   if (state.detailSymbol) {
     const detailSymbol = state.detailSymbol;
     const detailInfoElement = byId('detail-info');

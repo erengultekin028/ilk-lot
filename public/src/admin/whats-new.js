@@ -8,6 +8,13 @@ import { section } from '../widgets/section.js';
 // Her öğe: sürüm, başlık, nerede, nasıl kontrol edilir
 export const WHATS_NEW = [
   {
+    version: 'b40',
+    title: 'Piyasa, Analiz ve hisse ayrıntısı ekranları yeni tasarım dilinde (geniş ekran)',
+    where: 'Katılımcı uygulaması → simülatör → alttaki Piyasa, Analiz sekmeleri ve bir hisseye dokununca açılan ayrıntı (bilgisayar ekranı, ≥1100 px)',
+    check:
+      'Her üçünde solda "Toplam paran" kartı (canlı güncellenir) ve altında haberler / işlem özeti / Sat-Al ve hisse haberleri; sağda ana içerik (renkli hisse kutulu kartlar, işlem geçmişi, fiyat grafiği). Telefonda ve tablette eskisi gibi. Karar anı ekranları (1. ve 3. bölüm) değişmedi. Koyu ve açık temada, serbest modda da bak.',
+  },
+  {
     version: 'b39',
     title: 'Simülatör Portföy ekranı yeni tasarım (geniş ekran) ve yeni yazı tipleri',
     where: 'Katılımcı uygulaması → simülatör → Portföy (bilgisayar ekranı, ≥1100 px genişlik); yazı tipleri her ekranda',
