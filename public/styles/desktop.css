@@ -117,8 +117,8 @@
   }
 }
 
-/* ≥ 1100 px: simülatör bir "panel" olur. Portföy (b39): solda özet paneli (toplam para, hisseler/nakit/gün, halka grafik ve dağılım),
-   sağda hisse tablosu ve son haber.
+/* ≥ 1100 px: simülatör bir "panel" olur. Portföy (b39, b41): solda özet paneli (toplam para, hisseler/nakit/gün, son haber, halka grafik ve dağılım),
+   sağda hisse tablosu.
    Piyasa, Analiz ve hisse ayrıntısı (b40): aynı iskelet; solda dar özet sütunu (toplam para + haberler/işlem özeti), sağda ana içerik.
    Bilgi içeriği telefonla aynıdır; yalnızca yerleşim ve görünüm farklıdır (haber vurgusu eklenmez, mevcut tonlar korunur). */
 @media (min-width: 1100px) {
@@ -137,7 +137,7 @@
   }
   #main-view[data-tab='p'] {
     grid-template-columns: clamp(272px, 22vw, 320px) minmax(0, 1fr);
-    /* Hisse tablosu 5-7. satırlara yayılır; 7. satır boştur, tablonun fazla yüksekliğini o alır, soldaki kartlar gerilmez */
+    /* Hisse tablosu 5-8. satırlara yayılır; 8. satır boştur, tablonun fazla yüksekliğini o alır, soldaki kartlar gerilmez */
   }
   #main-view[data-tab='m'] {
     grid-template-columns: clamp(272px, 22vw, 320px) minmax(0, 1fr);
@@ -241,10 +241,10 @@
     background: var(--ac);
     transition: width 0.4s;
   }
-  /* Sol panelin altı: dağılım (halka grafik + yüzde listesi) */
+  /* Sol panelin altı: dağılım (halka grafik + yüzde listesi); son haber hemen üstünde, ilk bakışta görünür */
   #main-view[data-tab='p'] > #allocation-section {
     grid-column: 1;
-    grid-row: 6;
+    grid-row: 7;
     align-self: start;
   }
   #main-view[data-tab='p'] > #allocation-section .card-body {
@@ -292,7 +292,7 @@
      altında ortalama alış, hissenin toplam paradaki payı çubuğu (ve serbest modda otomatik emir satırı) */
   #main-view[data-tab='p'] > #stock-list {
     grid-column: 2;
-    grid-row: 5 / span 3;
+    grid-row: 5 / span 4;
     align-self: start;
   }
   #main-view[data-tab='p'] > #stock-list .sheet-hint {
@@ -366,8 +366,8 @@
     grid-row: 4;
   }
   #main-view[data-tab='p'] > #news-section {
-    grid-column: 2;
-    grid-row: 8;
+    grid-column: 1;
+    grid-row: 6;
     align-self: start;
   }
   #main-view[data-tab='p'] > #news-section .news {
@@ -377,7 +377,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
   }
   #main-view[data-tab='p'] > #news-section .news .news-title {
-    font-size: 17px;
+    font-size: 16px;
   }
   #main-view[data-tab='p'] > .button {
     grid-column: 1 / -1;

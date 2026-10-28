@@ -8,6 +8,13 @@ import { section } from '../widgets/section.js';
 // Her öğe: sürüm, başlık, nerede, nasıl kontrol edilir
 export const WHATS_NEW = [
   {
+    version: 'b41',
+    title: 'Portföy (geniş ekran): "Son haber" kartı ilk ekranda, toplam paranın altında',
+    where: 'Katılımcı uygulaması → simülatör → Portföy (bilgisayar ekranı, ≥1100 px)',
+    check:
+      'b39-b40 düzeninde son haber, hisse tablosunun altına düşmüş ve kaydırmadan görünmüyordu (eski düzende sağ üstteydi). Şimdi solda, toplam para kartının hemen altında, dağılımın üstünde. Kartın görünümü, rengi ve içeriği aynı; yalnızca yeri değişti (haber vurgusu eklenmedi). Telefon ve tablet aynı.',
+  },
+  {
     version: 'b40',
     title: 'Piyasa, Analiz ve hisse ayrıntısı ekranları yeni tasarım dilinde (geniş ekran)',
     where: 'Katılımcı uygulaması → simülatör → alttaki Piyasa, Analiz sekmeleri ve bir hisseye dokununca açılan ayrıntı (bilgisayar ekranı, ≥1100 px)',

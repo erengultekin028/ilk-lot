@@ -320,13 +320,14 @@ def _(o):
     assert s.evaluate("document.getElementById('app').getBoundingClientRect().width") <= 390
 
 
-@test('Portföy paneli (1440, b39): solda özet ve halka grafik, sağda hisse tablosu; hisse kutusu ve pay çubuğu dolu; telefonda bu öğeler gizli')
+@test('Portföy paneli (1440, b39): solda özet, ilk ekranda görünen son haber ve halka grafik, sağda hisse tablosu; hisse kutusu ve pay çubuğu dolu; telefonda bu öğeler gizli')
 def _(o):
     s = o.sayfa(1440, 900)
     simulator_kur(s, 'B')
     r = s.evaluate("""() => {
+      document.getElementById('main-view').scrollTop = 0;
       const q = (x) => document.querySelector(x), kutu = (x) => q(x).getBoundingClientRect();
-      const hero = kutu('#main-view > .hero'), dag = kutu('#allocation-section'), liste = kutu('#stock-list');
+      const hero = kutu('#main-view > .hero'), dag = kutu('#allocation-section'), liste = kutu('#stock-list'), haber = kutu('#news-section .news');
       const dilim = document.querySelectorAll('.allocation-donut circle').length;
       const yasenda = [...document.querySelectorAll('.allocation-legend span')].length;
       const nakit = parseInt(document.querySelector('.allocation-legend span:last-child').textContent.replace(/\\D/g, ''), 10);
@@ -334,11 +335,12 @@ def _(o):
         harf: x.querySelector('.stock-avatar').textContent, gorunur: getComputedStyle(x.querySelector('.stock-avatar')).display !== 'none',
         pay: parseFloat(x.querySelector('.weight-bar i').style.width) }));
       return { solSag: hero.right <= liste.left && dag.right <= liste.left, ayniSutun: Math.abs(hero.left - dag.left) < 1,
-               bitisik: dag.top - hero.bottom, dilim, yasenda, merkez: document.querySelector('.donut-center b').textContent, nakit,
+               bitisik: haber.top - hero.bottom, bitisik2: dag.top - haber.bottom, haberGorunur: haber.bottom <= innerHeight - 90, haberSol: haber.right <= liste.left, dilim, yasenda, merkez: document.querySelector('.donut-center b').textContent, nakit,
                gunCubugu: document.getElementById('day-bar-fill').style.width, satirlar };
     }""")
     assert r['solSag'] and r['ayniSutun'], r
-    assert 0 <= r['bitisik'] <= 30, f"özet ve dağılım kartı arası açılmış (kart gerilmiş): {r['bitisik']}"
+    assert 0 <= r['bitisik'] <= 30 and 0 <= r['bitisik2'] <= 30, f"özet, son haber ve dağılım kartları arası açılmış (kart gerilmiş): {r['bitisik']} / {r['bitisik2']}"
+    assert r['haberGorunur'] and r['haberSol'], f"son haber ilk ekranda (kaydırmadan) görünmüyor: {r}"
     assert r['dilim'] == r['yasenda'], r
     assert r['merkez'] == f"%{100 - r['nakit']}", r
     assert r['gunCubugu'] == '27%', r['gunCubugu']
