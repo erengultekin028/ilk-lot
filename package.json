@@ -1,6 +1,6 @@
 {
   "name": "ilk-lot",
-  "version": "2026.10.26-b36",
+  "version": "2026.10.28-b37",
   "private": true,
   "description": "İlk Lot: genç yatırımcılarda panik satışını inceleyen araştırma uygulaması (katılımcı uygulaması + yönetim paneli, Firebase Hosting)",
   "type": "module",

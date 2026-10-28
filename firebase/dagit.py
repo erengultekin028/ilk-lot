@@ -29,6 +29,7 @@ KLASOR = os.path.dirname(os.path.abspath(__file__))
 KOK = os.path.abspath(os.path.join(KLASOR, '..'))
 PUBLIC = os.path.join(KOK, 'public')
 HTML = os.path.join(PUBLIC, 'src', 'constants', 'app-config.js')  # sürüm, CONFIG ve onam sürümü bu dosyadadır
+ARAYUZ = os.path.join(PUBLIC, 'src', 'constants', 'ui-constants.js')  # arayüz sabitleri (ör. yeni katılım seçeneği)
 KURALLAR = os.path.join(KLASOR, 'firestore.rules')
 KAYIT = os.path.join(KLASOR, 'yayin_kaydi.json')
 
@@ -95,9 +96,11 @@ def kayit_oku():
         return json.load(f).get('kayitlar', [])
 
 
-def kontrol(html=None, kurallar=None, kayitlar=None, pilot=False, ozet=None):
-    """(sonuçlar, durum) döner. sonuçlar: [(düzey, ad, ayrıntı)]; düzey 'TAMAM' | 'UYARI' | 'HATA'."""
+def kontrol(html=None, kurallar=None, kayitlar=None, pilot=False, ozet=None, arayuz=None):
+    """(sonuçlar, durum) döner. sonuçlar: [(düzey, ad, ayrıntı)]; düzey 'TAMAM' | 'UYARI' | 'HATA'.
+    arayuz: public/src/constants/ui-constants.js metni (verilmezse dosyadan okunur)."""
     html = oku(HTML) if html is None else html
+    arayuz = oku(ARAYUZ) if arayuz is None else arayuz
     kurallar = oku(KURALLAR) if kurallar is None else kurallar
     kayitlar = kayit_oku() if kayitlar is None else kayitlar
     s = []
@@ -137,6 +140,17 @@ def kontrol(html=None, kurallar=None, kayitlar=None, pilot=False, ozet=None):
         ekle('HATA', 'Pilot form açık', 'CFG.pilot true: ana veri toplamada geri bildirim formu olmamalı (public/src/constants/app-config.js içinde pilot: false yap). Pilot yayını yapıyorsan --pilot ile çalıştır')
     else:
         ekle('TAMAM', 'Pilot form kapalı', 'CFG.pilot false')
+
+    # Çekilen katılımcının "Yeni katılım başlat" seçeneği (karar paketi madde 17, karar 28.10.2026): pilotta açık, ana veri toplamada kapalı olmalı
+    m = re.search(r'ALLOW_FRESH_START_AFTER_WITHDRAWAL\s*=\s*(true|false)', arayuz)
+    if not m:
+        ekle('HATA', 'Yeni katılım seçeneği', 'ui-constants.js içinde ALLOW_FRESH_START_AFTER_WITHDRAWAL bulunamadı (biçim değişmiş; bu aracı güncelle)')
+    elif m.group(1) == 'true' and not pilot:
+        ekle('HATA', 'Yeni katılım seçeneği açık', 'ana veri toplamada çekilen katılımcı yeniden katılabilir (aynı kişi iki kez sayılabilir, bağ tutulmuyor). public/src/constants/ui-constants.js içinde ALLOW_FRESH_START_AFTER_WITHDRAWAL = false yap; açık bırakmaya karar verdiysen karar paketi madde 17\'yi güncelle ve bu denetimi kaldır. Pilot yayını yapıyorsan --pilot ile çalıştır')
+    elif m.group(1) == 'true':
+        ekle('TAMAM', 'Yeni katılım seçeneği (pilot)', 'açık: pilotta serbest; ana veri toplamadan ÖNCE ALLOW_FRESH_START_AFTER_WITHDRAWAL = false yap (karar paketi madde 17)')
+    else:
+        ekle('TAMAM', 'Yeni katılım seçeneği kapalı', 'çekilen katılımcı yeniden başlatamaz')
 
     olcut = olcut_ayarlari(html)
     bos_olcut = [k for k, v in olcut.items() if v is None]

@@ -13,7 +13,7 @@ export const WHATS_NEW = [
     where:
       'Katılımcı uygulaması → "Çalışmadan çekildin" ekranı (menüden çekilince ya da sonradan siteyi açınca)',
     check:
-      'Ekranın altında "Baştan başlamak ister misin?" ve "Yeni katılım başlat" düğmesi çıkar; onaylayınca sayfa yenilenir, onam ekranından yeni bir katılım (yeni yuva) başlar. 18 yaş altı nedeniyle kapanan kayıtta düğme çıkmaz. Ana veri toplamada kapatmayı düşün: karar paketi madde 17.',
+      'Ekranın altında "Baştan başlamak ister misin?" ve "Yeni katılım başlat" düğmesi çıkar; onaylayınca sayfa yenilenir, onam ekranından yeni bir katılım (yeni yuva) başlar. 18 yaş altı nedeniyle kapanan kayıtta düğme çıkmaz. Karar (28.10.2026): pilota kadar açık; ana veri toplamadan önce kapatılacak (karar paketi madde 17), `dagit.py` ön kontrolü açıkken HATA verir.',
   },
   {
     version: 'b35',

@@ -82,6 +82,7 @@ Rapor süreyi, maruz kalma oranını (güven aralığıyla), anlama ve dikkat ko
 3. Pilot kayıtlarını panelden **Test kayıtları → işaretle** (silinmez; ana analizden ve dışa aktarmadan çıkar). Ana toplama için **yeni yuva listesi** oluştur; pilotta kullanılan yuvalar geri verilmez.
 
 - **`CONFIG.pilot: false` yap** ve `APP_VERSION`'ı artır (`public/src/constants/app-config.js`); ana veri toplama formsuz sürümle yapılır (`python firebase/dagit.py`, `--pilot` olmadan, form açıksa HATA verir).
+- **"Yeni katılım başlat" seçeneğini kapat:** `public/src/constants/ui-constants.js` içinde `ALLOW_FRESH_START_AFTER_WITHDRAWAL = false` (karar paketi madde 17: pilota kadar açık). Açık kalırsa aynı ön kontrol (`--pilot` olmadan) HATA verir; çünkü çekilen kişi yeniden katılırsa aynı kişi iki kez sayılabilir ve bağ tutulmadığı için analizde ayıklanamaz.
 - Uygulamada **herhangi bir değişiklik** yaparsan `APP_VERSION`'ı artır; testleri koş (`npm run lint`, `npm run check:*`, `python testler/arac_testleri.py`, `python testler/ekran_testleri.py`, kural testleri); `main`'e gönderince site otomatik yayınlanır. Ana veri tek sürümden gelmeli.
 - Ön kayıt, **bu değişikliklerden sonra**, ardından `python firebase/dagit.py --kilitle` ile ölçüt ayarlarını kilitle.
 

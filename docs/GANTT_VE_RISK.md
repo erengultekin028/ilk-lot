@@ -28,7 +28,7 @@ Her sütun 2 haftadır (H1–2, H3–4, …). ■ = çalışılan dönem, ▨ = 
 | M2: Altyapı hazır | Gerçek cihaz testi geçti; `python firebase/dagit.py` HATA vermiyor; yedek alma denendi | `docs/GERCEK_CIHAZ_TESTI.md`, ön kontrol çıktısı |
 | M3: Etik onay | Onay numarası alındı | Onay yazısı |
 | M4: Pilot raporu | Anlaşılırlık, süre, tamamlama, teknik sorun raporlandı | Rapor |
-| M5: Ön kayıt | OSF kaydı yapıldı, uygulama dondu (`--kilitle`) | OSF bağlantısı, `firebase/yayin_kaydi.json` |
+| M5: Ön kayıt | OSF kaydı yapıldı, uygulama dondu (`--kilitle`), "yeni katılım başlat" seçeneği kapatıldı (karar paketi madde 17) | OSF bağlantısı, `firebase/yayin_kaydi.json` |
 | M6: Veri toplama bitti | Hedef n ya da son tarih; test kayıtları ayrıldı | Pano, CSV |
 | M7: Rapor ve paylaşım | Rapor, poster/bildiri, açık kaynak sürüm (DOI) | Çıktılar |
 

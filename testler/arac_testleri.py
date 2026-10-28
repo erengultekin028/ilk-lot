@@ -70,9 +70,15 @@ def ozet(metin):
     return hashlib.sha256(metin.encode('utf-8')).hexdigest()
 
 
+ARAYUZ_GERCEK = open(os.path.join(KOK, 'public', 'src', 'constants', 'ui-constants.js'), encoding='utf-8').read()
+# Ön kontrol testleri ana veri toplama durumunu varsayar: "yeni katılım" seçeneği kapalı sayılır (gerçek dosya pilotta açık olabilir)
+ARAYUZ_KAPALI = re.sub(r'(ALLOW_FRESH_START_AFTER_WITHDRAWAL\s*=\s*)true', r'\1false', ARAYUZ_GERCEK)
+
+
 def kontrol(h, k, **kw):
     """Ayar metni ve kural metniyle ön kontrol (dosya ağacı özeti ayrıca verilir: kod değişikliği ayar metninden bağımsız denenir)."""
-    return dagit.kontrol(html=h, kurallar=k, kayitlar=kw.pop('kayitlar', []), ozet=kw.pop('ozet', ozet(h)), **kw)
+    return dagit.kontrol(html=h, kurallar=k, kayitlar=kw.pop('kayitlar', []), ozet=kw.pop('ozet', ozet(h)),
+                         arayuz=kw.pop('arayuz', ARAYUZ_KAPALI), **kw)
 
 
 def seviye(s, ad):
@@ -86,7 +92,7 @@ def hatalar(s):
 @test('Ön kontrol: gerçek proje doldurulmamış ayarlarda HATA verir (onam, iletişim; kurallardaki e-posta hâlâ örnekse o da); hazır kopya hiç HATA vermez')
 def _():
     s, durum = dagit.kontrol(kayitlar=[])
-    izinli = {'Firebase ayarı', 'Onam alanları', 'İletişim adresi'} | ({'Güvenlik kuralları'} if ORNEK_EPOSTA in GERCEK_KURAL else set())
+    izinli = {'Firebase ayarı', 'Onam alanları', 'İletişim adresi', 'Yeni katılım seçeneği açık'} | ({'Güvenlik kuralları'} if ORNEK_EPOSTA in GERCEK_KURAL else set())
     assert durum == 1 and set(hatalar(s)) <= izinli and 'Onam alanları' in hatalar(s), hatalar(s)
     s, durum = kontrol(hazir_html(), hazir_kural())
     assert durum == 0 and not hatalar(s), s
@@ -106,6 +112,21 @@ def _():
     for ad, (hh, kk) in bozuk.items():
         s, durum = kontrol(hh, kk)
         assert durum == 1 and hatalar(s) == [ad.strip()], (ad, hatalar(s))
+
+
+@test('Ön kontrol: "yeni katılım" seçeneği ana veri toplamada açıksa HATA; pilotta (--pilot) serbest; kapalıysa TAMAM; sabit bulunamazsa HATA')
+def _():
+    h, k = hazir_html(), hazir_kural()
+    acik = ARAYUZ_KAPALI.replace('ALLOW_FRESH_START_AFTER_WITHDRAWAL = false', 'ALLOW_FRESH_START_AFTER_WITHDRAWAL = true')
+    assert acik != ARAYUZ_KAPALI, 'sabit biçimi değişmiş: testi güncelle'
+    s, durum = kontrol(h, k, arayuz=acik)
+    assert durum == 1 and hatalar(s) == ['Yeni katılım seçeneği açık'], hatalar(s)
+    s, durum = kontrol(h, k, arayuz=acik, pilot=True)
+    assert durum == 0 and not hatalar(s) and seviye(s, 'Yeni katılım seçeneği (pilot)') == ['TAMAM'], s
+    s, durum = kontrol(h, k)
+    assert durum == 0 and seviye(s, 'Yeni katılım seçeneği kapalı') == ['TAMAM'], s
+    s, durum = kontrol(h, k, arayuz='export const BASKA = 1;')
+    assert durum == 1 and hatalar(s) == ['Yeni katılım seçeneği'], hatalar(s)
 
 
 def kayit_yap(html):
@@ -238,10 +259,13 @@ def bayraklar():
     """dagit'in dosya yollarını geçici klasöre yönlendirir (ayar dosyası ve kural dosyası geçici kopyalardır)."""
     d = tempfile.mkdtemp()
     kopya = {}
-    for ad in ('HTML', 'KURALLAR', 'KAYIT'):
+    for ad in ('HTML', 'KURALLAR', 'KAYIT', 'ARAYUZ'):
         kopya[ad] = getattr(dagit, ad)
     with open(os.path.join(d, 'app-config.js'), 'w', encoding='utf-8', newline='') as f:
         f.write(hazir_html())
+    with open(os.path.join(d, 'ui-constants.js'), 'w', encoding='utf-8', newline='') as f:
+        f.write(ARAYUZ_KAPALI)
+    dagit.ARAYUZ = os.path.join(d, 'ui-constants.js')
     with open(os.path.join(d, 'firestore.rules'), 'w', encoding='utf-8') as f:
         f.write(hazir_kural())
     dagit.HTML, dagit.KURALLAR = os.path.join(d, 'app-config.js'), os.path.join(d, 'firestore.rules')
