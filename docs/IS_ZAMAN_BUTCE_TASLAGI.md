@@ -37,7 +37,7 @@
 | Poster baskısı | Evet | Poster ve QR (kart kalktı: katılımcı ortak bağlantıyla girer); yuva listesi hedef n'den fazla üretilir (ör. +%20) | [DOLDUR] |
 | Test cihazları / erişim | Belki | Gerçek cihaz testi için | [DOLDUR] |
 | Katılımcı ödülü | **[KARAR]** | Yoksa 0; varsa kimlikten ayrı mekanizma, etik görüş | [DOLDUR] |
-| Yazılım (analiz, sunum) | Hayır | Python ve açık kaynak araçlar | 0 |
+| Yazılım (analiz, sunum) | Hayır | Python ve başkalarının ücretsiz kitaplıkları (projenin kendisi açık kaynak değildir, bkz. README "Lisans") | 0 |
 | Yayın / kongre | Belki | Başvuru çağrısı bu kalemi kapsıyor mu kontrol et | [DOLDUR] |
 
 ## 4. Riskler ve yedek planlar
