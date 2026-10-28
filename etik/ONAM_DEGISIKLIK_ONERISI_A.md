@@ -1,5 +1,7 @@
 # Onam metni değişiklik ÖNERİSİ: silme politikası A (tamamen soft delete)
 
+> **Güncel taslak: `etik/ONAM_V2_TASLAGI.md` (28.10.2026).** Bu belge eski dosya adlarına (`05_entry.js`, `07_app.js` vb.) bağlıdır ve tarihsel kayıt olarak kalır.
+
 **Durum: ÖNERİ. Uygulamaya KONMADI.** Uygulamadaki onam metinleri (`consentSections()`, `CONSENT_VER = v1`) ve `etik/` altındaki metinler aynen duruyor. Bu belge, politika A seçildiği için hangi cümlelerin uyuşmaz hale geldiğini ve önerilen yeni ifadeleri listeler. Danışman ve etik kurul onayından sonra, kullanıcı "uygula" derse metinler değiştirilir, `CONSENT_VER` `v2` olur ve `etik/materyalleri_uret.py` yeniden çalıştırılır.
 
 ## Neden gerekli

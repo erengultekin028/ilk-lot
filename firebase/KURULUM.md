@@ -29,7 +29,7 @@ Uygulama yalnızca Firebase ile çalışır: yerel (tarayıcıda) kayıt kipi, t
 ## 3c. Onam metni (ZORUNLU)
 - `CONFIG.consentInfo` içindeki `controller`, `ethics`, `retention`, `hosting`, `support` alanlarını ve `CONFIG.contact` adresini doldur. `funding` boşsa onamda TÜBİTAK/destek cümlesi geçmez; destek kesinleşince yaz.
 - Doldurulmamış alanlar onam ekranında **sarı işaretli** görünür; yönetim panelindeki "Onam metni" bölümü hangilerinin boş olduğunu listeler.
-- Silme politikası A seçildiği için onam ve çekilme metinleri değişmeli: `etik/ONAM_DEGISIKLIK_ONERISI_A.md` (danışman ve etik kurul onayı gerekir; `CONSENT_VERSION` artar).
+- Silme politikası A seçildiği için onam ve çekilme metinleri değişmeli: `etik/ONAM_V2_TASLAGI.md` (danışman ve etik kurul onayı gerekir; `CONSENT_VERSION` artar).
 
 ## 4. Yayınla (Firebase Hosting)
 - Ön kontrol: `python firebase/dagit.py`. HATA varsa yayınlama.

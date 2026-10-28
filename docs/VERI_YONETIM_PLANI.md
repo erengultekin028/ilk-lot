@@ -12,7 +12,7 @@
 | Dışa aktarma | Panelden CSV (katılımcı ve olay) | Araştırmacı | **[KARAR]** Veri toplama bitmeden sonuç amacıyla açılmaz (ön kayıt taslağında bu karar bekliyor) |
 | Yedek | Panelden **Tam yedek (JSON)** ve CSV dışa aktarımları, şifreli diskte iki kopya | [DOLDUR: kimde, nerede] | Veri toplama sırasında en az haftalık; bulutta ikinci kopya tutulacaksa yeri belirtilir |
 | Temizlik | Serbest metin kişisel bilgi içeriyor mu diye gözden geçirilir, gerekirse silinir | Araştırmacı | Analizden önce yapılır |
-| Çekilme | Katılımcı menüden çekilir (iki aşamalı onay). **Kayıt silinmez** (politika A, soft delete): `withdrawn: true` ile işaretlenir, analize ve dışa aktarmaya girmez, katılımcı geri açamaz | Katılımcı / araştırmacı | **[KARAR]** Kalıcı silme gerekirse süreci ve süresi onam v2'de yazılmalı (`etik/ONAM_DEGISIKLIK_ONERISI_A.md`) |
+| Çekilme | Katılımcı menüden çekilir (iki aşamalı onay). **Kayıt silinmez** (politika A, soft delete): `withdrawn: true` ile işaretlenir, analize ve dışa aktarmaya girmez, katılımcı geri açamaz | Katılımcı / araştırmacı | **[KARAR]** Kalıcı silme gerekirse süreci ve süresi onam v2'de yazılmalı (`etik/ONAM_V2_TASLAGI.md`) |
 | Test kayıtları | Denemelerden kalan kayıtlar panelden "test kaydı" olarak işaretlenir (silinmez, geri alınabilir); analize girmez | Araştırmacı | Pilot ve ana toplamadan önce yapılır |
 | Saklama | [DOLDUR: süre ve başlangıç tarihi] | Araştırmacı | `etik/saklama_takvimi.py` hatırlatma takvimi üretir; süreyi **o seçmez**, etik kurul ve KVKK birimiyle aynı olmalı |
 | Silme | Süre sonunda ham veri silinir | Araştırmacı | Yalnızca kimliksiz toplu sonuçlar kalır |
