@@ -1,19 +1,23 @@
 /* Tasarım değişkenleri: yazı tipi, renk paleti (açık ve koyu tema). */
 
-/* Yazı tipi dosyanın içinde (Bricolage Grotesque, SIL OFL 1.1; kaynak/yazi/). Türkçe karakterli alt küme; dış sunucuya bağlanılmaz */
+/* Yazı tipleri uygulamanın içinde (SIL OFL 1.1; lisans metinleri assets/fonts/ içinde); dış sunucuya bağlanılmaz.
+   Manrope (değişken, 400-800): başlık ve metin. Inter (yalnızca sayı ve işaretler): rakamlar sabit genişlikli ve net okunur.
+   "Ilk Lot Sayi" ailesi unicode-range ile yalnızca rakam, ₺, %, +, −, ×, ▲, ▼ için kullanılır; yığında Manrope'tan önce gelir,
+   böylece uygulamanın her yerindeki sayılar tek yerden Inter ile çizilir (ayrı sınıf gerekmez). Her ikisi de Türkçe karakterli alt kümedir */
 @font-face {
-  font-family: "Bricolage Grotesque";
+  font-family: "Manrope";
   font-style: normal;
-  font-weight: 400 599;
+  font-weight: 400 800;
   font-display: swap;
-  src: url(../assets/fonts/BricolageGrotesque-Regular.woff) format("woff");
+  src: url(../assets/fonts/Manrope-Variable.woff) format("woff");
 }
 @font-face {
-  font-family: "Bricolage Grotesque";
+  font-family: "Ilk Lot Sayi";
   font-style: normal;
-  font-weight: 600 900;
+  font-weight: 400 700;
   font-display: swap;
-  src: url(../assets/fonts/BricolageGrotesque-Bold.woff) format("woff");
+  src: url(../assets/fonts/Inter-Sayi.woff) format("woff");
+  unicode-range: U+0030-0039, U+0025, U+002B, U+2212, U+00D7, U+20BA, U+25B2, U+25BC;
 }
 /* Üniversite paleti: soğuk gri zemin, çivit mavisi eylem.
    Anlam ayrımı korunur: --pr = eylem (çivit), --wr/--wt = uyarı (amber), --up/--dn = fiyat yönü (yeşil/kırmızı).
@@ -42,8 +46,8 @@
   --wr: #fcefd6;
   --wt: #7a4b00;
   --shadow: 0 -14px 44px rgba(0, 0, 0, 0.16);
-  --fd: "Bricolage Grotesque", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --fb: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --fd: "Ilk Lot Sayi", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fb: "Ilk Lot Sayi", "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   color-scheme: light;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);

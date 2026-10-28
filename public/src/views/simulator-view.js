@@ -86,7 +86,13 @@ export function renderSimulator() {
     formatNumber(simulation.cash, 0) +
     '</b></span><span>Gün<b id="day-counter">' +
     dayText(simulation) +
-    '</b></span></div></div>';
+    '</b>' +
+    (state.freePlay
+      ? ''
+      : '<span class="day-bar" aria-hidden="true"><i id="day-bar-fill" style="width:' +
+        dayProgressPercent(simulation) +
+        '%"></i></span>') +
+    '</span></div></div>';
   if (state.freePlay)
     html += '<div id="free-play-panel">' + freePlayHeaderHtml() + '</div>' + freePlaySpeedHtml();
   html +=
@@ -105,12 +111,20 @@ export function renderSimulator() {
         key +
         '" data-sim="' +
         key +
-        '"><span class="stock-row-top"><span class="stock-symbol">' +
+        '"><span class="stock-avatar" aria-hidden="true" style="background:' +
+        STOCK_COLORS[key] +
+        ';color:' +
+        readableTextColor(STOCK_COLORS[key]) +
+        '">' +
+        key.slice(0, 2) +
+        '</span><span class="stock-row-top"><span class="stock-symbol">' +
         key +
         (state.freePlay ? '<span class="news-flag" hidden>Haber</span>' : '') +
         '<small>' +
         item[1] +
-        '</small></span><span class="profit-loss-block"><b class="row-secondary"></b><span class="percent-chip"></span><small>kâr / zarar</small></span></span><span class="equation"><span class="equation-cell"><i>Adet</i><b class="sl"></b></span><span class="operator" aria-hidden="true">×</span><span class="equation-cell"><i>1 lot fiyatı</i><b class="span-item"></b></span><span class="operator" aria-hidden="true">=</span><span class="equation-cell is-total"><i>Değer</i><b class="row-primary"></b></span></span><span class="average-line">Ortalama alış fiyatın: <b class="sa"></b></span>' +
+        '</small></span><span class="profit-loss-block"><b class="row-secondary"></b><span class="percent-chip"></span><small>kâr / zarar</small></span></span><span class="equation"><span class="equation-cell"><i>Adet</i><b class="sl"></b></span><span class="operator" aria-hidden="true">×</span><span class="equation-cell"><i>1 lot fiyatı</i><b class="span-item"></b></span><span class="operator" aria-hidden="true">=</span><span class="equation-cell is-total"><i>Değer</i><b class="row-primary"></b></span></span><span class="average-line">Ortalama alış fiyatın: <b class="sa"></b></span><span class="weight-bar" aria-hidden="true"><i style="background:' +
+        STOCK_COLORS[key] +
+        '"></i></span>' +
         (state.freePlay ? '<span class="average-line ordl" hidden></span>' : '') +
         '</button>'
       );
@@ -155,8 +169,35 @@ function allocationHtml() {
     .forEach(function (item) {
       percent[item[1]]++;
     });
+  // Halka grafik (yalnızca geniş ekran panelinde görünür): çubukla aynı oranlar, aynı renkler
+  const circumference = 2 * Math.PI * 40;
+  let usedLength = 0;
+  const donutSegments = parts
+    .map(function (item) {
+      const length = (item[1] / portfolioTotal) * circumference;
+      const drawn = Math.max(0, length - 1.2);
+      const segment =
+        item[1] > 0
+          ? '<circle cx="50" cy="50" r="40" stroke="' +
+            (item[0] === 'Nakit' ? STOCK_COLORS.cash : STOCK_COLORS[item[0]]) +
+            '" stroke-dasharray="' +
+            drawn.toFixed(2) +
+            ' ' +
+            (circumference - drawn).toFixed(2) +
+            '" stroke-dashoffset="' +
+            (-usedLength).toFixed(2) +
+            '"/>'
+          : '';
+      usedLength += length;
+      return segment;
+    })
+    .join('');
   return (
-    '<div class="allocation-bar">' +
+    '<div class="allocation-donut" aria-hidden="true"><svg viewBox="0 0 100 100"><g transform="rotate(-90 50 50)" fill="none" stroke-width="12">' +
+    donutSegments +
+    '</g></svg><div class="donut-center"><b>%' +
+    (100 - percent[parts.length - 1]) +
+    '</b><span>hissede</span></div></div><div class="allocation-bar">' +
     parts
       .map(function (item) {
         return item[1] > 0
@@ -186,6 +227,21 @@ function allocationHtml() {
       .join('') +
     '</div>'
   );
+}
+
+// Gün çubuğu (geniş ekran panelinde): geçen günün oranı
+function dayProgressPercent(simulation) {
+  return Math.min(100, Math.round((simulation.tick / simulationTickLimit()) * 100));
+}
+
+// Renkli hisse kutusundaki harfler için okunur (kontrastı yüksek) yazı rengi
+function readableTextColor(hex) {
+  const channels = [1, 3, 5].map(function (start) {
+    const value = parseInt(hex.slice(start, start + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+  });
+  const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  return 1.05 / (luminance + 0.05) >= (luminance + 0.05) / 0.05 ? '#ffffff' : '#111111';
 }
 
 function stockDetailInfoHtml(symbol) {
@@ -631,6 +687,8 @@ export function updateSimulatorLive() {
   portfolioChangeElement.className = 'direction-badge ' + directionClass(change);
   setText('cash-value', '₺' + formatNumber(simulation.cash, 0));
   setText('day-counter', dayText(simulation));
+  const dayBarFillElement = byId('day-bar-fill');
+  if (dayBarFillElement) dayBarFillElement.style.width = dayProgressPercent(simulation) + '%';
   const freePlayPanelElement = byId('free-play-panel');
   if (freePlayPanelElement) {
     const innerFreePlayHeaderHtml = freePlayHeaderHtml();
@@ -680,6 +738,12 @@ export function updateSimulatorLive() {
       }
     }
     element4.textContent = '₺' + formatNumber(price);
+    const weightFillElement = item.querySelector('.weight-bar i');
+    if (weightFillElement) {
+      // Çubuk, hissenin toplam paradaki payını gösterir (%40 pay = tam çubuk)
+      const share = position && position.q > 0 ? (position.q * price) / portfolioTotal : 0;
+      weightFillElement.style.width = Math.min(100, share * 250).toFixed(1) + '%';
+    }
     // Fiyat sütununun altında: alış ortalamasına göre % ; değer sütununun altında: ₺ kâr/zarar
     if (position && position.q > 0) {
       element3.textContent = position.q + ' lot';

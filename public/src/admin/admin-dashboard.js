@@ -139,7 +139,7 @@ function renderProgressRing(fraction) {
     value.toFixed(1) +
     '" stroke-dashoffset="' +
     position.toFixed(1) +
-    '" transform="rotate(-90 44 44)"/><text x="44" y="50" text-anchor="middle" font-family="Bricolage Grotesque,system-ui" font-weight="800" font-size="19" fill="var(--tx)">%' +
+    '" transform="rotate(-90 44 44)"/><text x="44" y="50" text-anchor="middle" font-family="Ilk Lot Sayi,Manrope,system-ui" font-weight="800" font-size="19" fill="var(--tx)">%' +
     Math.round(fraction * 100) +
     '</text></svg>'
   );

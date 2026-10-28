@@ -199,6 +199,6 @@ Katılım gönüllüdür; çekilme her an mümkündür. Ad, e-posta ya da öğre
 
 ## Lisans ve katkılar
 
-**Tüm hakları saklıdır** (bilinçli karar, 28 Ekim 2026): bu depoya bir lisans eklenmedi; yani proje **açık kaynak değildir**. Kaynak kodu GitHub'da herkese açık olarak görüntülenebilir (GitHub kullanım şartları görüntüleme ve çatallamaya izin verir), ancak izin alınmadan kopyalanamaz, değiştirilemez ya da yeniden dağıtılamaz. Kullanım, atıf ve işbirliği için iletişime geç. Üçüncü taraf bileşenler kendi lisanslarıyla gelir: QR kitaplığı (Kazuhiko Arase, MIT), Bricolage Grotesque yazı tipi (SIL OFL 1.1).
+**Tüm hakları saklıdır** (bilinçli karar, 28 Ekim 2026): bu depoya bir lisans eklenmedi; yani proje **açık kaynak değildir**. Kaynak kodu GitHub'da herkese açık olarak görüntülenebilir (GitHub kullanım şartları görüntüleme ve çatallamaya izin verir), ancak izin alınmadan kopyalanamaz, değiştirilemez ya da yeniden dağıtılamaz. Kullanım, atıf ve işbirliği için iletişime geç. Üçüncü taraf bileşenler kendi lisanslarıyla gelir: QR kitaplığı (Kazuhiko Arase, MIT), Manrope ve Inter yazı tipleri (SIL OFL 1.1; `public/assets/fonts/` içinde lisans metinleriyle).
 
 Hata ve öneriler için [Issues](https://github.com/erengultekin028/ilk-lot/issues) kullanılabilir. Kodu değiştirmeden önce [`docs/MIMARI.md`](docs/MIMARI.md) içindeki veri sözleşmesine ve değişiklik kurallarına bak.

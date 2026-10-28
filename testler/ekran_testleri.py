@@ -320,6 +320,59 @@ def _(o):
     assert s.evaluate("document.getElementById('app').getBoundingClientRect().width") <= 390
 
 
+@test('Portföy paneli (1440, b39): solda özet ve halka grafik, sağda hisse tablosu; hisse kutusu ve pay çubuğu dolu; telefonda bu öğeler gizli')
+def _(o):
+    s = o.sayfa(1440, 900)
+    simulator_kur(s, 'B')
+    r = s.evaluate("""() => {
+      const q = (x) => document.querySelector(x), kutu = (x) => q(x).getBoundingClientRect();
+      const hero = kutu('#main-view > .hero'), dag = kutu('#allocation-section'), liste = kutu('#stock-list');
+      const dilim = document.querySelectorAll('.allocation-donut circle').length;
+      const yasenda = [...document.querySelectorAll('.allocation-legend span')].length;
+      const nakit = parseInt(document.querySelector('.allocation-legend span:last-child').textContent.replace(/\\D/g, ''), 10);
+      const satirlar = [...document.querySelectorAll('.stock-row')].map(x => ({
+        harf: x.querySelector('.stock-avatar').textContent, gorunur: getComputedStyle(x.querySelector('.stock-avatar')).display !== 'none',
+        pay: parseFloat(x.querySelector('.weight-bar i').style.width) }));
+      return { solSag: hero.right <= liste.left && dag.right <= liste.left, ayniSutun: Math.abs(hero.left - dag.left) < 1,
+               bitisik: dag.top - hero.bottom, dilim, yasenda, merkez: document.querySelector('.donut-center b').textContent, nakit,
+               gunCubugu: document.getElementById('day-bar-fill').style.width, satirlar };
+    }""")
+    assert r['solSag'] and r['ayniSutun'], r
+    assert 0 <= r['bitisik'] <= 30, f"özet ve dağılım kartı arası açılmış (kart gerilmiş): {r['bitisik']}"
+    assert r['dilim'] == r['yasenda'], r
+    assert r['merkez'] == f"%{100 - r['nakit']}", r
+    assert r['gunCubugu'] == '27%', r['gunCubugu']
+    assert len(r['satirlar']) == 6 and all(x['gorunur'] and len(x['harf']) == 2 and x['pay'] > 0 for x in r['satirlar']), r['satirlar']
+    hata_yok(s)
+    t = o.sayfa(390, 844, mobil=True)
+    simulator_kur(t, 'B')
+    gizli = t.evaluate("""() => ['.allocation-donut', '.stock-avatar', '.weight-bar', '.day-bar']
+      .map(x => [x, getComputedStyle(document.querySelector(x)).display])""")
+    assert all(d == 'none' for _, d in gizli), gizli
+
+
+@test('Yazı tipleri (b39): Manrope ve sayılar için Inter dosyadan yüklenir (dış sunucu yok); ₺ ve Türkçe harfler var; rakamlar sabit genişlikli')
+def _(o):
+    s = o.sayfa(1440, 900)
+    simulator_kur(s, 'B')
+    r = s.evaluate("""async () => {
+      const css = await Promise.all([...document.styleSheets].filter(x => x.href).map(x => fetch(x.href).then(y => y.text())));
+      const disStil = css.join('\\n').match(/@import|googleapis|gstatic|url\\(\\s*['"]?https?:/gi) || [];
+      const disIstek = performance.getEntriesByType('resource').map(e => e.name).filter(n => /fonts\\.g(oogleapis|static)/.test(n));
+      await document.fonts.load('700 20px "Manrope"', 'ğüşıİç'); await document.fonts.load('700 20px "Ilk Lot Sayi"', '₺0123456789%');
+      const olc = (m) => { const e = document.createElement('span'); e.style.cssText = 'position:absolute;visibility:hidden;font:700 20px var(--fb);font-variant-numeric:tabular-nums';
+        e.textContent = m; document.body.appendChild(e); const w = e.getBoundingClientRect().width; e.remove(); return w; };
+      return { manrope: document.fonts.check('700 20px "Manrope"', 'ğüşıİç'), sayi: document.fonts.check('700 20px "Ilk Lot Sayi"', '₺0123456789%'),
+               aile: getComputedStyle(document.querySelector('.hero-value')).fontFamily, bir: olc('1111'), sekiz: olc('8888'),
+               kayitli: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/"/g, '')), disStil, disIstek };
+    }""")
+    assert r['manrope'] and r['sayi'], r
+    assert 'Ilk Lot Sayi' in r['aile'] and 'Manrope' in r['aile'] and 'Bricolage' not in r['aile'], r['aile']
+    assert abs(r['bir'] - r['sekiz']) < 0.5, f"rakamlar sabit genişlikli değil: {r['bir']} / {r['sekiz']}"
+    assert {'Manrope', 'Ilk Lot Sayi'} <= set(r['kayitli']), r['kayitli']
+    assert not r['disStil'] and not r['disIstek'], f"dış yazı tipi sunucusu: {r['disStil']} {r['disIstek']}"
+
+
 # ───────── yönetim paneli ─────────
 def yonetim_kur(sayfa):
     """Sahte araştırmacı oturumu ve sahte veri: gerçek Firebase'e dokunulmaz."""

@@ -156,10 +156,11 @@ export async function createSummaryCard() {
     return cells.getPropertyValue(count).trim() || '#000';
   };
   try {
-    await document.fonts.load('700 40px "Bricolage Grotesque"');
-    await document.fonts.load('400 40px "Bricolage Grotesque"');
+    await document.fonts.load('700 40px "Manrope"');
+    await document.fonts.load('400 40px "Manrope"');
+    await document.fonts.load('700 40px "Ilk Lot Sayi"', '0123456789%');
   } catch (error) {}
-  const text = '"Bricolage Grotesque",system-ui,sans-serif';
+  const text = '"Ilk Lot Sayi","Manrope",system-ui,sans-serif';
   context.fillStyle = innerValue('--bg');
   context.fillRect(0, 0, innerWidth, height);
   context.fillStyle = innerValue('--tx');

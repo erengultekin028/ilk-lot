@@ -590,6 +590,14 @@
   border-radius: 3px;
   display: inline-block;
 }
+/* Geniş ekran paneline (≥1100 px, desktop.css) özgü öğeler: halka grafik, hisse kutusu, pay çubuğu, gün çubuğu.
+   Telefonda ve tabletta gizlidir; Portföy orada eskisi gibi görünür */
+.allocation-donut,
+.stock-avatar,
+.stock-row .weight-bar,
+.hero-sub .day-bar {
+  display: none;
+}
 /* Hisse detay sayfası */
 .detail-header {
   display: flex;

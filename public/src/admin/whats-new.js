@@ -8,6 +8,13 @@ import { section } from '../widgets/section.js';
 // Her öğe: sürüm, başlık, nerede, nasıl kontrol edilir
 export const WHATS_NEW = [
   {
+    version: 'b39',
+    title: 'Simülatör Portföy ekranı yeni tasarım (geniş ekran) ve yeni yazı tipleri',
+    where: 'Katılımcı uygulaması → simülatör → Portföy (bilgisayar ekranı, ≥1100 px genişlik); yazı tipleri her ekranda',
+    check:
+      'Solda toplam para ve Hisselerin/Nakit/Gün özeti ile halka grafikli dağılım, sağda hisse tablosu (renkli hisse kutusu, adet × fiyat = değer, kâr/zarar, hissenin payı çubuğu) görünür. Telefonda ve tablette Portföy eskisi gibi kalır. Yeni veri ya da haber vurgusu yok; sayılar ve renkler aynı. Yazı tipleri Manrope (metin) ve Inter (sayılar); dosyalar uygulamanın içinde, Google\'a bağlanılmaz. Bilgisayarda ve telefonda, koyu ve açık temada gözle bak.',
+  },
+  {
     version: 'b38',
     title: 'Açık temada kayıp kırmızısı koyulaştırıldı (erişilebilirlik)',
     where:
