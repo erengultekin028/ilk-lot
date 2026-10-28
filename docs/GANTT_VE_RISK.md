@@ -16,7 +16,7 @@ Her sütun 2 haftadır (H1–2, H3–4, …). ■ = çalışılan dönem, ▨ = 
 | 6. Uygulamayı dondur, ön kayıt (OSF) | | | | | | ■ | | | | | | |
 | 7. Ana veri toplama | | | | | | | ■ | ■ | ■ | ■ | | |
 | 8. Analiz ve rapor | | | | | | | | | | | ■ | ■ |
-| 9. Paylaşım (poster, bildiri, açık kaynak sürümü) | | | | | | | | | | | ■ | ■ |
+| 9. Paylaşım (poster, bildiri, herkese açık kaynak kod sürümü) | | | | | | | | | | | ■ | ■ |
 
 **Kritik yol:** 4 (etik onay süresi) ve 7 (katılım hızı). İkisi de uzayabilir; bu yüzden pilot ve veri toplamayı etik onaya göre kurun, tarih değil aralık verin.
 
@@ -30,7 +30,7 @@ Her sütun 2 haftadır (H1–2, H3–4, …). ■ = çalışılan dönem, ▨ = 
 | M4: Pilot raporu | Anlaşılırlık, süre, tamamlama, teknik sorun raporlandı | Rapor |
 | M5: Ön kayıt | OSF kaydı yapıldı, uygulama dondu (`--kilitle`), "yeni katılım başlat" seçeneği kapatıldı (karar paketi madde 17) | OSF bağlantısı, `firebase/yayin_kaydi.json` |
 | M6: Veri toplama bitti | Hedef n ya da son tarih; test kayıtları ayrıldı | Pano, CSV |
-| M7: Rapor ve paylaşım | Rapor, poster/bildiri, açık kaynak sürüm (DOI) | Çıktılar |
+| M7: Rapor ve paylaşım | Rapor, poster/bildiri, yayımlanan kod sürümü (DOI) | Çıktılar |
 
 ## 3. Risk matrisi
 

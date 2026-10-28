@@ -18,7 +18,7 @@ Durum: ☐ açık · ☑ kapandı (kapanınca tarih ve kararı yaz)
 | 10 | **Panik satış tanımı** | "Sert düşüş + zarar" anlarında satış (mevcut) | Mevcut tanımı ön kayda aynen yaz | Ön kayıt, analiz | ☐ |
 | 11 | **Ön kayıt zamanı** | OSF; pilottan sonra, ana toplamadan önce | Etik onaydan sonra, uygulamayı dondurduktan (`--kilitle`) sonra | Zaman damgası, bilimsel güvence | ☐ |
 | 12 | **`[DOLDUR]` alanları** | `CONFIG.consentInfo` (denetleyen, etik, saklama, barındırma, destek, iletişim) | Etik onay numarası ve iletişim adresi netleşince | Onam ekranı (şu an sarı işaretli) | ☐ |
-| 13 | **Lisans** | Kod: MIT/Apache-2.0 gibi; metin ve belgeler: CC-BY gibi; ya da "tüm hakları saklıdır" | Açık kaynak görünümü için kod lisansı + DOI | `LICENSE`, `CITATION.cff` (yazar adı ve kurum gerekli) | ☐ |
+| 13 | **Lisans** | Kod: MIT/Apache-2.0 gibi; metin ve belgeler: CC-BY gibi; ya da "tüm hakları saklıdır" | Açık kaynak görünümü için kod lisansı + DOI | `LICENSE`, `CITATION.cff` (yazar adı ve kurum gerekli) | ☑ **28.10.2026: "tüm hakları saklıdır"; `LICENSE` eklenmedi.** Sonuç: kod herkese açık görüntülenebilir ama "açık kaynak" değildir (başvuruda "açık kaynak" yerine "herkese açık kaynak kod" yaz). `CITATION.cff` (ad, kurum, ORCID) bilgi bekliyor. Fikir değişirse tek `LICENSE` dosyasıyla eklenir |
 | 14 | **Araştırmacı hesabı güvenliği** | Tek e-posta; iki faktörlü doğrulama, hesap kimde | 2FA aç, hesabı danışmanla yedekle | `firebase/firestore.rules` e-posta listesi | ☐ |
 | 15 | **Yeni ölçüm eklemek** (ör. `stress_sell`) | Evet / hayır | Ön kayıttan önce karar, sonra dondur | Veri sözleşmesi, ön kayıt | ☐ |
 | 16 | **Sonuçların katılımcıyla paylaşılması** | Söz verilir / verilmez | Söz verilecekse tarih gerçekçi olsun; onam metni değişir | Onam, bilgilendirme | ☐ |
@@ -28,5 +28,5 @@ Durum: ☐ açık · ☑ kapandı (kapanınca tarih ve kararı yaz)
 - 1(b): yeni Firebase projesi (AB), yapılandırma, kurallar, yayın hattı, deneme ve eski projenin kapatılması.
 - 2: onam v2 metni, çekilme metinleri, `CONSENT_VERSION` ve sürüm kaydı (onayınla).
 - 12: `[DOLDUR]` alanlarının işlenmesi ve `python firebase/dagit.py` ön kontrolü.
-- 13: `LICENSE`, `CITATION.cff` ve Zenodo bağlantısı.
+- 13: `CITATION.cff` (ad, kurum, varsa ORCID gelince) ve Zenodo bağlantısı; `LICENSE` eklenmeyecek (karar: tüm hakları saklı). Not: Zenodo DOI almak lisanssız da mümkündür, ama başkalarının yeniden kullanımı için lisans gerekir.
 - 11 sonrası: `python firebase/dagit.py --kilitle`.

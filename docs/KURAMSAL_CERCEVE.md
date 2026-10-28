@@ -18,7 +18,7 @@ Bireysel yatırımcılar sert fiyat düşüşlerinde, özellikle zarardaki pozis
 
 ## 4. Araştırma boşluğu ve katkı
 - Kısa bir bekleme müdahalesinin etkisi çoğunlukla davranış değişimi **o an** ölçülerek incelenir; **bekleme kalktıktan sonra sürme (aktarım)** ve genç yatırımcılar için kontrollü, tekrarlanabilir bir simülatörde ölçülmesi daha az incelenmiş bir sorudur `[DOĞRULA: gerçek bir literatür taraması yapılmadan "boşluk var" demeyin]`.
-- Katkılar: (1) tamamen tekrarlanabilir, tohumlu bir uyaran ve fiyat yolu; (2) ön kayıtlı, eşdeğerlik testli (TOST) analiz; (3) açık kaynak araç ve anonim veri yönetim planı.
+- Katkılar: (1) tamamen tekrarlanabilir, tohumlu bir uyaran ve fiyat yolu; (2) ön kayıtlı, eşdeğerlik testli (TOST) analiz; (3) herkese açık (görüntülenebilir) kaynak kod ve anonim veri yönetim planı.
 
 ## 5. Hipotezler
 Ana hipotez ve analiz planı `docs/ON_KAYIT_TASLAGI.md` içindedir; burada tekrar yazılmaz ki iki yerde farklılaşmasın. Özet: A grubunun (bekleme ekranı gören) "sert düşüş + zarar" anlarındaki satış oranı değişimi (1. bölümden 3. bölüme), B grubundan farklı mı? Etki küçükse **eşdeğerlik (TOST)** sınırları içinde olup olmadığı raporlanır.
