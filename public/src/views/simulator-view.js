@@ -241,7 +241,7 @@ function sideSummaryHtml() {
   );
 }
 
-// Hisse kutusu (geniş ekranda sembolün ilk iki harfi, hissenin rengiyle); telefonda gizli
+// Hisse kutusu (sembolün ilk iki harfi, hissenin rengiyle); telefonda yalnızca Portföy satırında görünür (simulator.css)
 function stockAvatarHtml(symbol) {
   return (
     '<span class="stock-avatar" aria-hidden="true" style="background:' +

@@ -320,7 +320,7 @@ def _(o):
     assert s.evaluate("document.getElementById('app').getBoundingClientRect().width") <= 390
 
 
-@test('Portföy paneli (1440, b39): solda özet, ilk ekranda görünen son haber ve halka grafik, sağda hisse tablosu; hisse kutusu ve pay çubuğu dolu; telefonda bu öğeler gizli')
+@test('Portföy paneli (1440, b39): solda özet, ilk ekranda görünen son haber ve halka grafik, sağda hisse tablosu; hisse kutusu ve pay çubuğu dolu; telefonda halka, pay çubuğu ve gün çubuğu gizli, Portföy satırında hisse kutusu (b43) görünür')
 def _(o):
     s = o.sayfa(1440, 900)
     simulator_kur(s, 'B')
@@ -348,9 +348,21 @@ def _(o):
     hata_yok(s)
     t = o.sayfa(390, 844, mobil=True)
     simulator_kur(t, 'B')
-    gizli = t.evaluate("""() => ['.allocation-donut', '.stock-avatar', '.weight-bar', '.day-bar']
+    gizli = t.evaluate("""() => ['.allocation-donut', '.weight-bar', '.day-bar']
       .map(x => [x, getComputedStyle(document.querySelector(x)).display])""")
     assert all(d == 'none' for _, d in gizli), gizli
+    # b43: telefonda yalnızca Portföy satırındaki renkli hisse kutusu görünür; sembolün solunda, satır taşmaz
+    kutu = t.evaluate("""() => [...document.querySelectorAll('#stock-list .stock-row')].map(x => {
+      const a = x.querySelector('.stock-avatar'), s = x.querySelector('.stock-symbol'), e = x.querySelector('.equation'), r = x.getBoundingClientRect();
+      const ar = a.getBoundingClientRect(), sr = s.getBoundingClientRect(), er = e.getBoundingClientRect();
+      return { harf: a.textContent, gorunur: getComputedStyle(a).display !== 'none', genislik: Math.round(ar.width), solda: ar.right <= sr.left + 1,
+        altta: er.top >= ar.bottom - 1, tasma: x.scrollWidth > x.clientWidth + 1, arka: getComputedStyle(a).backgroundColor };
+    })""")
+    assert len(kutu) == 6 and all(k['gorunur'] and len(k['harf']) == 2 and k['genislik'] == 38 and k['solda'] and k['altta'] and not k['tasma'] and k['arka'] != 'rgba(0, 0, 0, 0)' for k in kutu), kutu
+    assert len({k['arka'] for k in kutu}) == 6, 'her hissenin kendi rengi olmalı'
+    piyasa_kutu = t.evaluate("""() => { const k = window.ilkLot; k.state.marketTab = 'm'; k.render(); k.updateSimulatorLive();
+      return [...document.querySelectorAll('.market-card .stock-avatar')].map(x => getComputedStyle(x).display); }""")
+    assert piyasa_kutu and all(d == 'none' for d in piyasa_kutu), piyasa_kutu  # Piyasa kartı kutusu telefonda hâlâ gizli
 
 
 UST_USTE_OLCUM = """() => {

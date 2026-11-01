@@ -590,8 +590,38 @@
   border-radius: 3px;
   display: inline-block;
 }
+/* b43: Portföy listesinde renkli hisse kutusu (hissenin rengi, ilk iki harf) telefonda da görünür. Satır iki sütunlu ızgara olur:
+   solda kutu, sağda sembol ve kâr/zarar; adet × fiyat = değer ve ortalama alış tam genişlikte (içerik ve sıra aynı).
+   ≥1100 px düzeni desktop.css'te bu kuralların üstüne yazar (daha özgül seçiciler). Piyasa kartı ve işlem geçmişi kutusu telefonda hâlâ gizli. */
+.stock-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: center;
+}
+.stock-row .stock-avatar {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font: 700 12px var(--fd);
+  letter-spacing: 0.02em;
+}
+.stock-row .stock-row-top {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+.stock-row .equation,
+.stock-row .average-line {
+  grid-column: 1 / -1;
+}
 /* Geniş ekran paneline (≥1100 px, desktop.css) özgü öğeler: halka grafik, sol özet kartı, hisse kutusu, pay çubuğu, gün çubuğu.
-   Telefonda ve tabletta gizlidir; Portföy orada eskisi gibi görünür */
+   Telefonda ve tabletta gizlidir (b43: Portföy satırındaki hisse kutusu hariç, yukarıda) */
 .allocation-donut,
 .side-summary,
 .stock-avatar,
