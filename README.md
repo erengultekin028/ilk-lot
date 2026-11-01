@@ -164,6 +164,7 @@ Yayın öncesi ön kontrol (boş `[DOLDUR]` alanları, örnek e-posta, ölçüt 
 | Belge | Konu |
 |---|---|
 | [`DEVIR_NOTU.md`](DEVIR_NOTU.md) | Proje durumu, kararlar, kurallar, doğrulanmayanlar |
+| [`CHANGELOG.md`](CHANGELOG.md) | Sürüm geçmişi (b5–b41) ve eski notlar |
 | [`docs/MIMARI.md`](docs/MIMARI.md) | Katmanlar, katılım akışı, veri sözleşmesi |
 | [`firebase/KURULUM.md`](firebase/KURULUM.md) | Firebase kurulumu, yayın, pilot yürütme, kontrol listesi |
 | [`docs/VERI_SOZLUGU.md`](docs/VERI_SOZLUGU.md) | Firestore alanları, olaylar, CSV sütunları |
