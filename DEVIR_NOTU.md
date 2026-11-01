@@ -4,9 +4,9 @@ Bu belge, projeyi ilk kez gören biri için yazıldı. Önce bunu, sonra `README
 
 ## Güncel durum (1 Kasım 2026)
 - **Yayın:** https://ilk-lot-pilot.web.app (Firebase Hosting; `main`'e gönderimde GitHub Actions ile). Pilot başlamadı. 28.10 panel kontrolü: 80 yuva (40/40), 10 alınmış, hepsi deneme kaydı, Sistem testi ✓.
-- **b43 (1 Kasım, `mimari`'de, CI'da doğrulanmadı, YAYINLANMADI):** telefonda Portföy satırlarına renkli hisse kutusu (kullanıcı isteği; halka grafik, pay çubuğu, sol özet telefonda hâlâ gizli). Telefonda ekran görüntüsü alınmadı.
-- **b42 (1 Kasım, `mimari`'de CI yeşil, YAYINLANMADI):** CI'ı kıran erişilebilirlik hatası düzeltildi (`#market-news` klavyeyle odaklanabilir) ve kullanılmayan kod temizlendi; ayrıntı `CHANGELOG.md`. Canlı site (`main`) b41'de ve bu hatayla duruyor.
-- **b41 (son yayınlanan sürüm):** geniş ekran (≥1100 px) simülatör ekranları yeni tasarım dilinde (Portföy, Piyasa, Analiz, hisse ayrıntısı; Manrope + Inter). Telefon/tablet, karar anı ekranları (1. ve 3. bölüm) ve fiyat yolu özeti (`3171573551 18600`) değişmedi.
+- **b43 (1 Kasım, YAYINDA; `main` = `mimari`, `testler` ve `yayin` yeşil, canlı sitede b43):** telefonda Portföy satırlarına renkli hisse kutusu (kullanıcı isteği; halka grafik, pay çubuğu, sol özet telefonda hâlâ gizli). Kullanıcı gerçek telefonda denedi, "olmuş" dedi; hangi telefon/tarayıcı ve büyük yazı/koyu tema kayda geçmedi. Yeni testin mutasyon doğrulaması yok.
+- **b42 (1 Kasım, YAYINDA, b43 ile birlikte):** CI'ı kıran erişilebilirlik hatası düzeltildi (`#market-news` klavyeyle odaklanabilir) ve kullanılmayan kod temizlendi; ayrıntı `CHANGELOG.md`.
+- **b41:** geniş ekran (≥1100 px) simülatör ekranları yeni tasarım dilinde (Portföy, Piyasa, Analiz, hisse ayrıntısı; Manrope + Inter). Telefon/tablet, karar anı ekranları (1. ve 3. bölüm) ve fiyat yolu özeti (`3171573551 18600`) değişmedi.
 - **Uyaranın görünümü b38'de değişti** (açık temada kayıp rengi ≈%6 koyulaştı, araştırmacı onayıyla): ön kayıt ve `--kilitle` bundan SONRA yapılmalı.
 - **Onam v2 UYGULANMADI** (`etik/ONAM_V2_TASLAGI.md`, KVKK yanıtı ve onay bekliyor). Mevcut onam "verilerin silinir" diyor, soft delete (politika A) ile çelişiyor: gerçek katılımcıyla (pilot dahil) kullanma.
 - **Yeniden katılım** ("Yeni katılım başlat") pilota kadar AÇIK; ana veri toplamadan önce `ALLOW_FRESH_START_AFTER_WITHDRAWAL = false` (karar paketi madde 17; `dagit.py` ana toplamada engeller).
