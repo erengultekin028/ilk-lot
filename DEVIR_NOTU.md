@@ -1,15 +1,16 @@
 # Devir notu (başka bir Claude oturumu ve geliştirici için)
 
-Bu belge, projeyi ilk kez gören biri için yazıldı. Önce bunu, sonra `README.md` ve `docs/MIMARI.md`'yi oku. Çalışma kuralları ve komutlar `CLAUDE.md`'dedir. **Sürüm geçmişi (b5–b41) ve eski notların tamamı `CHANGELOG.md`'dedir**; bu belge yalnızca güncel durumu tutar. Son güncelleme: **1 Kasım 2026**. Uygulama sürümü **2026.10.28-b41**, onam sürümü **v1**.
+Bu belge, projeyi ilk kez gören biri için yazıldı. Önce bunu, sonra `README.md` ve `docs/MIMARI.md`'yi oku. Çalışma kuralları ve komutlar `CLAUDE.md`'dedir. **Sürüm geçmişi (b5–b42) ve eski notların tamamı `CHANGELOG.md`'dedir**; bu belge yalnızca güncel durumu tutar. Son güncelleme: **1 Kasım 2026**. Uygulama sürümü **2026.11.01-b42**, onam sürümü **v1**.
 
 ## Güncel durum (1 Kasım 2026)
 - **Yayın:** https://ilk-lot-pilot.web.app (Firebase Hosting; `main`'e gönderimde GitHub Actions ile). Pilot başlamadı. 28.10 panel kontrolü: 80 yuva (40/40), 10 alınmış, hepsi deneme kaydı, Sistem testi ✓.
-- **Son uygulama sürümü b41:** geniş ekran (≥1100 px) simülatör ekranları yeni tasarım dilinde (Portföy, Piyasa, Analiz, hisse ayrıntısı; Manrope + Inter). Telefon/tablet, karar anı ekranları (1. ve 3. bölüm) ve fiyat yolu özeti (`3171573551 18600`) değişmedi.
+- **b42 (1 Kasım, YAYINLANMADI, CI'da doğrulanmadı):** CI'ı kıran erişilebilirlik hatası düzeltildi (`#market-news` klavyeyle odaklanabilir) ve kullanılmayan kod temizlendi; ayrıntı `CHANGELOG.md`. b40–b41 canlı sitede bu hatayla duruyor.
+- **b41 (son yayınlanan sürüm):** geniş ekran (≥1100 px) simülatör ekranları yeni tasarım dilinde (Portföy, Piyasa, Analiz, hisse ayrıntısı; Manrope + Inter). Telefon/tablet, karar anı ekranları (1. ve 3. bölüm) ve fiyat yolu özeti (`3171573551 18600`) değişmedi.
 - **Uyaranın görünümü b38'de değişti** (açık temada kayıp rengi ≈%6 koyulaştı, araştırmacı onayıyla): ön kayıt ve `--kilitle` bundan SONRA yapılmalı.
 - **Onam v2 UYGULANMADI** (`etik/ONAM_V2_TASLAGI.md`, KVKK yanıtı ve onay bekliyor). Mevcut onam "verilerin silinir" diyor, soft delete (politika A) ile çelişiyor: gerçek katılımcıyla (pilot dahil) kullanma.
 - **Yeniden katılım** ("Yeni katılım başlat") pilota kadar AÇIK; ana veri toplamadan önce `ALLOW_FRESH_START_AFTER_WITHDRAWAL = false` (karar paketi madde 17; `dagit.py` ana toplamada engeller).
 - **Lisans:** tüm hakları saklı, `LICENSE` yok; `CITATION.cff` için ad/kurum/ORCID bekleniyor.
-- **Karar paketi:** 1 Kasım 2026'da madde 18 eklendi (gerçek şirket adları; etik kurul/hukuk birimine sorulacak, pilottan önce karar). Kodda değişiklik yok.
+- **Karar paketi:** 1 Kasım 2026'da madde 18 eklendi (gerçek şirket adları; etik kurul/hukuk birimine sorulacak, pilottan önce karar; e-posta taslağı `docs/ETIK_KURULA_SIRKET_ADLARI_EPOSTASI.md`, KVKK e-postası `docs/KVKK_BIRIMINE_EPOSTA.md`, ikisi de taslak; gönderim durumu kayıtlı değil). Kodda değişiklik yok.
 - **Geçersiz veri uyarısı:** b27–b30 ile toplanmış A grubu verisi geçerli sayılmaz (b31: bekleme ekranı geri sayımı ilerlemiyordu); pilot başlamadığı için bilinen böyle veri yok. Eski sürümlerle toplanmış veri yeni sürümle **birleştirilmez** (ayrıntı: `CHANGELOG.md` b8, b13).
 
 ## Proje nedir

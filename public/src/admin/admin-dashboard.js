@@ -156,7 +156,6 @@ export function renderDashboard() {
         (adminState.dashboardBusy ? 'Yükleniyor…' : 'Panoyu yükle') +
         '</button>'
     );
-  const totalSessions = CONFIG.totalSessions;
   const cons = Math.max(1, dashboard.cons);
   // Günlük katılım: son 14 gün
   const items = [];

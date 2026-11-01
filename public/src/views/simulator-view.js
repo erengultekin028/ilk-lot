@@ -346,7 +346,6 @@ function stockDetailHtml(symbol) {
   const simulation = state.simulation;
   const position = simulation.pos[symbol];
   const hasPosition = position && position.q > 0;
-  const buyQuantity = Math.floor(CONFIG.addAmount / simulation.p[symbol]);
   return (
     '<div class="detail-header"><button class="icon-button" data-a="closeStockDetail" aria-label="Geri">‹</button><div><div style="font:700 22px/1.1 var(--fd)">' +
     symbol +
@@ -394,7 +393,7 @@ function stockDetailHtml(symbol) {
 function marketTabHtml() {
   const simulation = state.simulation;
   let html =
-    '<div class="card-section"><div class="card-header"><h3>Haberler</h3><span class="muted small-text">en yeni üstte</span></div><div class="card-body" id="market-news">' +
+    '<div class="card-section"><div class="card-header"><h3>Haberler</h3><span class="muted small-text">en yeni üstte</span></div><div class="card-body" id="market-news" tabindex="0" role="region" aria-label="Haber akışı">' +
     newsListHtml(simulation.tick) +
     '</div></div>';
   html +=
@@ -745,8 +744,6 @@ export function updateSimulatorLive() {
     const sim = item.dataset.sim;
     const position = simulation.pos[sim];
     const price = simulation.p[sim];
-    const history = simulation.h[sim];
-    const isUp = history[history.length - 1] >= history[Math.max(0, history.length - 8)];
     const innerElement = item.querySelector('.news-flag');
     if (innerElement) {
       const news = freePlayBannerNews();
@@ -875,7 +872,6 @@ function tradeSummaryHtml(calc) {
 }
 
 export function tradeWindowHtml(symbol) {
-  const tradeDraft = state.tradeDraft;
   const simulation = state.simulation;
   const position = simulation.pos[symbol];
   const price = simulation.p[symbol];

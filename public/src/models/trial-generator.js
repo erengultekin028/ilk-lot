@@ -35,7 +35,6 @@ const PAIR_PARAMS = (function () {
 function buildTrialSet(name) {
   rngState.main = hashSeed('ilklot-set6-' + name);
   const items = [];
-  const letters = (name === 'X' ? 'ABCDEF' : 'GHJKLM').split('');
   const innerShuffleArray = shuffleArray(SECTORS.slice());
   const shuffleArray2 = shuffleArray(CRISIS_HEADLINES.slice());
   const shuffleArray3 = shuffleArray(NORMAL_HEADLINES.slice());

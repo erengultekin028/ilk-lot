@@ -11,10 +11,6 @@ export function round2(value) {
   return Math.round(value * 100) / 100;
 }
 
-function signPrefix(value) {
-  return round2(value) >= 0 ? '+' : '';
-}
-
 export function directionClass(value) {
   return round2(value) >= 0 ? 'price-up' : 'price-down';
 }

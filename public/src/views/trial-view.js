@@ -185,18 +185,6 @@ function outcomeHtml(trial, decision) {
   );
 }
 
-function stressHtml() {
-  return (
-    '<div class="stage"><h1 style="font-size:26px">Kısa bir soru</h1><p>Şu an ne kadar gergin hissediyorsun?</p><div class="scale">' +
-    [1, 2, 3, 4, 5]
-      .map(function (item) {
-        return '<button data-a="answerStress" data-v="' + item + '">' + item + '</button>';
-      })
-      .join('') +
-    '</div><div class="scale-labels"><span>Hiç gergin değilim</span><span>Çok gerginim</span></div><button class="link" style="width:100%;margin-top:12px" data-a="answerStress" data-v="0">Cevaplamak istemiyorum</button></div>'
-  );
-}
-
 // Anlama kontrolü: yanlışta açıklama gösterilir ve aynı soru tekrar sorulur
 function quizHtml() {
   const comprehension = state.comprehension;

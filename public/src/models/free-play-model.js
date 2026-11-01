@@ -110,10 +110,6 @@ export function planFreePlayEvents(simulation) {
   }
 }
 
-function freePlayLossFloor(level, startValue) {
-  return Math.round(startValue * (1 - FREE_PLAY_LEVELS[level].lim));
-}
-
 // b23: kayıp sınırı kullanıcı seçimi (f.lim) ya da zorluğun varsayılanı
 export function freePlayLossLimit(freePlay) {
   return freePlay.lim != null ? freePlay.lim : FREE_PLAY_LEVELS[freePlay.lvl].lim;

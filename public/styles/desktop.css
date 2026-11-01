@@ -445,6 +445,11 @@
     overflow-y: auto;
     padding: 8px 20px 12px 38px;
   }
+  /* Kaydırılabilir bölge klavyeyle odaklanabilir (axe: scrollable-region-focusable); halka içeride, çünkü taşma kesilir */
+  #main-view[data-tab='m'] #market-news:focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: -2px;
+  }
   #main-view[data-tab='m'] #market-news::before {
     content: '';
     position: absolute;

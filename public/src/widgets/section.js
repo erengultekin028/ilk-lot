@@ -1,4 +1,4 @@
-// Bölüm kutusu ve ilerleme çubuğu bileşenleri.
+// Bölüm kutusu bileşeni.
 
 // ═════════════════ GÖRÜNÜMLER ═════════════════
 export function section(title, body, right) {
@@ -10,15 +10,5 @@ export function section(title, body, right) {
     '</div><div class="card-body">' +
     body +
     '</div></div>'
-  );
-}
-
-function progressBar(percent, color) {
-  return (
-    '<div class="bar"><i style="width:' +
-    Math.max(0, Math.min(100, percent)) +
-    '%' +
-    (color ? ';background:' + color : '') +
-    '"></i></div>'
   );
 }
