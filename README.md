@@ -172,7 +172,7 @@ Yayın öncesi ön kontrol (boş `[DOLDUR]` alanları, örnek e-posta, ölçüt 
 | [`docs/GERCEK_CIHAZ_TESTI.md`](docs/GERCEK_CIHAZ_TESTI.md) | Gerçek cihaz ve Firebase deneme protokolü (klavye ve ekran okuyucu dahil) |
 | [`docs/PILOT_PLANI.md`](docs/PILOT_PLANI.md) | Pilot planı, karar kuralları ve rapor şablonu |
 | [`docs/KONUM_VE_KVKK_KARARI.md`](docs/KONUM_VE_KVKK_KARARI.md) | Veri konumu ve KVKK seçenekleri, taşıma planı, KVKK birimine sorular |
-| [`docs/KARAR_PAKETI.md`](docs/KARAR_PAKETI.md) | Pilottan önce kapatılacak kararlar (KVKK/konum, onam v2, ödül, lisans…) |
+| [`docs/KARAR_PAKETI.md`](docs/KARAR_PAKETI.md) | Pilottan önce kapatılacak kararlar (KVKK/konum, onam v2, ödül, lisans, gerçek şirket adları…) |
 | [`docs/KURAMSAL_CERCEVE.md`](docs/KURAMSAL_CERCEVE.md) | Kuramsal çerçeve ve kaynakça taslağı (kaynaklar doğrulanacak) |
 | [`docs/GANTT_VE_RISK.md`](docs/GANTT_VE_RISK.md) | İş-zaman çizelgesi (Gantt), kilometre taşları ve risk matrisi |
 | [`docs/VERI_YONETIM_PLANI.md`](docs/VERI_YONETIM_PLANI.md) | Veri yaşam döngüsü, saklama, paylaşım, yedek |

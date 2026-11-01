@@ -22,7 +22,7 @@ Ana ölçüt bölüm başına yalnızca 4 denemeye dayanıyor. Varsayımlarla (t
 1. **Örneklem yolu:** mevcut tasarımla grup başına ~100 mü, yoksa tasarımı güçlendirip (bölüm başına 8 deneme, A'da herkesin bekleme görmesi) ~60 mı? Pilot sonrası.
 2. **Simülatör süresi:** kullanıcı 150 yerine **300 gün** istedi ve b8'de uygulandı (7,5 dk). `docs/BEKLEYEN_150_GUN.md` ayrı, uygulanmamış bir plandır. Takvim ya da tohum değişirse tohum yeniden aranmalı: `docs/SIMULATOR_TOHUMU.md`.
 3. **Eşdeğerlik sınırı (TOST):** hangi OR'nin "ihmal edilebilir" sayılacağı bilimsel karar; kullanıcıdan ve danışmandan iste, uydurma. **Araç hazır** (`ilklot_analiz.py --esdeger-or`, `ilklot_guc.py --esdeger-or`) ama sınır verilmedikçe çalışmaz; seyreltme yanlılığına dikkat (`analiz/README.md`, "Eşdeğerlik").
-4. Birincil modelin türü, tek/çift yönlü test (varsayılan: iki yönlü), ön kayıt, ölçek çevirisinin doğrulanması, gerçek şirket adlarının kalıp kalmayacağı, kart dağıtım politikası, veri paylaşımı.
+4. Birincil modelin türü, tek/çift yönlü test (varsayılan: iki yönlü), ön kayıt, ölçek çevirisinin doğrulanması, gerçek şirket adlarının kalıp kalmayacağı (karar paketi madde 18, 1 Kas 2026'da eklendi: etik kurul/hukuk birimine sorulacak, pilottan önce karar), kart dağıtım politikası, veri paylaşımı.
 5. **Sarı `[DOLDUR]` alanları** (`CFG.consentInfo`: kurum, etik onay, saklama, barındırma, destek birimi; `CFG.contact`): boşken uygulamada sarı işaretli görünür.
 
 ## Değiştirme kuralları

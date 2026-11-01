@@ -75,7 +75,7 @@ Hisse adları gerçek BIST şirketlerine aittir; **fiyatlar, grafikler, haberler
 | Eksik bilgilendirme | Bkz. 4. bölüm | Bkz. 4. bölüm |
 | Yanlış öğrenme ("satmak/tutmak işe yarar" izlenimi) | Düşük | Sonuçlar dengelenmiş; sonda "doğru ya da yanlış yok" ve "yatırım tavsiyesi değildir" |
 | Baskı ya da bağımlılık (tanıdık araştırmacı) | Öğrenci katılımcılarda olası | Gönüllülük vurgusu; ders notuyla ilişki yok; işe alım politikası (2. bölüm) |
-| **Gerçek şirket adlarının kullanımı** | Kurgusal olumsuz haberler ve çöküşler gerçek şirket adlarıyla gösteriliyor; itibar ve hukuki yönü olabilir | Her ekranda ve bilgilendirmede "adlar gerçek, fiyat ve haberler kurgusal" uyarısı; veriler kimliksiz ve toplu yayımlanır. **[KARAR]** Kurul ya da hukuk birimi itiraz ederse adlar kurgusal olanlarla değiştirilir (kod değişikliği küçüktür, `kaynak/02_core.js`). |
+| **Gerçek şirket adlarının kullanımı** | Kurgusal olumsuz haberler ve çöküşler gerçek şirket adlarıyla gösteriliyor; itibar ve hukuki yönü olabilir | Her ekranda ve bilgilendirmede "adlar gerçek, fiyat ve haberler kurgusal" uyarısı; veriler kimliksiz ve toplu yayımlanır. **[KARAR]** Kurul ya da hukuk birimi itiraz ederse adlar kurgusal olanlarla değiştirilir (kod değişikliği küçüktür: `public/src/constants/market-data.js`, `free-play-data.js` ve `app-config.js` içindeki kriz hisse listesi; fiyat yolu özeti değişirse yeni özet sabitlenir). Karar paketi madde 18. |
 
 **Yararlar:** Katılımcıya doğrudan maddi yarar yok (onamda da bu yazılı). Kendi karar kalıplarını gösteren bir özet (kararlarının filmi) ve bilgilendirme verilir. Toplumsal yarar: genç yatırımcılara yönelik finansal okuryazarlık eğitimlerinin tasarımına bilimsel veri.
 
