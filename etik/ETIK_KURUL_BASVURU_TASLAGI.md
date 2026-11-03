@@ -44,7 +44,7 @@ Ekran görüntüleri: `ekranlar/`.
 | 11. Bilgilendirme | Amaç, grubu, kurgusal olduğu, destek bilgisi, çekilme seçeneği. İsteğe bağlı "karar kartı" (aşağıdaki not) | 2 dk |
 | 12. Serbest mod (isteğe bağlı, **çalışma bittikten sonra**) | Katılımcı kendi seçtiği zorlukla (Kolay / Orta / Zor), kayıp sınırıyla (%10-%50), senaryoyla (rastgele / sakin / kriz / yükseliş dönemi) ve başlangıç portföyüyle simülatörü oyun gibi oynayabilir; oyun sırasında piyasayı durdurabilir ya da hızlandırabilir ve hisselere otomatik sat emri koyabilir; toplam para seçilen kayıp sınırının altına inince oyun biter. **Çalışmanın parçası değildir: hiçbir olay, işlem ya da ayar kaydedilmez**, bekleme ekranı yoktur, süre sınırı yoktur; puan, sıralama, ödül ve paylaşım yoktur. **[KARAR]** Etik kurulun bu ekranı da görmesi gerekir; bu ekranlar `etik/ekranlar/` içine henüz eklenmedi. | serbest |
 
-Hisse adları gerçek BIST şirketlerine aittir; **fiyatlar, grafikler, haberler ve sonuçlar tamamen kurgusaldır** ve her aşamada katılımcıya bildirilir. Karar sonuçları, "sat" ya da "tut" ortalamada avantaj sağlamayacak şekilde dengelenmiştir; sonda katılımcıya hiçbir kararın "doğru" ya da "yanlış" olmadığı söylenir.
+Şirket adları ve kodları kurgusaldır, gerçek şirketlerle ilgisi yoktur; **fiyatlar, grafikler, haberler ve sonuçlar da tamamen kurgusaldır** ve her aşamada katılımcıya bildirilir. Karar sonuçları, "sat" ya da "tut" ortalamada avantaj sağlamayacak şekilde dengelenmiştir; sonda katılımcıya hiçbir kararın "doğru" ya da "yanlış" olmadığı söylenir.
 
 **Yatırım tavsiyesi ve risk profili:** Uygulama yatırım tavsiyesi vermez, bir risk profili ya da uygunluk testi çıkarmaz, katılımcıya hisse önermez; haber ve fiyatlar kurgusaldır. Görev ve simülatör ekranlarında sabit bir satırda "Kurgusal piyasa · yatırım tavsiyesi değildir" yazar; bilgilendirmede de yer alır. (Gerçek aracı kurumlardaki SPK uygunluk testi bu çalışmada yoktur; çünkü gerçek işlem ve gerçek para yoktur.)
 
@@ -75,7 +75,7 @@ Hisse adları gerçek BIST şirketlerine aittir; **fiyatlar, grafikler, haberler
 | Eksik bilgilendirme | Bkz. 4. bölüm | Bkz. 4. bölüm |
 | Yanlış öğrenme ("satmak/tutmak işe yarar" izlenimi) | Düşük | Sonuçlar dengelenmiş; sonda "doğru ya da yanlış yok" ve "yatırım tavsiyesi değildir" |
 | Baskı ya da bağımlılık (tanıdık araştırmacı) | Öğrenci katılımcılarda olası | Gönüllülük vurgusu; ders notuyla ilişki yok; işe alım politikası (2. bölüm) |
-| **Gerçek şirket adlarının kullanımı** | Kurgusal olumsuz haberler ve çöküşler gerçek şirket adlarıyla gösteriliyor; itibar ve hukuki yönü olabilir | Her ekranda ve bilgilendirmede "adlar gerçek, fiyat ve haberler kurgusal" uyarısı; veriler kimliksiz ve toplu yayımlanır. **[KARAR]** Kurul ya da hukuk birimi itiraz ederse adlar kurgusal olanlarla değiştirilir (kod değişikliği küçüktür: `public/src/constants/market-data.js`, `free-play-data.js` ve `app-config.js` içindeki kriz hisse listesi; fiyat yolu özeti değişirse yeni özet sabitlenir). Karar paketi madde 18. |
+| **Şirket adlarının kullanımı** | Kurgusal olumsuz haberler ve çöküşler şirket adlarıyla gösterilirse itibar ve hukuki yönü olabilir | Simülatördeki tüm şirket adları ve kodları kurgusaldır (gerçek şirket ya da markayla eşleşmesi amaçlanmamıştır); onamda, ekranlarda ve bilgilendirmede "şirket adları, fiyatlar ve haberler kurgusaldır" uyarısı bulunur. Karar paketi madde 18 (kapandı). |
 
 **Yararlar:** Katılımcıya doğrudan maddi yarar yok (onamda da bu yazılı). Kendi karar kalıplarını gösteren bir özet (kararlarının filmi) ve bilgilendirme verilir. Toplumsal yarar: genç yatırımcılara yönelik finansal okuryazarlık eğitimlerinin tasarımına bilimsel veri.
 
@@ -115,7 +115,7 @@ Veri akışı şeması: `veri_akisi.svg` (PNG: `veri_akisi.png`). Alan tanımlar
 - [ ] `materyalleri_uret.py` yeniden çalıştırıldı; ekler güncel
 - [ ] Bu belgedeki tüm `[DOLDUR]` ve `[KARAR]` alanları kapatıldı
 - [ ] Kurumun form şablonuna taşındı
-- [ ] KVKK/hukuk birimi yurt dışı aktarımı ve gerçek şirket adlarını değerlendirdi
+- [ ] KVKK/hukuk birimi yurt dışı aktarımı değerlendirdi
 - [ ] Pilot, başvurunun kapsamında mı? (pilot katılımcı da onam alır; `docs/PILOT_PLANI.md`)
 - [ ] Bilgilendirmedeki destek birimi gerçekten ulaşılabilir ve haberdar edildi
 

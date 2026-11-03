@@ -20,7 +20,7 @@ export const STOCK_BASES = [
 // Yeni haberler yön ipucu vermez (karışık/yatay/takvim içerikli) ve her hisseye dengeli dağıtıldı.
 export const SIMULATOR_NEWS = [
   [0, 'Piyasa güne sakin başladı.', 0, []],
-  [10, 'Borsa İstanbul işlem hacmi geçen haftaya yakın seyretti.', 0, []],
+  [10, 'Piyasada işlem hacmi geçen haftaya yakın seyretti.', 0, []],
   [22, 'Perakende sektöründe talep istikrarlı seyrediyor.', 0, ['SEPMK']],
   [34, 'Madencilik şirketleri yeni üretim verilerini paylaştı.', 0, ['ALTKY']],
   [40, 'Şirketlerin bilanço takvimi açıklandı.', 0, []],

@@ -9,7 +9,7 @@
 **Ne eksik (ve kodla çözülmez):**
 1. **Örneklem ve güç:** mevcut tasarım yalnızca OR ≈ 0,4 ve daha güçlü etkide %80 güce ulaşıyor.
 2. **Bilimsel kararlar açık:** örneklem yolu, TOST sınırı, birincil model, ön kayıt zamanı.
-3. **Etik ve hukuk:** konum / yurt dışı aktarım, onam v2 (mevcut onam "verilerin silinir" diyor ama uygulama silmiyor), gerçek şirket adları (madde 18). **Mevcut onam metniyle gerçek katılımcıya (pilot dahil) gidilmemeli.**
+3. **Etik ve hukuk:** konum / yurt dışı aktarım, onam v2 (mevcut onam "verilerin silinir" diyor ama uygulama silmiyor). Şirket adları kurgusal yapıldı (madde 18 kapandı). **Mevcut onam metniyle gerçek katılımcıya (pilot dahil) gidilmemeli.**
 4. **Doğrulanmayanlar:** pilot yapılmadı (maruz kalma oranı, süre, anlaşılırlık ölçülmedi); gerçek telefonlarda ve gerçek Firebase'de tam akış denenmedi; Big Three çevirisi geri çeviriyle doğrulanmadı.
 
 ## 2. Örneklem ve güç (en önemli konu)
@@ -79,7 +79,7 @@
 |---|---|---|
 | **Konum / yurt dışı aktarım** (madde 1) | Veri ABD'de (nam5). Firebase Authentication yalnızca ABD'de çalışır, yani AB'ye taşıma aktarımı kaldırmaz. Konum sonradan değişmez | Kurumunuzda KVKK birimi kim? E-posta taslağı hazır: `docs/KVKK_BIRIMINE_EPOSTA.md` |
 | **Onam v2 / silme politikası** (madde 2, 3) | Soft delete uygulanıyor; onam "silinir" diyor (çelişki). Taslak: `etik/ONAM_V2_TASLAGI.md`, **uygulanmadı** | Soft delete kabul mü, kalıcı silme mi? Veri "anonim" mi "takma adlı" mı? |
-| **Gerçek şirket adları** (madde 18) | 6 gerçek BIST adı, kurgusal fiyat ve olumsuz haberlerle. Pilottan sonra değiştirmek verileri karşılaştırılamaz yapar | Etik kurul ve hukuk birimi kim? E-posta taslağı: `docs/ETIK_KURULA_SIRKET_ADLARI_EPOSTASI.md` |
+| **Şirket adları** (madde 18, kapandı) | Tüm şirket adları ve kodları kurgusal yapıldı (b45-b46); gerçek şirket adı kalmadı | Yok |
 | **Saklama süresi, ödül, kanallar** (madde 5, 6, 7) | Açık; etik kurul belirler | Kurulun beklentisi |
 | **`[DOLDUR]` alanları** (madde 12) | Onam ekranında sarı işaretli | Etik onay numarası ve iletişim adresi ne zaman netleşir? |
 | **Araştırmacı hesabı** (madde 14) | Tek e-posta tüm yönetim erişimine sahip | 2FA açılsın; hesap danışmanla yedeklensin mi? |
@@ -88,7 +88,6 @@
 
 - **Maruz kalma oranı (%70) bir varsayımdır**, ölçülmedi. Gerçek değer düşükse güç hızla düşer (n = 60'ta %40 maruz kalmada OR = 0,5 gücü %15).
 - **Tek oturum, kısa müdahale:** sonuçlar "kısa süreli aktarım" olarak adlandırılacak; simüle piyasa dış geçerliği sınırlar.
-- **Gerçek şirket adları** katılımcıda önceden fikir uyandırabilir (ön kayıtta sınırlılık olarak yazılı).
 - **Bekleme ekranını görmek randomize değil** (A grubunda yalnızca ≥%2 zarardaki satışta çıkar); müdahale görünür olduğu için tam körlük yok.
 - **Ön test:** Big Three çevirisi araştırmacı çevirisi, doğrulanmadı; 3 ek madde doğrulanmamış araştırmacı yazımı.
 - **Uyaran görünümü b38'de değişti** (açık tema kayıp rengi ≈%6 koyulaştı); ön kayıt ve `--kilitle` bundan sonra yapılmalı.
@@ -111,7 +110,7 @@ Her satır için karar ve tarih yazın; sonra `docs/KARAR_PAKETI.md`'ye işlenir
 | — | Pilot formu etik onay kapsamında mı | | | |
 | 1 | Konum / KVKK birimi kim, e-posta kime | | | |
 | 2, 3 | Soft delete ve takma adlı veri | | | |
-| 18 | Gerçek şirket adları: kime sorulacak | | | |
+| 18 | Şirket adları: kurgusal yapıldı (kapandı) | | | |
 | 17 | Pilotta yeniden katılım açık kalsın mı | | | |
 | 5, 6, 7 | Saklama, ödül, kanallar | | | |
 | 14 | Araştırmacı hesabı: 2FA ve yedek | | | |

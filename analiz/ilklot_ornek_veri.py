@@ -34,12 +34,12 @@ SURUM = '2026.10.04-q1'
 SELL_WHY = ['Planım buydu', 'Haber yüzünden', 'Korktum', 'Diğerleri satıyor', 'Söylemek istemiyorum']
 # [hisse, sektör, piyasa, pozisyon, sürü bilgisi var mı, sonuç yönü] — uygulamadaki sabit setlerin yaklaşık karşılığı
 SETLER = {
-    'X': [('GARAN', 'Bankacılık', 'normal', 'zarar', False, -1), ('FROTO', 'Otomotiv', 'kriz', 'zarar', False, -1),
-          ('TCELL', 'Telekom', 'kriz', 'zarar', True, -1), ('EREGL', 'Demir çelik', 'normal', 'kar', True, 1),
-          ('SISE', 'Cam', 'kriz', 'zarar', False, 1), ('ULKER', 'Gıda', 'kriz', 'zarar', True, 1)],
-    'Y': [('AKBNK', 'Bankacılık', 'normal', 'kar', True, -1), ('TOASO', 'Otomotiv', 'kriz', 'zarar', False, -1),
-          ('TTKOM', 'Telekom', 'kriz', 'zarar', True, 1), ('KCHOL', 'Holding', 'kriz', 'zarar', True, -1),
-          ('ARCLK', 'Beyaz eşya', 'kriz', 'zarar', False, 1), ('MGROS', 'Perakende', 'normal', 'zarar', False, 1)]}
+    'X': [('KLSBK', 'Bankacılık', 'normal', 'zarar', False, -1), ('OTVRA', 'Otomotiv', 'kriz', 'zarar', False, -1),
+          ('LVNTL', 'Telekom', 'kriz', 'zarar', True, -1), ('DMRKP', 'Demir çelik', 'normal', 'kar', True, 1),
+          ('CMLAR', 'Cam', 'kriz', 'zarar', False, 1), ('TADLI', 'Gıda', 'kriz', 'zarar', True, 1)],
+    'Y': [('SRVBK', 'Bankacılık', 'normal', 'kar', True, -1), ('OTMNA', 'Otomotiv', 'kriz', 'zarar', False, -1),
+          ('HBRTL', 'Telekom', 'kriz', 'zarar', True, 1), ('ANKHL', 'Holding', 'kriz', 'zarar', True, -1),
+          ('EVBRK', 'Beyaz eşya', 'kriz', 'zarar', False, 1), ('PZRLK', 'Perakende', 'normal', 'zarar', False, 1)]}
 YAS = ['18–20', '21–23', '24–26', '27 ve üzeri', 'Belirtmek istemiyorum']
 CINSIYET = ['Kadın', 'Erkek', 'Diğer', 'Belirtmek istemiyorum']
 ALAN = ['İktisadi ve idari bilimler', 'Mühendislik ve fen', 'Sağlık', 'Sosyal ve beşeri', 'Diğer']

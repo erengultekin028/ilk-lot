@@ -38,7 +38,7 @@ OR, bekleme ekranını gören katılımcıdaki gerçek odds oranıdır; "ek" sü
 
 ### 3. Veri toplama aracı
 
-Çalışma için geliştirilen **İlk Lot** web uygulaması kullanılır (telefonda tarayıcıdan, kurulum gerektirmez). Piyasa ve şirket verileri **kurgusaldır**; hisse adları gerçek BIST şirketlerine aittir ve katılımcıya her aşamada fiyatların, grafiklerin ve haberlerin kurgusal olduğu bildirilir. Aracın geçerliliği için şu önlemler alınmıştır:
+Çalışma için geliştirilen **İlk Lot** web uygulaması kullanılır (telefonda tarayıcıdan, kurulum gerektirmez). Piyasa ve şirket verileri **kurgusaldır**; şirket adları ve kodları da gerçek şirketlerle ilgisizdir ve katılımcıya her aşamada fiyatların, grafiklerin ve haberlerin kurgusal olduğu bildirilir. Aracın geçerliliği için şu önlemler alınmıştır:
 
 - **Standart uyaran:** Tüm uyaranlar sabit bir rastgele tohumdan üretilir; her katılımcı aynı karar anlarını görür.
 - **Tarafsız sonuçlar:** Karar anlarında her hücrede (piyasa × pozisyon) yükseliş ve düşüş sonuçları eşit büyüklükte eşleştirilmiştir; "sat" ya da "tut" ortalamada avantaj sağlamaz. Simülatör piyasası, krizden sonra ortalamada yatay seyredecek biçimde (aday tohumlar arasından ölçütle) seçilmiştir.
@@ -78,7 +78,6 @@ Katılımcı onam verir (katmanlı, onay kutulu), formu doldurur, ön testi çö
 - **Dış geçerlik.** Piyasa simülasyonu kurgusaldır ve gerçek para kullanılmaz; sonuçlar gerçek yatırım davranışına doğrudan genellenemez.
 - **Müdahale süresi.** Tek oturum ve kısa süreli müdahale: sonuçlar "kısa süreli aktarım" olarak adlandırılacak, kalıcılık iddia edilmeyecektir.
 - **Maruz kalma randomize değildir.** Bekleme ekranını görmek, simülatörde zararına satış denemesine bağlıdır; bu yüzden birincil analiz tüm A katılımcılarını içerir (niyet-tedavi mantığı), "görenler"in analizi keşifseldir.
-- **Gerçek şirket adları.** Katılımcıların bu şirketlere dair önceden fikri kararlarını etkileyebilir; iki grup aynı adları gördüğü için karşılaştırmayı bozmaz.
 
 ### 9. Etik
 

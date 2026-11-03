@@ -4,7 +4,8 @@ Bu belge, projeyi ilk kez gören biri için yazıldı. Önce bunu, sonra `README
 
 ## Güncel durum (1 Kasım 2026)
 - **Yayın:** https://ilk-lot-pilot.web.app (Firebase Hosting; `main`'e gönderimde GitHub Actions ile). Pilot başlamadı. 28.10 panel kontrolü: 80 yuva (40/40), 10 alınmış, hepsi deneme kaydı, Sistem testi ✓.
-- **b45 (3 Kasım, yerelde, COMMIT'LENMEDİ, test koşulmadı, YAYINLANMADI):** hisse adları/kodları kurgusal yapıldı (ALTKY, PTRVA, BLTAY, GKYOL, TUNCS, SEPMK); ekran uyarıları buna göre. Onam cümlesi güncellendi, `CONSENT_VERSION` = `v1.1` (`v2` silme politikası için ayrı). **Açık kalan:** etik başvuru taslağı (`ETIK_KURUL_BASVURU_TASLAGI.md` satır 47, 118) ve ön kayıt metinleri hâlâ "gerçek adlar" diyebilir, karar paketi madde 18 durumu, `docs/ETIK_KURULA_SIRKET_ADLARI_EPOSTASI.md` artık gereksiz olabilir. Ayrıntı CHANGELOG b45.
+- **b46 (4 Kasım, yerelde, COMMIT'LENMEDİ, test koşulmadı, YAYINLANMADI):** kalan tüm gerçek şirket adları/kodları kaldırıldı (karar anı görevi hisseleri KLSBK…PZRLK; haber 10'daki "Borsa İstanbul"; örnek veri, eski testler, belgeler). `arsiv/` ve `docs/ETIK_KURULA_SIRKET_ADLARI_EPOSTASI.md` silindi. Karar paketi madde 18 kapandı. Ayrıntı CHANGELOG b46.
+- **b45 (3 Kasım, COMMIT'LENDİ, YAYINLANMADI):** simülatör hisseleri kurgusal yapıldı (ALTKY, PTRVA, BLTAY, GKYOL, TUNCS, SEPMK); onam cümlesi güncellendi, `CONSENT_VERSION` = `v1.1` (`v2` silme politikası için ayrı).
 - **b44 (1 Kasım, yerelde, COMMIT'LENMEDİ, test koşulmadı, YAYINLANMADI):** onam ekranı "Veri sorumlusu" alanı dolduruldu (Gümüşhane Üniversitesi, Eren Gültekin); `CITATION.cff` eklendi; `tanitim.html` yürütücü/üniversite dolduruldu. Davranış aynı. Ayrıntı `CHANGELOG.md`.
 - **b43 (1 Kasım, YAYINDA; `main` = `mimari`, `testler` ve `yayin` yeşil, canlı sitede b43):** telefonda Portföy satırlarına renkli hisse kutusu (kullanıcı isteği; halka grafik, pay çubuğu, sol özet telefonda hâlâ gizli). Kullanıcı gerçek telefonda denedi, "olmuş" dedi; hangi telefon/tarayıcı ve büyük yazı/koyu tema kayda geçmedi. Yeni testin mutasyon doğrulaması yok.
 - **b42 (1 Kasım, YAYINDA, b43 ile birlikte):** CI'ı kıran erişilebilirlik hatası düzeltildi (`#market-news` klavyeyle odaklanabilir) ve kullanılmayan kod temizlendi; ayrıntı `CHANGELOG.md`.
@@ -13,7 +14,7 @@ Bu belge, projeyi ilk kez gören biri için yazıldı. Önce bunu, sonra `README
 - **Onam v2 UYGULANMADI** (`etik/ONAM_V2_TASLAGI.md`, KVKK yanıtı ve onay bekliyor). Mevcut onam "verilerin silinir" diyor, soft delete (politika A) ile çelişiyor: gerçek katılımcıyla (pilot dahil) kullanma.
 - **Yeniden katılım** ("Yeni katılım başlat") pilota kadar AÇIK; ana veri toplamadan önce `ALLOW_FRESH_START_AFTER_WITHDRAWAL = false` (karar paketi madde 17; `dagit.py` ana toplamada engeller).
 - **Lisans:** tüm hakları saklı, `LICENSE` yok; `CITATION.cff` için ad/kurum/ORCID bekleniyor.
-- **Karar paketi:** 1 Kasım 2026'da madde 18 eklendi (gerçek şirket adları; etik kurul/hukuk birimine sorulacak, pilottan önce karar; e-posta taslağı `docs/ETIK_KURULA_SIRKET_ADLARI_EPOSTASI.md`, KVKK e-postası `docs/KVKK_BIRIMINE_EPOSTA.md`, ikisi de taslak; gönderim durumu kayıtlı değil). Kodda değişiklik yok.
+- **Karar paketi:** madde 18 (şirket adları) kapandı: hepsi kurgusal (b45-b46). KVKK e-postası `docs/KVKK_BIRIMINE_EPOSTA.md` taslak; gönderim durumu kayıtlı değil.
 - **Geçersiz veri uyarısı:** b27–b30 ile toplanmış A grubu verisi geçerli sayılmaz (b31: bekleme ekranı geri sayımı ilerlemiyordu); pilot başlamadığı için bilinen böyle veri yok. Eski sürümlerle toplanmış veri yeni sürümle **birleştirilmez** (ayrıntı: `CHANGELOG.md` b8, b13).
 
 ## Proje nedir
@@ -36,7 +37,7 @@ Ana ölçüt bölüm başına yalnızca 4 denemeye dayanıyor. Varsayımlarla (t
 1. **Örneklem yolu:** mevcut tasarımla grup başına ~100 mü, yoksa tasarımı güçlendirip (bölüm başına 8 deneme, A'da herkesin bekleme görmesi) ~60 mı? Pilot sonrası.
 2. **Simülatör süresi:** kullanıcı 150 yerine **300 gün** istedi ve b8'de uygulandı (7,5 dk). `docs/BEKLEYEN_150_GUN.md` ayrı, uygulanmamış bir plandır. Takvim ya da tohum değişirse tohum yeniden aranmalı: `docs/SIMULATOR_TOHUMU.md`.
 3. **Eşdeğerlik sınırı (TOST):** hangi OR'nin "ihmal edilebilir" sayılacağı bilimsel karar; kullanıcıdan ve danışmandan iste, uydurma. **Araç hazır** (`ilklot_analiz.py --esdeger-or`, `ilklot_guc.py --esdeger-or`) ama sınır verilmedikçe çalışmaz; seyreltme yanlılığına dikkat (`analiz/README.md`, "Eşdeğerlik").
-4. Birincil modelin türü, tek/çift yönlü test (varsayılan: iki yönlü), ön kayıt, ölçek çevirisinin doğrulanması, gerçek şirket adlarının kalıp kalmayacağı (karar paketi madde 18, 1 Kas 2026'da eklendi: etik kurul/hukuk birimine sorulacak, pilottan önce karar), kart dağıtım politikası, veri paylaşımı.
+4. Birincil modelin türü, tek/çift yönlü test (varsayılan: iki yönlü), ön kayıt, ölçek çevirisinin doğrulanması, kart dağıtım politikası, veri paylaşımı.
 5. **Sarı `[DOLDUR]` alanları** (`CFG.consentInfo`: etik onay, saklama, barındırma, destek birimi; `CFG.contact`; `controller` b44'te dolduruldu): boşken uygulamada sarı işaretli görünür.
 
 ## Değiştirme kuralları

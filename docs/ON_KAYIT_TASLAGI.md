@@ -33,7 +33,7 @@
   1. 1. bölüm: 6 karar anı (4 "sert düşüş + zarar"); Sat / Tut / Daha al; **iki grupta da bekleme yok**.
   2. 2. bölüm: 7,5 dakikalık piyasa simülatörü (6 hisse, 3 sektörel kriz). **A grubu:** pozisyon en az %2 zarardayken "Sat" onayından önce 10 saniyelik bekleme ekranı (vazgeçme mümkün). **B grubu:** bekleme yok. İki grupta da her satışta kısa gerekçe sorusu.
   3. 3. bölüm: farklı hisselerle 6 karar anı; **iki grupta da bekleme yok**.
-- **Uyaranlar:** Sabit tohumdan üretilir; herkes aynı uyaranları görür. Hisse adları gerçek BIST şirketleridir, fiyatlar, grafikler, haberler ve sonuçlar kurgusaldır ve katılımcıya bildirilir. Her hücrede yükseliş ve düşüş sonuçları eşit büyüklükte eşleştirilmiştir (beklenen sonuç sıfır); simülatör piyasası kriz sonrası yatay seyredecek şekilde seçilmiştir.
+- **Uyaranlar:** Sabit tohumdan üretilir; herkes aynı uyaranları görür. Şirket adları ve kodları, fiyatlar, grafikler, haberler ve sonuçlar kurgusaldır ve katılımcıya bildirilir. Her hücrede yükseliş ve düşüş sonuçları eşit büyüklükte eşleştirilmiştir (beklenen sonuç sıfır); simülatör piyasası kriz sonrası yatay seyredecek şekilde seçilmiştir.
 
 ## 3. Örnekleme planı
 
@@ -109,7 +109,7 @@ Kayıttan sonra aşağıdakilerden biri değişirse bu **sapma** sayılır ve ra
 
 ## 6. Diğer
 
-- **Bilinen sınırlılıklar:** Simüle piyasa ve kurgusal fiyatlar (dış geçerlik); tek oturum ve kısa müdahale (sonuçlar "kısa süreli aktarım" olarak adlandırılacaktır); gerçek şirket adlarının önyargı yaratma olasılığı; müdahalenin görünür olması; bekleme ekranını görmenin randomize olmaması; ana ölçütün bölüm başına yalnızca 4 denemeye dayanması (gücü sınırlar).
+- **Bilinen sınırlılıklar:** Simüle piyasa ve kurgusal fiyatlar (dış geçerlik); tek oturum ve kısa müdahale (sonuçlar "kısa süreli aktarım" olarak adlandırılacaktır); müdahalenin görünür olması; bekleme ekranını görmenin randomize olmaması; ana ölçütün bölüm başına yalnızca 4 denemeye dayanması (gücü sınırlar).
 - **Sapmalar:** Ön kayıttan her sapma, gerekçesiyle birlikte raporda ayrıca listelenir.
 - **Veri ve kod paylaşımı:** [DOLDUR]
 

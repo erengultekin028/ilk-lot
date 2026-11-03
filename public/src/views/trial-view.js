@@ -118,7 +118,7 @@ function chooseHtml(trial) {
     '</div>';
   return (
     html +
-    '<p class="footnote" style="margin-top:14px">Sonuç bir hafta sonrası olarak hemen gösterilecek. Şirket adı gerçek; grafik, haber ve sonuç kurgusaldır.</p></div>'
+    '<p class="footnote" style="margin-top:14px">Sonuç bir hafta sonrası olarak hemen gösterilecek. Şirket adı, grafik, haber ve sonuç kurgusaldır.</p></div>'
   );
 }
 

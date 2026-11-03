@@ -44,19 +44,19 @@ export const NORMAL_HEADLINES = [
 
 export const TASK_STOCKS = {
   X: [
-    ['GARAN', 'Bankacılık'],
-    ['FROTO', 'Otomotiv'],
-    ['TCELL', 'Telekom'],
-    ['EREGL', 'Demir çelik'],
-    ['SISE', 'Cam'],
-    ['ULKER', 'Gıda'],
+    ['KLSBK', 'Bankacılık'],
+    ['OTVRA', 'Otomotiv'],
+    ['LVNTL', 'Telekom'],
+    ['DMRKP', 'Demir çelik'],
+    ['CMLAR', 'Cam'],
+    ['TADLI', 'Gıda'],
   ],
   Y: [
-    ['AKBNK', 'Bankacılık'],
-    ['TOASO', 'Otomotiv'],
-    ['TTKOM', 'Telekom'],
-    ['KCHOL', 'Holding'],
-    ['ARCLK', 'Beyaz eşya'],
-    ['MGROS', 'Perakende'],
+    ['SRVBK', 'Bankacılık'],
+    ['OTMNA', 'Otomotiv'],
+    ['HBRTL', 'Telekom'],
+    ['ANKHL', 'Holding'],
+    ['EVBRK', 'Beyaz eşya'],
+    ['PZRLK', 'Perakende'],
   ],
 };

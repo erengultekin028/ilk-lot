@@ -132,7 +132,7 @@ async def simulatore_gec(pg, gun=80):
     await pg.evaluate(f'while(S.sim.tick<{gun}){{simStep()}}simLive()')
 
 
-async def sim_sat(pg, hisse='TUPRS', cevap=2):
+async def sim_sat(pg, hisse='PTRVA', cevap=2):
     await pg.evaluate(f"ACT.simDetail('{hisse}')")
     await pg.click(f'[data-a=simOpen][data-v="{hisse}|S"]')
     await pg.click('[data-a=simQty][data-v=max]')
@@ -271,8 +271,8 @@ async def devam_etme(b):
         await pg.click('[data-a=choose][data-v=tut]')
         await pg.click('[data-a=next]')
     await simulatore_gec(pg, 90)
-    await pg.evaluate("ACT.simDetail('TUPRS')")
-    await pg.click('[data-a=simOpen][data-v="TUPRS|B"]')
+    await pg.evaluate("ACT.simDetail('PTRVA')")
+    await pg.click('[data-a=simOpen][data-v="PTRVA|B"]')
     await pg.fill('#simq', '10')
     await pg.click('[data-a=simGo]')
     await pg.wait_for_timeout(150)
@@ -374,10 +374,10 @@ async def lot_girisi(b):
         await pg.evaluate(f"S.code='X';S.grp='{grp}';S.stage='sim';S.phase='sim';simInit();S.simTab='p';S.tourSeen={{sim:1}};S.tour=null;while(S.sim.tick<78){{simStep()}};render()")
         return pg
     pg = await hazirla('A')
-    await pg.evaluate("ACT.simDetail('KOZAL')")
-    await pg.click('[data-a=simOpen][data-v="KOZAL|S"]')
+    await pg.evaluate("ACT.simDetail('ALTKY')")
+    await pg.click('[data-a=simOpen][data-v="ALTKY|S"]')
     assert await pg.input_value('#simq') == '' and await pg.evaluate("document.getElementById('tgo').disabled"), 'kutu boş ve onay pasif başlamalı (hazır miktar çıpa olur)'
-    elde = await pg.evaluate('S.sim.pos.KOZAL.q')
+    elde = await pg.evaluate('S.sim.pos.ALTKY.q')
     await pg.fill('#simq', '37')
     assert '37 lot sat' in await pg.inner_text('#tgo')
     await pg.fill('#simq', str(elde + 5))
@@ -393,7 +393,7 @@ async def lot_girisi(b):
     assert await pg.input_value('#simq') in ('', '0')
     await pg.click('[data-a=simSide][data-v=B]')
     assert await pg.input_value('#simq') == '' and 'alacaksın' in await pg.inner_text('.qlab')
-    nakit, fiyat = await pg.evaluate('S.sim.cash'), await pg.evaluate('S.sim.p.KOZAL')
+    nakit, fiyat = await pg.evaluate('S.sim.cash'), await pg.evaluate('S.sim.p.ALTKY')
     await pg.fill('#simq', str(int(nakit // fiyat) + 3))
     assert await pg.evaluate("document.getElementById('tgo').disabled")
     await pg.click('[data-a=simSide][data-v=S]')
@@ -408,25 +408,25 @@ async def lot_girisi(b):
     await pg.evaluate("S.simCd.left=0;document.getElementById('cdg').disabled=false")
     await pg.click('[data-a=simCdGo]')
     await pg.wait_for_timeout(150)
-    assert await pg.evaluate('S.sim.pos.KOZAL.q') == elde - 37
+    assert await pg.evaluate('S.sim.pos.ALTKY.q') == elde - 37
     t = await pg.evaluate('S.sim.trades[S.sim.trades.length-1]')
     assert t['q'] == 37 and t['qMode'] == 'typed' and t['afterCooldown'] is True and t['why'] == 'Korktum'
-    c0, q0 = await pg.evaluate('S.sim.cash'), await pg.evaluate('S.sim.pos.KOZAL.q')
-    await pg.click('[data-a=simOpen][data-v="KOZAL|B"]')
+    c0, q0 = await pg.evaluate('S.sim.cash'), await pg.evaluate('S.sim.pos.ALTKY.q')
+    await pg.click('[data-a=simOpen][data-v="ALTKY|B"]')
     # Fiyat, piyasa durduktan (işlem penceresi açıldıktan) sonra okunur; önce okunursa gerçek zamanlı bir adım araya girip testi arada bir bozar
-    p0 = await pg.evaluate('S.sim.p.KOZAL')
+    p0 = await pg.evaluate('S.sim.p.ALTKY')
     await pg.fill('#simq', '12')
     await pg.click('[data-a=simGo]')
     await pg.wait_for_timeout(120)
-    assert await pg.evaluate('S.sim.pos.KOZAL.q') == q0 + 12 and abs((c0 - await pg.evaluate('S.sim.cash')) - 12 * p0) < 0.01
+    assert await pg.evaluate('S.sim.pos.ALTKY.q') == q0 + 12 and abs((c0 - await pg.evaluate('S.sim.cash')) - 12 * p0) < 0.01
     pb = await hazirla('B')
-    await pb.evaluate("ACT.simDetail('TUPRS')")
-    await pb.click('[data-a=simOpen][data-v="TUPRS|S"]')
+    await pb.evaluate("ACT.simDetail('PTRVA')")
+    await pb.click('[data-a=simOpen][data-v="PTRVA|S"]')
     await pb.fill('#simq', '100')
     await pb.click('[data-a=simGo]')
     await pb.click('[data-a=simWhy][data-v="1"]')
     await pb.wait_for_timeout(120)
-    assert await pb.query_selector('#cdn') is None and await pb.evaluate('S.sim.pos.TUPRS.q') == 135, 'B grubunda bekleme çıkmamalı'
+    assert await pb.query_selector('#cdn') is None and await pb.evaluate('S.sim.pos.PTRVA.q') == 135, 'B grubunda bekleme çıkmamalı'
     temiz(pg, pb)
 
 
@@ -655,40 +655,40 @@ async def serbest_mod_hiz_ve_otomatik_emir(b):
     assert await pg.evaluate('S.sim.tick') - t0 >= 4, '4× hızda bir turda dört gün ilerlemeli'
     await pg.click('[data-a=freeSpeed][data-v="0"]')
     # ── emirler: kartı aç ──
-    await pg.evaluate("ACT.simDetail('TUPRS')")
+    await pg.evaluate("ACT.simDetail('PTRVA')")
     assert await pg.query_selector('#dord [data-a=freeOrder]'), 'detayda emir kartı olmalı'
-    await pg.click('[data-a=freeOrder][data-v="TUPRS|stop|0.1"]')
-    await pg.click('[data-a=freeOrder][data-v="TUPRS|take|0.2"]')
-    assert await pg.evaluate("JSON.stringify(S.sim.orders.TUPRS)") == '{"stop":0.1,"take":0.2}'
-    assert await pg.evaluate("[].map.call(document.querySelectorAll('#dord [role=radio][aria-checked=true]'),function(e){return e.dataset.v}).join()") == 'TUPRS|stop|0.1,TUPRS|take|0.2'
-    await pg.evaluate("ACT.freeOrder('TUPRS|stop|0.07');ACT.freeOrder('TUPRS|zzz|0.1');ACT.freeOrder('YOKHISSE|stop|0.1')")
-    assert await pg.evaluate("JSON.stringify(S.sim.orders)") == '{"TUPRS":{"stop":0.1,"take":0.2}}', 'geçersiz emirler yok sayılmalı'
+    await pg.click('[data-a=freeOrder][data-v="PTRVA|stop|0.1"]')
+    await pg.click('[data-a=freeOrder][data-v="PTRVA|take|0.2"]')
+    assert await pg.evaluate("JSON.stringify(S.sim.orders.PTRVA)") == '{"stop":0.1,"take":0.2}'
+    assert await pg.evaluate("[].map.call(document.querySelectorAll('#dord [role=radio][aria-checked=true]'),function(e){return e.dataset.v}).join()") == 'PTRVA|stop|0.1,PTRVA|take|0.2'
+    await pg.evaluate("ACT.freeOrder('PTRVA|stop|0.07');ACT.freeOrder('PTRVA|zzz|0.1');ACT.freeOrder('YOKHISSE|stop|0.1')")
+    assert await pg.evaluate("JSON.stringify(S.sim.orders)") == '{"PTRVA":{"stop":0.1,"take":0.2}}', 'geçersiz emirler yok sayılmalı'
     await pg.evaluate("ACT.simBack()")
-    assert await pg.evaluate("document.querySelector('[data-sim=TUPRS] .ordl').textContent") == 'Otomatik emir: zarar −%10 · kâr +%20'
-    assert await pg.evaluate("document.querySelector('[data-sim=BIMAS] .ordl').hidden")
+    assert await pg.evaluate("document.querySelector('[data-sim=PTRVA] .ordl').textContent") == 'Otomatik emir: zarar −%10 · kâr +%20'
+    assert await pg.evaluate("document.querySelector('[data-sim=SEPMK] .ordl').hidden")
     # ── eşik: -%9 tetiklemez, -%11 tetikler ──
-    R = await pg.evaluate("""(function(){var m=S.sim,o=m.pos.TUPRS,q=o.q,avg=o.avg,c0=m.cash,r={};
-      m.p.TUPRS=avg*0.91;freeOrders();r.a=[m.pos.TUPRS.q===q,!!m.orders.TUPRS];
-      m.p.TUPRS=avg*0.89;var p=m.p.TUPRS;freeOrders();r.b=[m.pos.TUPRS.q,!!m.orders.TUPRS,m.trades[m.trades.length-1].auto,m.trades[m.trades.length-1].q===q,Math.abs(m.cash-(c0+q*p))<1e-6];return r})()""")
+    R = await pg.evaluate("""(function(){var m=S.sim,o=m.pos.PTRVA,q=o.q,avg=o.avg,c0=m.cash,r={};
+      m.p.PTRVA=avg*0.91;freeOrders();r.a=[m.pos.PTRVA.q===q,!!m.orders.PTRVA];
+      m.p.PTRVA=avg*0.89;var p=m.p.PTRVA;freeOrders();r.b=[m.pos.PTRVA.q,!!m.orders.PTRVA,m.trades[m.trades.length-1].auto,m.trades[m.trades.length-1].q===q,Math.abs(m.cash-(c0+q*p))<1e-6];return r})()""")
     assert R['a'] == [True, True] and R['b'] == [0, False, 'stop', True, True], R
     assert 'Otomatik emir' in await pg.evaluate("document.getElementById('toast').textContent")
     # kâr emri
-    R = await pg.evaluate("""(function(){var m=S.sim,o=m.pos.KOZAL,q=o.q,avg=o.avg;m.orders.KOZAL={stop:0.2,take:0.15};m.p.KOZAL=avg*1.14;freeOrders();var a=m.pos.KOZAL.q===q;m.p.KOZAL=avg*1.16;freeOrders();
-      return [a,m.pos.KOZAL.q,m.orders.KOZAL===undefined,m.trades[m.trades.length-1].auto]})()""")
+    R = await pg.evaluate("""(function(){var m=S.sim,o=m.pos.ALTKY,q=o.q,avg=o.avg;m.orders.ALTKY={stop:0.2,take:0.15};m.p.ALTKY=avg*1.14;freeOrders();var a=m.pos.ALTKY.q===q;m.p.ALTKY=avg*1.16;freeOrders();
+      return [a,m.pos.ALTKY.q,m.orders.ALTKY===undefined,m.trades[m.trades.length-1].auto]})()""")
     assert R == [True, 0, True, 'take'], R
     # manuel tam satışta emir silinir; pozisyonsuz hisseye emir konmaz
-    await pg.evaluate("S.sim.orders.THYAO={stop:0.1,take:null};ACT.simDetail('THYAO')")
-    await pg.click('[data-a=simOpen][data-v="THYAO|S"]')
+    await pg.evaluate("S.sim.orders.GKYOL={stop:0.1,take:null};ACT.simDetail('GKYOL')")
+    await pg.click('[data-a=simOpen][data-v="GKYOL|S"]')
     await pg.click('[data-a=simQty][data-v=max]')
     await pg.click('[data-a=simGo]')
     await pg.wait_for_timeout(150)
-    assert await pg.evaluate("[S.sim.pos.THYAO.q,S.sim.orders.THYAO===undefined]") == [0, True], 'tam satışta emir silinmeli'
+    assert await pg.evaluate("[S.sim.pos.GKYOL.q,S.sim.orders.GKYOL===undefined]") == [0, True], 'tam satışta emir silinmeli'
     assert await pg.evaluate("document.querySelectorAll('#dord [data-a=freeOrder][disabled]').length") == 9, 'pozisyon yokken emir düğmeleri pasif olmalı'
-    await pg.evaluate("ACT.freeOrder('THYAO|stop|0.1')")
-    assert await pg.evaluate("S.sim.orders.THYAO===undefined"), 'pozisyonsuz hisseye emir konmamalı'
+    await pg.evaluate("ACT.freeOrder('GKYOL|stop|0.1')")
+    assert await pg.evaluate("S.sim.orders.GKYOL===undefined"), 'pozisyonsuz hisseye emir konmamalı'
     # marketTick üzerinden: emir günü ilerleyen piyasada da çalışır
-    await pg.evaluate("ACT.simBack();S.sim.orders.ASELS={stop:0.05,take:null};S.sim.p.ASELS=S.sim.pos.ASELS.avg*0.5;S.free.speed=1;marketTick()")
-    assert await pg.evaluate("[S.sim.pos.ASELS.q,S.sim.orders.ASELS===undefined]") == [0, True]
+    await pg.evaluate("ACT.simBack();S.sim.orders.TUNCS={stop:0.05,take:null};S.sim.p.TUNCS=S.sim.pos.TUNCS.avg*0.5;S.free.speed=1;marketTick()")
+    assert await pg.evaluate("[S.sim.pos.TUNCS.q,S.sim.orders.TUNCS===undefined]") == [0, True]
     # sonuç ekranı otomatik emir sayısını söyler
     await pg.evaluate("ACT.freeQuit();ACT.freeEnd()")
     txt = await pg.inner_text('#view')
@@ -702,7 +702,7 @@ async def serbest_mod_hiz_ve_otomatik_emir(b):
     # çalışma simülatöründe emir yok
     await pg.evaluate("ACT.freeBack();simInit();S.free=null")
     assert await pg.evaluate("S.sim.orders===undefined&&typeof freeOrders==='function'")
-    await pg.evaluate("S.sim.p.TUPRS=S.sim.pos.TUPRS.avg*0.5;var q=S.sim.pos.TUPRS.q;freeOrders();window.__q=[q,S.sim.pos.TUPRS.q]")
+    await pg.evaluate("S.sim.p.PTRVA=S.sim.pos.PTRVA.avg*0.5;var q=S.sim.pos.PTRVA.q;freeOrders();window.__q=[q,S.sim.pos.PTRVA.q]")
     assert await pg.evaluate("window.__q[0]===window.__q[1]"), 'çalışma simülatöründe otomatik emir çalışmamalı'
     temiz(pg)
 
@@ -769,16 +769,16 @@ async def adet_fiyat_gosterimi(b):
                 assert r['pc'][0] == ('▲' if pl > 0 else '▼') if pl != 0 else r['pc'][0] not in '▲▼', (gun, r)
     # detay ve işlem penceresi: aynı rakamlar, aynı adlandırma
     await pg.evaluate("while(S.sim.tick<80){simStep()}simLive()")
-    await pg.evaluate("ACT.simDetail('TUPRS')")
-    d = await pg.evaluate("({q:S.sim.pos.TUPRS.q,p:S.sim.p.TUPRS,avg:S.sim.pos.TUPRS.avg,t:document.getElementById('dinfo').innerText})")
+    await pg.evaluate("ACT.simDetail('PTRVA')")
+    d = await pg.evaluate("({q:S.sim.pos.PTRVA.q,p:S.sim.p.PTRVA,avg:S.sim.pos.PTRVA.avg,t:document.getElementById('dinfo').innerText})")
     assert 'Elindeki adet' in d['t'] and 'Toplam değeri' in d['t'] and 'Ort. alış fiyatın' in d['t'], d['t']
     assert f"{d['q']} lot × ₺{str(round(d['p'], 2)).replace('.', ',')}" in d['t'].replace('\n', ' ') or f"{d['q']} lot ×" in d['t'], d['t']
-    await pg.click('[data-a=simOpen][data-v="TUPRS|S"]')
+    await pg.click('[data-a=simOpen][data-v="PTRVA|S"]')
     m = await pg.inner_text('#mbox')
     assert 'Elindeki adet' in m and 'Toplam değeri' in m and 'Ortalama alış fiyatın' in m and 'güncel fiyat (1 lot)' in m, m
     await pg.click('[data-a=simQty][data-v=p50]')
     q = await pg.evaluate('S.simTrade.q')
-    p = await pg.evaluate('S.sim.p.TUPRS')
+    p = await pg.evaluate('S.sim.p.PTRVA')
     ozet = (await pg.inner_text('#tsum')).replace('\n', ' ')
     tutar = f"₺{q * p:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
     assert f'{q} lot ×' in ozet and tutar in ozet, (ozet, tutar)
@@ -889,7 +889,7 @@ async def tanitim_modu(b):
     assert await sim_sat(d) is False, 'tanıtımda bekleme ekranı çıkmamalı'
     # Savunma: grup A olsa bile (elle zorlandı) bekleme çıkmaz
     await d.evaluate("S.grp='A'")
-    assert await sim_sat(d, 'KOZAL') is False, 'tanıtımda A grubu olsa da bekleme çıkmamalı'
+    assert await sim_sat(d, 'ALTKY') is False, 'tanıtımda A grubu olsa da bekleme çıkmamalı'
     assert await d.evaluate('S.sim.trades.length') >= 2, 'işlemler çalışmalı (sadece kaydedilmemeli)'
     # Araştırmacı paneli: logoya 5 dokunuş açmamalı; #admin da işlemez
     for _ in range(5):
@@ -1104,7 +1104,7 @@ async def tema_yazi_ve_hareket(b):
     temiz(d, r)
 
 
-async def _detaya_git(pg, hisse='TUPRS', gun=80):
+async def _detaya_git(pg, hisse='PTRVA', gun=80):
     await pg.evaluate(f'while(S.sim.tick<{gun}){{simStep()}}')
     await pg.evaluate(f"ACT.simDetail('{hisse}')")
     await pg.wait_for_selector('#dchart svg')
@@ -1125,14 +1125,14 @@ async def grafik_gezme(b):
     await pg.evaluate(TURU_ATLA)
     await pg.evaluate('marketTick=function(){}')   # piyasa kendiliğinden akmasın: gün numaraları deterministik olsun (akış aşağıda elle sürülür)
     x, y, w, h = await _detaya_git(pg)
-    n = await pg.evaluate('Math.min(S.simRange,S.sim.h.TUPRS.length)')
+    n = await pg.evaluate('Math.min(S.simRange,S.sim.h.PTRVA.length)')
     for oran in (0.0, 0.5, 1.0):
         await pg.mouse.move(x + min(oran * w, w - 0.5), y + h / 2)   # tam sağ kenar grafiğin dışında sayılır
         dolu = await pg.evaluate('S.scrubDay')
         i = int(oran * (n - 1) + 0.5)
         gun = await pg.evaluate(f'S.sim.tick-({n}-1-{i})')
         assert dolu == gun, (oran, dolu, gun)
-        fiyat = await pg.evaluate(f'fmt(S.sim.h.TUPRS[S.sim.h.TUPRS.length-1-(S.sim.tick-{gun})])')
+        fiyat = await pg.evaluate(f'fmt(S.sim.h.PTRVA[S.sim.h.PTRVA.length-1-(S.sim.tick-{gun})])')
         assert (await pg.text_content('#scrublb')) == f'Gün {gun} · ₺{fiyat}', await pg.text_content('#scrublb')
     # Uçların dışı: son güne sınırlanır
     await pg.mouse.move(x + w + 60, y + h / 2)
@@ -1156,7 +1156,7 @@ async def grafik_gezme(b):
     await pg.evaluate('flush()')
     ev = await pg.evaluate(f"Store.listEvents('{kod}')")
     ges = [e for e in ev if e['type'] == 'sim_chart_scrub']
-    assert len(ges) == 1 and ges[0]['data']['k'] == 'TUPRS' and ges[0]['data']['moves'] >= 6, ges
+    assert len(ges) == 1 and ges[0]['data']['k'] == 'PTRVA' and ges[0]['data']['moves'] >= 6, ges
     # Aralık değişince ve detaydan çıkınca işaret temizlenir
     await pg.mouse.move(x + 0.5 * w, y + h / 2)
     await pg.evaluate('ACT.simBack()')
@@ -1220,7 +1220,7 @@ async def piyasa_tarafsizligi(b):
     var ev=[],pre=0,minP=1e9,N=CFG.simTicks;
     CFG.simCrises.forEach(function(c){c.stocks.forEach(function(k){var e=c.at+c.len-1,h=H[k];ev.push({k:k,end:h[N]/h[e]-1,p20:h[Math.min(N,e+20)]/h[e]-1})})});
     SIMBASE.forEach(function(b){for(var t=0;t<CFG.simCrises[0].at;t++)pre=Math.max(pre,Math.abs(H[b[0]][t]/b[2]-1));H[b[0]].forEach(function(x){minP=Math.min(minP,x)})});
-    return {ev:ev,pre:pre,minP:minP,bim:H.BIMAS[N]/H.BIMAS[0]-1,N:N,
+    return {ev:ev,pre:pre,minP:minP,bim:H.SEPMK[N]/H.SEPMK[0]-1,N:N,
       neg:SIMNEWS.filter(function(x){return x[2]<0}).map(function(x){return x[0]}),
       crs:CFG.simCrises.map(function(c){return [c.at,c.len]})}})()""")
     ev = R['ev']
@@ -1258,7 +1258,7 @@ async def karar_karti_ve_uyari(b):
     await simulatore_gec(pg)
     assert await pg.is_visible('#disc'), 'simülatörde uyarı satırı olmalı'
     assert await sim_sat(pg) is False
-    await pg.evaluate("ACT.simBack();doSimBuy('BIMAS',3)")
+    await pg.evaluate("ACT.simBack();doSimBuy('SEPMK',3)")
     assert await pg.evaluate('S.sim.trades.length') == 2
     await simulatoru_bitir(pg)
     await blok(pg, plan)
@@ -1435,7 +1435,7 @@ async def terim_aciklama(b):
     assert 'Sözlük' in await pg.inner_text('#mbox') and gl[7][0] in await pg.inner_text('#mbox')
     await pg.click('#mbox [data-a=mCancel]')
     # Ayrıntı ekranı: elindeki adet, ort. alış, kâr/zarar, nakit
-    await pg.evaluate("ACT.simDetail('TUPRS')")
+    await pg.evaluate("ACT.simDetail('PTRVA')")
     n = await pg.locator('#view .term').count()
     assert n == 3, n
     assert await pg.evaluate("document.querySelectorAll('button button').length") == 0
@@ -1443,7 +1443,7 @@ async def terim_aciklama(b):
     assert await pg.evaluate("$('modal').classList.contains('open')")
     await pg.click('#mbox [data-a=mCancel]')
     # İşlem penceresi modal: içinde terim düğmesi olmamalı (açılırsa yarım kalan işlemi ezerdi)
-    await pg.evaluate("ACT.simOpen('TUPRS|S')")
+    await pg.evaluate("ACT.simOpen('PTRVA|S')")
     assert await pg.locator('#mbox .term').count() == 0
     await pg.evaluate('ACT.mCancel()')
     # Geçersiz indeks
@@ -1493,10 +1493,10 @@ async def alistirma_simulatoru(b):
     assert 'ALIŞTIRMA' in await pg.inner_text('#db') and await pg.is_visible('#db')
     assert await pg.inner_text('#tmt') in ('⏱ 0:30', '⏱ 0:29'), await pg.inner_text('#tmt')
     # A grubunda bile zararına satışta bekleme ekranı çıkmaz; işlem yapılır
-    await pg.evaluate("while(S.sim.tick<5){simStep()}S.sim.p.TUPRS=S.sim.pos.TUPRS.avg*0.9;simLive()")
+    await pg.evaluate("while(S.sim.tick<5){simStep()}S.sim.p.PTRVA=S.sim.pos.PTRVA.avg*0.9;simLive()")
     assert await sim_sat(pg) is False, 'alıştırmada bekleme ekranı çıkmamalı'
     assert await pg.evaluate('S.sim.trades.length') == 1
-    await pg.evaluate("ACT.simTab('m');ACT.simTab('p');ACT.simDetail('THYAO');ACT.simBack()")
+    await pg.evaluate("ACT.simTab('m');ACT.simTab('p');ACT.simDetail('GKYOL');ACT.simBack()")
     await pg.evaluate("flush()")
     await pg.wait_for_timeout(300)
     ev = await pg.evaluate(f"Store.listEvents('{kod}')")
@@ -1518,7 +1518,7 @@ async def alistirma_simulatoru(b):
     assert await pg.evaluate('S.readMs') is not None
     assert await pg.inner_text('#tmt') in ('⏱ 7:30', '⏱ 7:29'), 'gerçek simülatör süresi'
     await pg.evaluate(TURU_ATLA)
-    await pg.evaluate("while(S.sim.tick<60){simStep()}S.sim.p.TUPRS=S.sim.pos.TUPRS.avg*0.9;simLive()")
+    await pg.evaluate("while(S.sim.tick<60){simStep()}S.sim.p.PTRVA=S.sim.pos.PTRVA.avg*0.9;simLive()")
     assert await sim_sat(pg) is True, 'gerçek simülatörde A grubuna bekleme ekranı çıkmalı'
     await pg.evaluate('flush()')
     await pg.wait_for_timeout(300)
@@ -1671,9 +1671,9 @@ async def serbest_mod_kayit_yok_ve_kosullar(b):
     assert await pg.evaluate("S.stage==='sim'&&!!S.free&&S.sim.free==='z'")
     await pg.evaluate("while(S.sim.tick<20){simStep()}simLive()")
     # A grubu, zararda satış: bekleme ve gerekçe yok, işlem doğrudan yapılır
-    await pg.evaluate("S.sim.p.TUPRS=S.sim.pos.TUPRS.avg*0.9;simLive()")
-    await pg.evaluate("ACT.simDetail('TUPRS')")
-    await pg.click('[data-a=simOpen][data-v="TUPRS|S"]')
+    await pg.evaluate("S.sim.p.PTRVA=S.sim.pos.PTRVA.avg*0.9;simLive()")
+    await pg.evaluate("ACT.simDetail('PTRVA')")
+    await pg.click('[data-a=simOpen][data-v="PTRVA|S"]')
     await pg.click('[data-a=simQty][data-v=max]')
     await pg.click('[data-a=simGo]')
     await pg.wait_for_timeout(200)
@@ -1868,7 +1868,7 @@ async def serbest_mod_haber_derinligi_ve_olaylar(b):
         assert sek[0][0] != sek[2][0] and sek[0][1] != sek[2][1], f'sektör {si}: kolay/orta uyarılar yön vermeli'
     assert [len(x) for x in R['neu']] == [5, 5, 5]
     # düşüş olaylarında kriz uyarısı ekranı çalışır, yükselişte çalışmaz
-    d = await pg.evaluate("""(function(){simInit('t-o');freeInit('o');S.sim.crises=[{at:5,len:6,drop:0.2,stocks:['TUPRS']},{at:30,len:6,drop:-0.2,stocks:['TUPRS']}];return [!!(simCrisis(6)&&simCrisis(6).drop>0),simCrisis(32)===null]})()""")
+    d = await pg.evaluate("""(function(){simInit('t-o');freeInit('o');S.sim.crises=[{at:5,len:6,drop:0.2,stocks:['PTRVA']},{at:30,len:6,drop:-0.2,stocks:['PTRVA']}];return [!!(simCrisis(6)&&simCrisis(6).drop>0),simCrisis(32)===null]})()""")
     assert d == [True, True]
     temiz(pg)
 
