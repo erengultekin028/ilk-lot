@@ -4,9 +4,9 @@
 
 ## Karar verilen ve hazırlanan
 - `simTicks: 150` (süre ≈ 3,75 dakika; tick süresi 1,5 sn aynı kalır).
-- Krizler orantılı olarak içeri alınır: **28. gün** TUPRS + KOZAL (−%18), **70. gün** ASELS (−%20), **112. gün** THYAO + PGSUS (−%16); her biri 7 gün.
-- Haber takvimi (gün: haber): 0 sakin başlangıç · 12 perakende (BIMAS) · 22 enerji uyarısı · 28 enerji ve madencilik krizi · 46 yatay gün · 64 savunma uyarısı · 70 savunma krizi · 90 havayolları rotaları · 106 jet yakıtı uyarısı · 112 havacılık krizi · 135 sakin gün.
-- **Tohum:** `simSeed: 'ilklot-sim3-v117'`. 400 aday arasından 84'ü ölçütleri geçti; v117 kriz dibinden sona ortalama −%0,02, 20 gün sonra +%0,04, 5 olaydan 2 (sona) ve 3 (20 gün sonra) yükselen, BIMAS +%3,0, kriz öncesi en büyük sapma %3,8. Eski tohum (v80) yeni takvimde **kullanılmamalı**, tarafsızlığı doğrulanmadı.
+- Krizler orantılı olarak içeri alınır: **28. gün** PTRVA + ALTKY (−%18), **70. gün** TUNCS (−%20), **112. gün** GKYOL + BLTAY (−%16); her biri 7 gün.
+- Haber takvimi (gün: haber): 0 sakin başlangıç · 12 perakende (SEPMK) · 22 enerji uyarısı · 28 enerji ve madencilik krizi · 46 yatay gün · 64 savunma uyarısı · 70 savunma krizi · 90 havayolları rotaları · 106 jet yakıtı uyarısı · 112 havacılık krizi · 135 sakin gün.
+- **Tohum:** `simSeed: 'ilklot-sim3-v117'`. 400 aday arasından 84'ü ölçütleri geçti; v117 kriz dibinden sona ortalama −%0,02, 20 gün sonra +%0,04, 5 olaydan 2 (sona) ve 3 (20 gün sonra) yükselen, SEPMK +%3,0, kriz öncesi en büyük sapma %3,8. Eski tohum (v80) yeni takvimde **kullanılmamalı**, tarafsızlığı doğrulanmadı.
 
 ## Uygulanırken güncellenecekler
 - Metinler: "yaklaşık 30 dakika" (onam özeti, onam metni, indirilen metin, tanıtım ekranı, tanıtım sayfası, ön kayıt) → ≈ 25 dakika; "10 dakikalık simülatör" (ön kayıt, veri sözlüğü, README) → ≈ 4 dakika; hızlı mod açıklaması (panel metni, KURULUM): "10 dk yerine yaklaşık 1 dk" → "≈ 4 dk yerine ≈ 25 sn".

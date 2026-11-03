@@ -242,7 +242,7 @@ export function renderFreePlayMenu() {
     '<p class="muted small-text" style="margin:-6px 0 14px">' +
     FREE_PLAY_PORTFOLIOS[freePlay.pf || 'd'].tx +
     '</p>' +
-    '<button class="button is-primary" data-a="startFreePlay">Oyunu başlat</button><button class="link" style="width:100%" data-a="leaveFreePlay">Geri dön</button><p class="footnote">Şirket adları gerçek; fiyatlar, grafikler ve haberler kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz. Yatırım tavsiyesi değildir.</p></div>'
+    '<button class="button is-primary" data-a="startFreePlay">Oyunu başlat</button><button class="link" style="width:100%" data-a="leaveFreePlay">Geri dön</button><p class="footnote">Şirket adları ve kodları kurgusaldır; fiyatlar, grafikler ve haberler de kurgusaldır. Gerçek şirketlerle ilgisi yoktur. Yatırım tavsiyesi değildir.</p></div>'
   );
 }
 

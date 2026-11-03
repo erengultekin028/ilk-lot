@@ -1,7 +1,7 @@
 // Uygulama sürümü ve çalışma ayarları (CONFIG). Tüm modüller buradan okur; pilot başladıktan sonra ölçüt ayarları DEĞİŞTİRİLMEZ.
 
 // Her olay ve anlık görüntü bu sürümle etiketlenir. Pilot ortasında kodu değiştirirsen MUTLAKA artır.
-export const APP_VERSION = '2026.11.01-b43';
+export const APP_VERSION = '2026.11.01-b45';
 
 // ═════════════════ ÇALIŞMA AYARLARI ═════════════════
 export const CONFIG = {
@@ -13,7 +13,7 @@ export const CONFIG = {
   // Onam metnindeki doldurulacak alanlar. "[DOLDUR…" ile başlayanlar ekranda sarı işaretli görünür ve
   // araştırmacı panelinde "doldurulmamış" olarak listelenir. Pilottan ÖNCE hepsini doldur.
   consentInfo: {
-    controller: '[DOLDUR: üniversite ve araştırmacı adı]',
+    controller: 'Gümüşhane Üniversitesi, Eren Gültekin',
     ethics: '[DOLDUR: etik kurul adı, tarih ve sayı]',
     retention: '[DOLDUR: örn. araştırma bittikten sonra 2 yıl]',
     hosting: '[DOLDUR: örn. Google Firebase, Avrupa bölgesi]',
@@ -33,12 +33,12 @@ export const CONFIG = {
   simTickMs: 1500, // 300 gün × 1,5 sn = 7,5 dk
   // Sektörel krizler: her biri farklı hisseleri vurur. Bir hisseyi satmak diğer krizlerden kaçırmaz,
   // böylece piyasa nötr kalır ama katılımcı her krizde yeniden karar verir (bekleme dozu dağılır).
-  // BIMAS hiçbir krizden etkilenmez (karşılaştırma hissesi). Kriz dışında sürüklenme yok.
-  // Hisse adları gerçek BIST şirketleri; fiyatlar, haberler ve krizler KURGUSAL (ekranda ve bilgilendirmede belirtilir).
+  // SEPMK hiçbir krizden etkilenmez (karşılaştırma hissesi). Kriz dışında sürüklenme yok.
+  // Şirket adları ve kodları KURGUSALDIR (gerçek şirketlerle ilgisi yoktur); fiyatlar, haberler ve krizler de kurgusaldır.
   simCrises: [
-    { at: 52, len: 7, drop: 0.18, stocks: ['TUPRS', 'KOZAL'] },
-    { at: 135, len: 7, drop: 0.2, stocks: ['ASELS'] },
-    { at: 218, len: 7, drop: 0.16, stocks: ['THYAO', 'PGSUS'] },
+    { at: 52, len: 7, drop: 0.18, stocks: ['PTRVA', 'ALTKY'] },
+    { at: 135, len: 7, drop: 0.2, stocks: ['TUNCS'] },
+    { at: 218, len: 7, drop: 0.16, stocks: ['GKYOL', 'BLTAY'] },
   ],
   simSeed: 'ilklot-sim4-v2669', // 300 günlük takvim için seçildi: kriz dibinden sona ve +20 güne ortalama değişim ~0 (nötr piyasa); docs/SIMULATOR_TOHUMU.md
   crisisFx: true, // Yön ışığı: yükselişte yeşil, düşüşte kırmızı kenar ışığı (iki gruba da aynı)
@@ -58,4 +58,4 @@ export const CONFIG = {
 export const PILOT_MODE = CONFIG.pilot === true;
 
 // ═════════════════ DURUM ═════════════════
-export const CONSENT_VERSION = 'v1';
+export const CONSENT_VERSION = 'v1.1';

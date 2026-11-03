@@ -8,11 +8,11 @@ Simülatör rastgele ama tohumla belirlenir: herkes aynı piyasayı görür. Tas
 ## Takvim
 | Kriz | Başlangıç günü | Süre | Düşüş | Hisseler |
 |---|---|---|---|---|
-| 1 | 52 | 7 | %18 | TUPRS, KOZAL |
-| 2 | 135 | 7 | %20 | ASELS |
-| 3 | 218 | 7 | %16 | THYAO, PGSUS |
+| 1 | 52 | 7 | %18 | PTRVA, ALTKY |
+| 2 | 135 | 7 | %20 | TUNCS |
+| 3 | 218 | 7 | %16 | GKYOL, BLTAY |
 
-Olumsuz haberler: 46 (uyarı) ve 52, 129 ve 135, 212 ve 218. Son kriz bitişi (gün 224) ile oturum sonu (300) arası 76 gün. BIMAS krizsiz kontrol hissesidir.
+Olumsuz haberler: 46 (uyarı) ve 52, 129 ve 135, 212 ve 218. Son kriz bitişi (gün 224) ile oturum sonu (300) arası 76 gün. SEPMK krizsiz kontrol hissesidir.
 
 Tarafsız haberler (b18): 17 madde (günler 0, 10, 22, 34, 40, 82, 90, 100, 112, 122, 172, 195, 204, 250, 262, 276, 288). Uyarı ve kriz haberlerinin günü ve metni değişmedi; her kriz için uyarıdan (kriz günü −6) kriz bitişinden 20 gün sonrasına kadar olan pencerede yeni haber yok (46–79, 129–162, 212–245). Tarafsız haberlerin yönü 0; fiyatı etkilemezler (haberler fiyat üretmez, yalnızca ekranda gösterilir). Aynı tablo iki gruba da gösterilir.
 
@@ -22,7 +22,7 @@ Her kriz-hisse olayı için (5 olay) kriz dibinden **sona** ve **dipten 20 gün 
 2. Olayların 2-3'ü yükselmiş (her iki ufukta).
 3. Tek bir olayın değişimi |%6| içinde.
 4. İlk krizden önce hiçbir hisse başlangıçtan %4,5'ten fazla sapmamış.
-5. BIMAS toplam |%3,5| içinde.
+5. SEPMK toplam |%3,5| içinde.
 6. Hiçbir fiyat 1'in altına inmemiş.
 
 **Bu ölçütler benim seçimimdir, bilimsel bir standart değil.** Eşikleri değiştirmek farklı tohum seçtirir; gerekçeyi etik kurula/danışmana siz savunmalısınız.
@@ -35,13 +35,13 @@ Her kriz-hisse olayı için (5 olay) kriz dibinden **sona** ve **dipten 20 gün 
 | Yükselen olay (son / +20) | 3 / 2 (5 üzerinden) |
 | En büyük tek olay (son) | %3,0 |
 | İlk krizden önce en büyük sapma | %2,2 |
-| BIMAS toplam | +%0,1 |
+| SEPMK toplam | +%0,1 |
 
 3000 adaydan 96'sı ölçütleri geçti; geçenler arasında bileşik sapma en küçük olan seçildi.
 
 ## Yeniden arama
 ```
-node analiz/simulator_tohum_ara.js 300 '[{"at":52,"len":7,"drop":0.18,"stocks":["TUPRS","KOZAL"]},{"at":135,"len":7,"drop":0.20,"stocks":["ASELS"]},{"at":218,"len":7,"drop":0.16,"stocks":["THYAO","PGSUS"]}]' ilklot-sim4-v 3000
+node analiz/simulator_tohum_ara.js 300 '[{"at":52,"len":7,"drop":0.18,"stocks":["PTRVA","ALTKY"]},{"at":135,"len":7,"drop":0.20,"stocks":["TUNCS"]},{"at":218,"len":7,"drop":0.16,"stocks":["GKYOL","BLTAY"]}]' ilklot-sim4-v 3000
 ```
 Araç, `kaynak/02_core.js` içindeki `simInit/simStep` ile aynı üretimi kullanır (elle kopya; o fonksiyonlar değişirse araç da güncellenmeli). Uygulama testi `piyasa_tarafsizligi` aynı ölçütleri uygulamanın kendi kodu üzerinde sınar; takvim ya da tohum bozulursa kalır.
 

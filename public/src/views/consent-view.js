@@ -46,7 +46,7 @@ function consentSections(plain) {
           ' kısa karar ve ' +
           innerSimulationMinutesText +
           ' dakikalık bir piyasa simülatörü (öncesinde 30 saniyelik bir alıştırma). Toplam yaklaşık 30 dakika sürer.',
-        'Hiçbir aşamada gerçek para kullanılmaz. Hisse adları gerçek BIST şirketlerine ait olabilir; ama fiyatlar, grafikler ve haberler tamamen kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz.',
+        'Hiçbir aşamada gerçek para kullanılmaz. Simülatördeki şirket adları, fiyatlar, grafikler ve haberler tamamen kurgusaldır; gerçek şirketlerle ya da gerçek olaylarla ilgisi yoktur.',
       ],
     ],
     [

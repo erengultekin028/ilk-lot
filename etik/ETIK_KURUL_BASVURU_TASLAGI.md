@@ -92,7 +92,7 @@ Veri akışı şeması: `veri_akisi.svg` (PNG: `veri_akisi.png`). Alan tanımlar
 | Teknik | Tarayıcı ve cihaz türü (kısa dize), ekran boyutu | Hayır |
 | Barındırıcı günlükleri | IP adresi vb. | Barındırıcıda durabilir, araştırma verisiyle eşleştirilmez; **[DOLDUR: barındırma ayarlarını kontrol et]** |
 
-- **Veri sorumlusu:** [DOLDUR]
+- **Veri sorumlusu:** Gümüşhane Üniversitesi, Eren Gültekin (Yönetim Bilişim Sistemleri). Kurumun KVKK biriminin sorumlu tanımını onaylaması gerekir.
 - **Hukuki dayanak:** Açık rıza (onam ekranı ve onay kutusu; kabul edilen onam sürümü ve zaman damgası kaydedilir). **[DOLDUR]** Kurumun KVKK birimi onaylamalı.
 - **Saklama ve silme:** [DOLDUR: süre]. Süre sonunda ham veri silinir; yalnızca kimliksiz toplu sonuçlar kalır.
 - **Erişim:** Yalnızca [DOLDUR: araştırmacılar]. Sunucuda kurallarla zorlanır: katılımcı grubunu değiştiremez ve çekilmiş kaydı geri açamaz; kayıtları listeleme ve olay kayıtlarını okuma yalnızca yetkili araştırmacı hesabındadır. Katılımcı **kod girmez**: Firebase anonim girişle sıradaki yuvayı alır ve yalnızca **kendi** yuvasına ait kaydı okuyup yazabilir (kural, oturum kimliği ile yuva kaydını eşleştirir); başkasının kaydına, listeye ya da olaylara erişemez. 18 otomatik kural testi vardır (`firebase/kural_testleri`). Araştırmacı hesabı tek e-postadır; iki adımlı doğrulama önerilir. **[DOLDUR]**

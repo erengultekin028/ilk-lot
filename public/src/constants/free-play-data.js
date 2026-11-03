@@ -13,12 +13,12 @@ export const FREE_PLAY_LEVELS = {
 };
 
 export const FREE_PLAY_SECTORS = [
-  ['Madencilik', ['KOZAL']],
-  ['Enerji', ['TUPRS']],
-  ['Havacılık', ['THYAO', 'PGSUS']],
-  ['Savunma', ['ASELS']],
-  ['Perakende', ['BIMAS']],
-  ['Genel piyasa', ['KOZAL', 'TUPRS', 'PGSUS', 'THYAO', 'ASELS', 'BIMAS']],
+  ['Madencilik', ['ALTKY']],
+  ['Enerji', ['PTRVA']],
+  ['Havacılık', ['GKYOL', 'BLTAY']],
+  ['Savunma', ['TUNCS']],
+  ['Perakende', ['SEPMK']],
+  ['Genel piyasa', ['ALTKY', 'PTRVA', 'BLTAY', 'GKYOL', 'TUNCS', 'SEPMK']],
 ];
 
 // Her sektör: [düşüş uyarısı, düşüş haberi, yükseliş uyarısı, yükseliş haberi]; her biri [kolay, orta, zor]. Zor uyarılar yön vermez (iki yönde aynı metin).

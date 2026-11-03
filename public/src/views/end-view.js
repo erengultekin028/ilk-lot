@@ -89,7 +89,7 @@ export function renderEnd() {
     ) +
     section(
       'Bilmen gerekenler',
-      '<p class="muted" style="margin:0 0 8px">Hisse adları gerçek şirketlere ait olsa da fiyatlar, grafikler ve haberler tamamen kurgusaldı; bu şirketlerin gerçek performansını ya da gerçek haberlerini yansıtmaz. Karar anlarının sonuçları, satmanın ya da tutmanın ortalamada avantaj sağlamayacağı şekilde dengelenmişti; simülatördeki piyasa da krizden sonra ortalamada yatay seyredecek şekilde seçilmişti. Yani hiçbir kararın "doğru" ya da "yanlış" değildi.</p><p class="muted" style="margin:0 0 8px">Hiçbir içerik yatırım tavsiyesi değildir.</p><p class="muted" style="margin:0">Soruların için: <b style="color:var(--tx)">' +
+      '<p class="muted" style="margin:0 0 8px">Şirket adları, fiyatlar, grafikler ve haberler tamamen kurgusaldı; gerçek şirketlerle ya da gerçek haberlerle ilgisi yoktur. Karar anlarının sonuçları, satmanın ya da tutmanın ortalamada avantaj sağlamayacağı şekilde dengelenmişti; simülatördeki piyasa da krizden sonra ortalamada yatay seyredecek şekilde seçilmişti. Yani hiçbir kararın "doğru" ya da "yanlış" değildi.</p><p class="muted" style="margin:0 0 8px">Hiçbir içerik yatırım tavsiyesi değildir.</p><p class="muted" style="margin:0">Soruların için: <b style="color:var(--tx)">' +
         consentField('contact') +
         '</b></p>'
     ) +

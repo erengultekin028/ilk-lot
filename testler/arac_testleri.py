@@ -105,7 +105,7 @@ def _():
     bozuk = {
         'Firebase ayarı': (h.replace(FB, 'firebase: null'), k),
         'Firebase ayarı ': (re.sub(r"appId:\s*'[^']*'", "appId: ''", h), k),
-        'Onam alanları': (h.replace("controller: 'dolu'", "controller: '[DOLDUR: x]'"), k),
+        'Onam alanları': (re.sub(r"controller: '[^']*'", "controller: '[DOLDUR: x]'", h), k),
         'İletişim adresi': (h.replace("contact: 'a@uni.edu.tr'", "contact: 'arastirmaci@ornek.edu.tr'"), k),
         'Güvenlik kuralları': (h, kural_eposta(ORNEK_EPOSTA)),
     }

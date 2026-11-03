@@ -223,7 +223,7 @@ def _olaylar(kod, grp, gor, satir, rng, bitti):
     ek('sim_start', t_sim, dict(readMs=40000))
     maruz = int(satir[KATILIMCI_KOLONLARI.index('cooldown_shown')] or 0)
     for k in range(maruz):
-        ek('cooldown_shown', t_sim + pd.Timedelta(seconds=120 + 60 * k), dict(k='TUPRS', pl=-0.17, tick=90 + 10 * k, why='Korktum'))
+        ek('cooldown_shown', t_sim + pd.Timedelta(seconds=120 + 60 * k), dict(k='PTRVA', pl=-0.17, tick=90 + 10 * k, why='Korktum'))
     t_sim_end = t_sim + pd.Timedelta(seconds=600 + float(rng.integers(0, 180)))
     ek('sim_end', t_sim_end, dict(value=95000, trades=3))
     if len(post) == 0 and not bitti:

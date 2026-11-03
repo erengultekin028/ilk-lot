@@ -134,7 +134,7 @@ export function renderSimulator() {
       : state.freePlay
         ? '<button class="button" style="margin:4px 0 10px" data-a="quitFreePlay">Oyunu bitir</button>'
         : '') +
-    '<p class="footnote">Şirket adları gerçek; fiyatlar, grafikler ve haberler kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz. Yatırım tavsiyesi değildir.</p>'
+    '<p class="footnote">Şirket adları ve kodları kurgusaldır; fiyatlar, grafikler ve haberler de kurgusaldır. Gerçek şirketlerle ilgisi yoktur. Yatırım tavsiyesi değildir.</p>'
   );
 }
 

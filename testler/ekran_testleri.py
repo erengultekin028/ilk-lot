@@ -135,7 +135,7 @@ def _(o):
 def _(o):
     s = o.sayfa()
     simulator_kur(s, 'A')
-    s.evaluate("""() => { const a = window.ilkLot.actions; a.openTradeWindow('KOZAL|S'); a.setTradeQuantity('max'); a.submitTrade(); a.chooseSellReason('0'); }""")
+    s.evaluate("""() => { const a = window.ilkLot.actions; a.openTradeWindow('ALTKY|S'); a.setTradeQuantity('max'); a.submitTrade(); a.chooseSellReason('0'); }""")
     time.sleep(0.4)
     ilk = int(s.inner_text('#cooldown-number'))
     assert ilk >= 9, ilk
@@ -152,9 +152,9 @@ def _(o):
 def _(o):
     s = o.sayfa()
     simulator_kur(s, 'A')
-    kalan = s.evaluate("""() => { const k = window.ilkLot, a = k.actions; const onceki = k.state.simulation.pos.KOZAL.q;
-      a.openTradeWindow('KOZAL|S'); a.setTradeQuantity('max'); a.submitTrade(); a.chooseSellReason('0'); a.cancelCooldown();
-      return [onceki, k.state.simulation.pos.KOZAL.q, !!document.getElementById('cooldown-number')]; }""")
+    kalan = s.evaluate("""() => { const k = window.ilkLot, a = k.actions; const onceki = k.state.simulation.pos.ALTKY.q;
+      a.openTradeWindow('ALTKY|S'); a.setTradeQuantity('max'); a.submitTrade(); a.chooseSellReason('0'); a.cancelCooldown();
+      return [onceki, k.state.simulation.pos.ALTKY.q, !!document.getElementById('cooldown-number')]; }""")
     assert kalan[0] == kalan[1] and kalan[2] is False, kalan
 
 
@@ -162,9 +162,9 @@ def _(o):
 def _(o):
     s = o.sayfa()
     simulator_kur(s, 'B')
-    r = s.evaluate("""() => { const k = window.ilkLot, a = k.actions; const onceki = k.state.simulation.pos.KOZAL.q;
-      a.openTradeWindow('KOZAL|S'); a.setTradeQuantity('max'); a.submitTrade(); a.chooseSellReason('0');
-      return [onceki, k.state.simulation.pos.KOZAL.q, !!document.getElementById('cooldown-number')]; }""")
+    r = s.evaluate("""() => { const k = window.ilkLot, a = k.actions; const onceki = k.state.simulation.pos.ALTKY.q;
+      a.openTradeWindow('ALTKY|S'); a.setTradeQuantity('max'); a.submitTrade(); a.chooseSellReason('0');
+      return [onceki, k.state.simulation.pos.ALTKY.q, !!document.getElementById('cooldown-number')]; }""")
     assert r[2] is False and r[1] < r[0], r
     hata_yok(s)
 
@@ -191,7 +191,7 @@ def _(o):
     assert len(kartlar) == 6 and all(n > 20 for n in kartlar), kartlar
     simulator_kur(s, 'B', sekme='a')
     assert 'İşlem geçmişi' in s.inner_text('#main-view')
-    s.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'p'; k.state.detailSymbol = 'PGSUS'; k.render(); k.updateSimulatorLive(); }")
+    s.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'p'; k.state.detailSymbol = 'BLTAY'; k.render(); k.updateSimulatorLive(); }")
     assert s.evaluate("!!document.querySelector('#detail-chart svg')")
     assert s.evaluate("[...document.querySelectorAll('.detail-actions button')].length") == 2
     hata_yok(s)
@@ -201,7 +201,7 @@ def _(o):
 def _(o):
     s = o.sayfa(1440, 900)
     simulator_kur(s, 'B')
-    s.evaluate("() => { const k = window.ilkLot; k.state.detailSymbol = 'PGSUS'; k.render(); k.updateSimulatorLive(); }")
+    s.evaluate("() => { const k = window.ilkLot; k.state.detailSymbol = 'BLTAY'; k.render(); k.updateSimulatorLive(); }")
     kutu = s.evaluate("(() => { const e = document.querySelector('#detail-chart svg').getBoundingClientRect(); return [e.left, e.top, e.width, e.height]; })()")
     x = kutu[0] + kutu[2] * 0.855 * 0.5
     y = kutu[1] + kutu[3] / 2
@@ -305,7 +305,7 @@ def _(o):
     kesik_olcum = """() => [...document.querySelectorAll('#main-view .card-section')]
       .filter(e => e.getBoundingClientRect().height < e.scrollHeight - 2)
       .map(e => (e.id || (e.querySelector('h3') || {}).textContent || 'kart') + ':' + Math.round(e.getBoundingClientRect().height) + '<' + e.scrollHeight)"""
-    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'PGSUS')):
+    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'BLTAY')):
         s.evaluate("""([sekme, detay]) => { const k = window.ilkLot; k.state.marketTab = sekme; k.state.detailSymbol = detay; k.render(); k.updateSimulatorLive(); }""", [sekme, detay])
         time.sleep(0.3)
         kesik = s.evaluate(kesik_olcum)
@@ -381,7 +381,7 @@ def _(o):
     s = o.sayfa(1440, 900)
     simulator_kur(s, 'B')
     genislikler = set()
-    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'PGSUS')):
+    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'BLTAY')):
         s.evaluate("""([sekme, detay]) => { const k = window.ilkLot; k.state.marketTab = sekme; k.state.detailSymbol = detay; k.render(); k.updateSimulatorLive(); }""", [sekme, detay])
         time.sleep(0.3)
         r = s.evaluate(UST_USTE_OLCUM)
@@ -398,7 +398,7 @@ def _(o):
     assert len(genislikler) == 1, f'sol sütun sekmeler arasında kayıyor: {genislikler}'
     # Serbest mod: ek paneller (kayıp sınırı, hız, otomatik sat emri) kartları bozmasın
     s.evaluate("() => { const k = window.ilkLot; k.state.stage = 'end'; k.state.freePlay = null; k.actions.openFreePlay(); k.actions.startFreePlay(); k.state.seenTourSteps = { sim: 1 }; k.state.tour = null; for (let i = 0; i < 40; i++) k.stepSimulation(); }")
-    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'KOZAL')):
+    for sekme, detay in (('p', None), ('m', None), ('a', None), ('p', 'ALTKY')):
         s.evaluate("""([sekme, detay]) => { const k = window.ilkLot; k.state.marketTab = sekme; k.state.detailSymbol = detay; k.render(); k.updateSimulatorLive(); }""", [sekme, detay])
         time.sleep(0.3)
         r = s.evaluate(UST_USTE_OLCUM)
@@ -558,9 +558,9 @@ def ekranlari_tara(o, tema, fs=''):
         for sekme in ('m', 'a'):
             s.evaluate("(t) => { const k = window.ilkLot; k.state.marketTab = t; k.render(); k.updateSimulatorLive(); }", sekme)
             kaydet(etiket + ' simülatör ' + sekme, s)
-        s.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'p'; k.state.detailSymbol = 'PGSUS'; k.render(); k.updateSimulatorLive(); }")
+        s.evaluate("() => { const k = window.ilkLot; k.state.marketTab = 'p'; k.state.detailSymbol = 'BLTAY'; k.render(); k.updateSimulatorLive(); }")
         kaydet(etiket + ' hisse ayrıntısı', s)
-        s.evaluate("() => { const k = window.ilkLot; k.state.detailSymbol = null; k.render(); k.actions.openTradeWindow('KOZAL|S'); k.actions.setTradeQuantity('max'); k.actions.submitTrade(); k.actions.chooseSellReason('0'); }")
+        s.evaluate("() => { const k = window.ilkLot; k.state.detailSymbol = null; k.render(); k.actions.openTradeWindow('ALTKY|S'); k.actions.setTradeQuantity('max'); k.actions.submitTrade(); k.actions.chooseSellReason('0'); }")
         time.sleep(0.4)
         kaydet(etiket + ' bekleme penceresi', s)
         s.evaluate("() => { const k = window.ilkLot; k.actions.cancelCooldown(); k.actions.cancelModal(); k.actions.openMenu(); }")

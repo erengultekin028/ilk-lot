@@ -1,5 +1,5 @@
 İLK LOT ARAŞTIRMASI
-Gönüllü katılım ve bilgilendirme metni (sürüm v1)
+Gönüllü katılım ve bilgilendirme metni (sürüm v1.1)
 21.10.2026
 
 ÖZET
@@ -15,7 +15,7 @@ Araştırmanın bazı ayrıntıları, davranışını etkileyebileceği için ç
 NE YAPACAKSIN?
 Kısa bir form (isteğe bağlı), iki kısa test, iki alıştırma, toplam 12 kısa karar ve 7,5 dakikalık bir piyasa simülatörü (öncesinde 30 saniyelik bir alıştırma). Toplam yaklaşık 30 dakika sürer.
 
-Hiçbir aşamada gerçek para kullanılmaz. Hisse adları gerçek BIST şirketlerine ait olabilir; ama fiyatlar, grafikler ve haberler tamamen kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz.
+Hiçbir aşamada gerçek para kullanılmaz. Simülatördeki şirket adları, fiyatlar, grafikler ve haberler tamamen kurgusaldır; gerçek şirketlerle ya da gerçek olaylarla ilgisi yoktur.
 
 NELER KAYDEDİLİR?
 Verdiğin kararlar ve bunları verme süren, simülatördeki işlemlerin, test ve anket cevapların, uygulamada hangi ekranlarda ne kadar kaldığın, cihaz türü ve ekran boyutu gibi teknik bilgiler.
@@ -27,7 +27,7 @@ Uygulamayı barındıran hizmetin teknik kayıtlarında IP adresin gibi bilgiler
 GİZLİLİK VE KVKK
 Verilerin yalnızca sana verilen rastgele bir kodla eşleşir; araştırmacı seni isimle tanımaz.
 
-Veri sorumlusu: [DOLDUR: üniversite ve araştırmacı adı]. Veriler [DOLDUR: örn. Google Firebase, Avrupa bölgesi] üzerinde saklanır ve yalnızca bu araştırmada kullanılır. Saklama süresi: [DOLDUR: örn. araştırma bittikten sonra 2 yıl].
+Veri sorumlusu: Gümüşhane Üniversitesi, Eren Gültekin. Veriler [DOLDUR: örn. Google Firebase, Avrupa bölgesi] üzerinde saklanır ve yalnızca bu araştırmada kullanılır. Saklama süresi: [DOLDUR: örn. araştırma bittikten sonra 2 yıl].
 
 Veriler üçüncü kişilerle paylaşılmaz; sonuçlar yayımlanırsa yalnızca kimliksiz ve toplu olarak yayımlanır. KVKK kapsamında verilerine erişme, düzeltilmesini ve silinmesini isteme haklarını arastirmaci@ornek.edu.tr adresine başvurarak kullanabilirsin.
 

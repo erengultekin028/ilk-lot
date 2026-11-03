@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Bu yazılıma atıf yapacaksanız lütfen aşağıdaki bilgileri kullanın."
+title: "İlk Lot"
+type: software
+abstract: "Genç yatırımcılarda zararına satış öncesi 10 saniyelik bir bekleme ekranının panik satışı azaltıp azaltmadığını inceleyen, telefonda çalışan davranış araştırması uygulaması."
+authors:
+  - family-names: "Gültekin"
+    given-names: "Eren"
+    affiliation: "Gümüşhane Üniversitesi, Yönetim Bilişim Sistemleri"
+repository-code: "https://github.com/erengultekin028/ilk-lot"
+url: "https://ilk-lot-pilot.web.app"

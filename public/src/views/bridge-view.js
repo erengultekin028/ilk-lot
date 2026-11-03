@@ -77,7 +77,7 @@ export function renderBridge() {
         })
         .join('') +
       '</div>' +
-      '<div class="note is-info" style="margin:14px 0 12px"><span><b style="color:var(--tx)">Önemli:</b> Hisse adları gerçek BIST şirketleridir, ama fiyatlar, grafikler ve haberler araştırma için kurgulanmıştır. Bu şirketlerin gerçek durumunu yansıtmaz. Hiçbir kararın doğru ya da yanlış değildir; içerik yatırım tavsiyesi değildir.</span></div>' +
+      '<div class="note is-info" style="margin:14px 0 12px"><span><b style="color:var(--tx)">Önemli:</b> Şirket adları, fiyatlar, grafikler ve haberler araştırma için kurgulanmıştır; gerçek şirketlerle ilgisi yoktur. Hiçbir kararın doğru ya da yanlış değildir; içerik yatırım tavsiyesi değildir.</span></div>' +
       '<div class="muted small-text" style="font-weight:700;margin:6px 0 8px">Başlamadan önce kısa bir okuma</div>' +
       READING_CARDS.map(function (item) {
         return '<div class="rounded-box"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';

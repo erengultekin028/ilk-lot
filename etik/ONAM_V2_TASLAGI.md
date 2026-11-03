@@ -35,7 +35,7 @@ Araştırmanın bazı ayrıntıları, davranışını etkileyebileceği için ç
 **NE YAPACAKSIN?** *(v1 ile aynı)*
 Kısa bir form (isteğe bağlı), iki kısa test, iki alıştırma, toplam 12 kısa karar ve 7,5 dakikalık bir piyasa simülatörü (öncesinde 30 saniyelik bir alıştırma). Toplam yaklaşık 30 dakika sürer.
 
-Hiçbir aşamada gerçek para kullanılmaz. Hisse adları gerçek BIST şirketlerine ait olabilir; ama fiyatlar, grafikler ve haberler tamamen kurgusaldır ve bu şirketlerin gerçek durumunu yansıtmaz.
+Hiçbir aşamada gerçek para kullanılmaz. Simülatördeki şirket adları, fiyatlar, grafikler ve haberler tamamen kurgusaldır; gerçek şirketlerle ya da gerçek olaylarla ilgisi yoktur.
 
 **NELER KAYDEDİLİR?**
 Verdiğin kararlar ve bunları verme süren, simülatördeki işlemlerin, test ve anket cevapların, uygulamada hangi ekranlarda ne kadar kaldığın, cihaz türü ve ekran boyutu gibi teknik bilgiler. **Bunlar, sana atanan rastgele katılım koduyla ve bu tarayıcıya bağlı rastgele bir oturum kimliğiyle eşleştirilir.**
@@ -47,7 +47,7 @@ Adın, e-postan, telefon numaran, öğrenci numaran, konumun, sesin ve görünt�
 **GİZLİLİK VE KVKK**
 **Verilerin, adınla değil, sistemin atadığı rastgele bir katılım koduyla ve bu tarayıcıya bağlı rastgele bir oturum kimliğiyle eşleşir; araştırmacı seni isimle tanımaz. [KVKK-YANITI: "anonim" mi, "takma adlı" mı: önerilen ifade "verilerin kimliğini doğrudan belirtmez; takma adlı olarak işlenir"].**
 
-Veri sorumlusu: [DOLDUR: üniversite ve araştırmacı adı]. **Araştırma verileri Google Firebase üzerinde [DOLDUR: ABD / Avrupa] veri merkezlerinde saklanır; oturum ve kimlik doğrulama hizmeti Google tarafından ABD'deki veri merkezlerinde işlenir. Bu nedenle verilerin yurt dışına aktarılır. [KVKK-YANITI: aktarımın dayanağı ve onaylı ifade, örn. standart sözleşme].** Veriler yalnızca bu araştırmada kullanılır. Saklama süresi: [DOLDUR: örn. araştırma bittikten sonra 2 yıl].
+Veri sorumlusu: Gümüşhane Üniversitesi, Eren Gültekin. **Araştırma verileri Google Firebase üzerinde [DOLDUR: ABD / Avrupa] veri merkezlerinde saklanır; oturum ve kimlik doğrulama hizmeti Google tarafından ABD'deki veri merkezlerinde işlenir. Bu nedenle verilerin yurt dışına aktarılır. [KVKK-YANITI: aktarımın dayanağı ve onaylı ifade, örn. standart sözleşme].** Veriler yalnızca bu araştırmada kullanılır. Saklama süresi: [DOLDUR: örn. araştırma bittikten sonra 2 yıl].
 
 **Veriler, hizmet sağlayıcı (Google) dışında üçüncü kişilerle paylaşılmaz;** sonuçlar yayımlanırsa yalnızca kimliksiz ve toplu olarak yayımlanır. KVKK kapsamında verilerine erişme, düzeltilmesini ve silinmesini isteme haklarını [DOLDUR: iletişim adresi] adresine başvurarak kullanabilirsin. **[KVKK-YANITI: silme talebinin nasıl karşılanacağı; öneri: "Verilerin kimliksiz olduğundan, talebini sana verilen katılım koduyla birlikte iletmen gerekir"].**
 
